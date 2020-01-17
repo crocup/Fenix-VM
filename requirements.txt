@@ -1,0 +1,10 @@
+Click==7.0
+Flask==1.1.1
+itsdangerous==1.1.0
+Jinja2==2.10.3
+MarkupSafe==1.1.1
+pymongo==3.10.1
+redis==3.3.11
+rq==1.2.0
+scapy==2.4.3
+Werkzeug==0.16.0
