@@ -23,7 +23,7 @@ def process_inventory():
         body_json = request.get_json()
         target_mask = body_json['target']
         inventory_service = Inventory(target=target_mask)
-        r = q.enqueue_call(inventory_service.result_scan, result_ttl=3600)
+        r = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
         return r.id
     except Exception as e:
         print(e)
@@ -36,8 +36,20 @@ def process_scanner():
         body_json = request.get_json()
         target_ip = body_json['target']
         scanner_service = Scanner(host=target_ip)
-        r = q.enqueue_call(scanner_service.scanner_async, result_ttl=3600)
+        r = q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
         return r.id
+    except Exception as e:
+        print(e)
+        exit(1)
+
+
+@app.route('/process/scanner/full/start', methods=["POST"])
+def process_scanner():
+    try:
+        pass
+        # body_json = request.get_json()
+        # target_ip = body_json['target']
+        # return r.id
     except Exception as e:
         print(e)
         exit(1)
@@ -48,8 +60,7 @@ def result(id):
     try:
         job = q.fetch_job(id)
         if job.is_finished:
-            status = {"status": job.result}
-            return json.dumps(status, ensure_ascii=False)
+            return jsonify({"status": job.result}), 200
         else:
             return jsonify({"status": "pending"}), 202
     except:

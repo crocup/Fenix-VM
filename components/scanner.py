@@ -1,6 +1,5 @@
 import datetime
 import json
-import logging.config
 import nmap
 import configparser
 from components.record_database import RecordMongo
@@ -23,8 +22,6 @@ def callback_result(host, scan_result):
                              coll=config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
         record.close_connection()
-        status = "success"
-        return status
     except Exception as e:
         status = "error: {}".format(e)
         return status
@@ -88,8 +85,11 @@ class Scanner(object):
                 time_delta_sec = datetime.datetime.now() - now
                 print("Waiting ... {0} sec.".format(time_delta_sec.seconds))
                 nma.wait(60)
-        except Exception as error:
-            print(error)
+            status = "success"
+            return status
+        except Exception as e:
+            status = "error: {}".format(e)
+            return status
 
     def scanner_yield(self):
         """
