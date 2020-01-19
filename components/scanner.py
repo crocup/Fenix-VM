@@ -3,6 +3,7 @@ import json
 import nmap
 import configparser
 from components.record_database import RecordMongo
+from components.search_vulnerability import VulnerSearch, find_circl
 
 # read settings file
 _path = "settings/settings_scanner.conf"
@@ -21,6 +22,21 @@ def callback_result(host, scan_result):
         record = RecordMongo(db=config.get("DATABASE_SCANNER", "BASE"),
                              coll=config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
+        result = record.find_ip(ip=host)
+        vulnerability_search = VulnerSearch(vulners_api=config.get("VULNERS", "API"))
+        for port in result['result_scan']['tcp']:
+            cpe = result['result_scan']['tcp'][port]['cpe']
+            product = result['result_scan']['tcp'][port]['product']
+            version = result['result_scan']['tcp'][port]['version']
+            product_version = product + " " + version
+            if len(cpe) > 0:
+                now = datetime.datetime.now()
+                vulnerabilities_cve_list = find_circl(cpe=cpe)
+                print(vulnerabilities_cve_list)
+                # vulnerabilities_exploit_list = vulner_search.search_vulners(product_version=product_version)
+                record.database_vulnerability_search_tcp(ip=host, time=now, port=port,
+                                                         cve=vulnerabilities_cve_list,
+                                                         exploit=[])
         record.close_connection()
     except Exception as e:
         status = "error: {}".format(e)
@@ -85,6 +101,7 @@ class Scanner(object):
                 time_delta_sec = datetime.datetime.now() - now
                 print("Waiting ... {0} sec.".format(time_delta_sec.seconds))
                 nma.wait(60)
+
             status = "success"
             return status
         except Exception as e:

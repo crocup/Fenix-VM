@@ -31,7 +31,7 @@ def process_inventory():
 
 
 @app.route('/process/scanner/ip/start', methods=["POST"])
-def process_scanner():
+def process_scanner_ip():
     try:
         body_json = request.get_json()
         target_ip = body_json['target']
@@ -43,16 +43,42 @@ def process_scanner():
         exit(1)
 
 
-@app.route('/process/scanner/full/start', methods=["POST"])
-def process_scanner():
-    try:
-        pass
-        # body_json = request.get_json()
-        # target_ip = body_json['target']
-        # return r.id
-    except Exception as e:
-        print(e)
-        exit(1)
+# @app.route('/process/scanner/vulnerability', methods=["POST"])
+# def process_scanner_vulnerability():
+#     try:
+#         body_json = request.get_json()
+#         target_ip = body_json['target']
+#         # scanner_service = Scanner(host=target_ip)
+#         r = q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
+#         return r.id
+#     except Exception as e:
+#         print(e)
+#         exit(1)
+
+
+# @app.route('/process/scanner/full/start', methods=["POST"])
+# def process_scanner_full():
+#     try:
+#         pass
+#         # body_json = request.get_json()
+#         # target_ip = body_json['target']
+#         # return r.id
+#     except Exception as e:
+#         print(e)
+#         exit(1)
+
+
+# @app.route('/process/cve/info', methods=["POST"])
+# def process_cve_info():
+#     try:
+#         body_json = request.get_json()
+#         target_cve = body_json['cve']
+#         cve_search = seach_cve(cve=target_cve)
+#         print(cve_search)
+#         return jsonify(cve_search), 200
+#     except Exception as e:
+#         print(e)
+#         # return jsonify({"status": "Not found"}), 404
 
 
 @app.route('/result/<id>', methods=["POST"])

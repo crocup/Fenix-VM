@@ -23,17 +23,9 @@ class RecordMongo(object):
         :return: None
         """
         for data in result:
-            # check data in database
-            ips = {"ip": data}
-            result_check = self.coll.find_one(ips)
-            ips_hostname = ips
-            if result_check is None:
-                tags = "None"
-            else:
-                tags = result_check["tags"]
+            ips_hostname = {"ip": data}
             sets = {"$set": {
-                "date_update": date_now.strftime("%d-%m-%Y %H:%M"),
-                "tags": tags
+                "date_update": date_now.strftime("%d-%m-%Y %H:%M")
             }}
             self.coll.update_one(ips_hostname, sets, upsert=True)
 
@@ -68,8 +60,24 @@ class RecordMongo(object):
         }}
         self.coll.update_one(ips_hostname, sets, upsert=True)
 
+    def database_vulnerability_search_tcp(self, ip, time, port, cve, exploit):
+        """
+
+        """
+        ips_hostname = {"ip": ip}
+        sets = {"$set": {
+            "last_update": time.strftime("%d-%m-%Y %H:%M"),
+            'result_scan.tcp.' + str(port) + '.cve': cve,
+            'result_scan.tcp.' + str(port) + '.exploit': exploit}}
+        # json.dumps(sets)
+        self.coll.update_one(ips_hostname, sets, upsert=True)
+
     def close_connection(self):
         """
 
         """
         self.conn.close()
+
+    def find_ip(self, ip):
+        ip = {"ip": ip}
+        return self.coll.find_one(ip)
