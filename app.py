@@ -23,8 +23,8 @@ def process_inventory():
         body_json = request.get_json()
         target_mask = body_json['target']
         inventory_service = Inventory(target=target_mask)
-        r = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
-        return r.id
+        results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
+        return results.id
     except Exception as e:
         print(e)
         exit(1)
@@ -36,8 +36,20 @@ def process_scanner_ip():
         body_json = request.get_json()
         target_ip = body_json['target']
         scanner_service = Scanner(host=target_ip)
-        r = q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
-        return r.id
+        results = q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
+        return results.id
+    except Exception as e:
+        print(e)
+        exit(1)
+
+
+@app.route('/process/scanner/full/start', methods=["POST"])
+def process_scanner_full():
+    try:
+        pass
+        # body_json = request.get_json()
+        # target_ip = body_json['target']
+        # return r.id
     except Exception as e:
         print(e)
         exit(1)
@@ -51,18 +63,6 @@ def process_scanner_ip():
 #         # scanner_service = Scanner(host=target_ip)
 #         r = q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
 #         return r.id
-#     except Exception as e:
-#         print(e)
-#         exit(1)
-
-
-# @app.route('/process/scanner/full/start', methods=["POST"])
-# def process_scanner_full():
-#     try:
-#         pass
-#         # body_json = request.get_json()
-#         # target_ip = body_json['target']
-#         # return r.id
 #     except Exception as e:
 #         print(e)
 #         exit(1)

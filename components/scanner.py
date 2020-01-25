@@ -3,7 +3,7 @@ import json
 import nmap
 import configparser
 from components.record_database import RecordMongo
-from components.search_vulnerability import VulnerSearch, find_circl
+from components.search_vulnerability import VulnerabilitySearch, search_circl
 
 # read settings file
 _path = "settings/settings_scanner.conf"
@@ -23,20 +23,25 @@ def callback_result(host, scan_result):
                              coll=config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
         result = record.find_ip(ip=host)
-        vulnerability_search = VulnerSearch(vulners_api=config.get("VULNERS", "API"))
+        vulnerabilities_api = VulnerabilitySearch(vulners_api=config.get("VULNERS", "API"))
         for port in result['result_scan']['tcp']:
             cpe = result['result_scan']['tcp'][port]['cpe']
             product = result['result_scan']['tcp'][port]['product']
             version = result['result_scan']['tcp'][port]['version']
-            product_version = product + " " + version
-            if len(cpe) > 0:
-                now = datetime.datetime.now()
-                vulnerabilities_cve_list = find_circl(cpe=cpe)
-                print(vulnerabilities_cve_list)
-                # vulnerabilities_exploit_list = vulner_search.search_vulners(product_version=product_version)
-                record.database_vulnerability_search_tcp(ip=host, time=now, port=port,
-                                                         cve=vulnerabilities_cve_list,
-                                                         exploit=[])
+            # Get now data
+            now = datetime.datetime.now()
+            # get CVE
+            vulnerabilities_cve_list = search_circl(cpe=cpe)
+            # Get vulnerabilities and exploits by software name and version
+            vulnerabilities_exploit_list_software = vulnerabilities_api.get_vulnerabilities_by_software(name=product,
+                                                                                                        version=version)
+            # Get vulnerabilities by CPE product and version string
+            vulnerabilities_exploit_list_cpe = vulnerabilities_api.get_vulnerabilities_by_cpe(cpe=cpe)
+            record.database_vulner_search_tcp(ip=host, time=now, port=port,
+                                              cve=vulnerabilities_cve_list,
+                                              exploit_software=vulnerabilities_exploit_list_software,
+                                              exploit_cpe=vulnerabilities_exploit_list_cpe)
+
         record.close_connection()
     except Exception as e:
         status = "error: {}".format(e)
