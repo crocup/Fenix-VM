@@ -36,13 +36,17 @@ class Inventory(object):
 
         :return: list ip address and mac
         """
-        arp_request = scapy.all.ARP(pdst=self.target)
-        broadcast = scapy.all.Ether(dst='ff:ff:ff:ff:ff:ff')
-        arp_request_broadcast = broadcast / arp_request
-        answered_list = scapy.all.srp(arp_request_broadcast, timeout=3, verbose=False)[0]
-        clients_list = []
-        for element in answered_list:
-            clients_list.append(element[1].psrc)
+        try:
+            arp_request = scapy.all.ARP(pdst=self.target)
+            broadcast = scapy.all.Ether(dst='ff:ff:ff:ff:ff:ff')
+            arp_request_broadcast = broadcast / arp_request
+            answered_list = scapy.all.srp(arp_request_broadcast, timeout=3, verbose=False)[0]
+            clients_list = []
+            for element in answered_list:
+                clients_list.append(element[1].psrc)
+        except Exception as e:
+            print(e)
+            clients_list = []
         return clients_list
 
     def ping_scan(self):
@@ -63,12 +67,13 @@ class Inventory(object):
         :return:
         """
         try:
-            # return list(set(self.scan_arp() + self.ping_scan()))
-            result = list(set(self.scan_arp()))
+            result = list(set(self.scan_arp() + self.ping_scan()))
+            # result = list(set(self.scan_arp()))
+            # print(result)
             now_time = datetime.datetime.now()
             record_in_mongo(result, now_time)
             status = "success"
-            return status
+            return status, result
         except Exception as e:
             status = "error: {}".format(e)
             return status
