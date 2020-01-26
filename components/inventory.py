@@ -67,8 +67,8 @@ class Inventory(object):
         :return:
         """
         try:
-            # return list(set(self.scan_arp() + self.ping_scan()))
-            result = list(set(self.scan_arp()))
+            result = list(set(self.scan_arp() + self.ping_scan()))
+            # result = list(set(self.scan_arp()))
             # print(result)
             now_time = datetime.datetime.now()
             record_in_mongo(result, now_time)
