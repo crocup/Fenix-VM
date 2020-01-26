@@ -6,7 +6,7 @@ from components.record_database import RecordMongo
 from components.search_vulnerability import VulnerabilitySearch, search_circl
 
 # read settings file
-_path = "settings/settings_scanner.conf"
+_path = "settings/settings.conf"
 config = configparser.ConfigParser()
 config.read(_path)
 
@@ -41,7 +41,6 @@ def callback_result(host, scan_result):
                                               cve=vulnerabilities_cve_list,
                                               exploit_software=vulnerabilities_exploit_list_software,
                                               exploit_cpe=vulnerabilities_exploit_list_cpe)
-
         record.close_connection()
     except Exception as e:
         status = "error: {}".format(e)
@@ -106,7 +105,6 @@ class Scanner(object):
                 time_delta_sec = datetime.datetime.now() - now
                 print("Waiting ... {0} sec.".format(time_delta_sec.seconds))
                 nma.wait(60)
-
             status = "success"
             return status
         except Exception as e:
