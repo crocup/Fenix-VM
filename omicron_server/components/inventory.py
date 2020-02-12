@@ -2,22 +2,16 @@ import ipaddress
 import os
 import scapy.all
 import socket
-import omicron_server
-import configparser
 import datetime
-
-# read setting file
-path = "settings/settings.conf"
-config = configparser.ConfigParser()
-config.read(path)
+import omicron_server
 
 
 def record_in_mongo(result_inventory, now_time):
     """
 
     """
-    record_mongo = omicron_server.RecordMongo(db=config.get("DATABASE_INVENTORY", "BASE"),
-                                              coll=config.get("DATABASE_INVENTORY", "COLLECTION"))
+    record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_INVENTORY", "BASE"),
+                                              coll=omicron_server.config.get("DATABASE_INVENTORY", "COLLECTION"))
     record_mongo.database_inventory(result=result_inventory, date_now=now_time)
     record_mongo.close_connection()
 

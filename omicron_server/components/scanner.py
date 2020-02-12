@@ -1,13 +1,7 @@
 import datetime
 import json
 import nmap
-import configparser
 import omicron_server
-
-# read settings file
-_path = "settings/settings.conf"
-config = configparser.ConfigParser()
-config.read(_path)
 
 
 def callback_result(host, scan_result):
@@ -18,11 +12,11 @@ def callback_result(host, scan_result):
     :return:
     """
     try:
-        record = omicron_server.RecordMongo(db=config.get("DATABASE_SCANNER", "BASE"),
-                                            coll=config.get("DATABASE_SCANNER", "COLLECTION"))
+        record = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
+                                            coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
         result = record.find_ip(ip=host)
-        vulnerabilities_api = omicron_server.VulnerabilitySearch(vulners_api=config.get("VULNERS", "API"))
+        vulnerabilities_api = omicron_server.VulnerabilitySearch(vulners_api=omicron_server.config.get("VULNERS", "API"))
         for port in result['result_scan']['tcp']:
             cpe = result['result_scan']['tcp'][port]['cpe']
             product = result['result_scan']['tcp'][port]['product']
