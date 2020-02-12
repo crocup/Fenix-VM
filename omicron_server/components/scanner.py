@@ -2,8 +2,7 @@ import datetime
 import json
 import nmap
 import configparser
-from components.record_database import RecordMongo
-from components.search_vulnerability import VulnerabilitySearch, search_circl
+import omicron_server
 
 # read settings file
 _path = "settings/settings.conf"
@@ -19,11 +18,11 @@ def callback_result(host, scan_result):
     :return:
     """
     try:
-        record = RecordMongo(db=config.get("DATABASE_SCANNER", "BASE"),
-                             coll=config.get("DATABASE_SCANNER", "COLLECTION"))
+        record = omicron_server.RecordMongo(db=config.get("DATABASE_SCANNER", "BASE"),
+                                            coll=config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
         result = record.find_ip(ip=host)
-        vulnerabilities_api = VulnerabilitySearch(vulners_api=config.get("VULNERS", "API"))
+        vulnerabilities_api = omicron_server.VulnerabilitySearch(vulners_api=config.get("VULNERS", "API"))
         for port in result['result_scan']['tcp']:
             cpe = result['result_scan']['tcp'][port]['cpe']
             product = result['result_scan']['tcp'][port]['product']
@@ -31,7 +30,7 @@ def callback_result(host, scan_result):
             # Get now data
             now = datetime.datetime.now()
             # get CVE
-            vulnerabilities_cve_list = search_circl(cpe=cpe)
+            vulnerabilities_cve_list = omicron_server.search_circl(cpe=cpe)
             # Get vulnerabilities and exploits by software name and version
             vulnerabilities_exploit_list_software = vulnerabilities_api.get_vulnerabilities_by_software(name=product,
                                                                                                         version=version)

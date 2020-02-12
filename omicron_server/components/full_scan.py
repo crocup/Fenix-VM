@@ -1,5 +1,4 @@
-from components.inventory import Inventory
-from components.scanner import Scanner
+import omicron_server
 
 
 def full_scan(target):
@@ -7,7 +6,7 @@ def full_scan(target):
         inventory_service = Inventory(target=target)
         result_inventory = inventory_service.result_scan()
         for ips in result_inventory[1]:
-            scanner_service = Scanner(host=ips)
+            scanner_service = omicron_server.Scanner(host=ips)
             scanner_service.scanner_async()
         status = "success"
         return status
