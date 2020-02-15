@@ -3,7 +3,7 @@ import schedule
 from time import sleep
 
 
-def run_scheduler():
+def run():
     try:
         target_ips = omicron_server.config.get("NETWORK_IP", "IP")
         sched_inventory = omicron_server.config.get("SCHEDULER", "INVENTORY")
