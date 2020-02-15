@@ -1,3 +1,4 @@
+import asyncio
 import logging.config
 from flask import Flask, request, jsonify
 from rq import Queue
@@ -16,10 +17,10 @@ q = Queue(connection=Redis(), default_timeout=3600)
 # create the logging file handler
 logging.config.fileConfig('setting/log.conf')
 logger = logging.getLogger("OmicronApp")
-logger.info("Server start...")
 
 # read settings file
 _path = "setting/settings.conf"
 config = configparser.ConfigParser()
 config.read(_path)
+
 from . import views
