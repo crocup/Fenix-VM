@@ -1,4 +1,3 @@
-import asyncio
 import logging.config
 from flask import Flask, request, jsonify
 from rq import Queue
