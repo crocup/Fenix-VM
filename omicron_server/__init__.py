@@ -8,6 +8,7 @@ from .components.scanner import *
 from .components.record_database import *
 from .components.full_scan import *
 from .components.search_vulnerability import *
+from .components.scheduler import *
 
 app = Flask(__name__)
 q = Queue(connection=Redis(), default_timeout=3600)
