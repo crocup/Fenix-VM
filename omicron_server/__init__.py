@@ -21,5 +21,5 @@ logger = logging.getLogger("OmicronApp")
 _path = "setting/settings.conf"
 config = configparser.ConfigParser()
 config.read(_path)
-
+logger.info("Server start...")
 from . import views
