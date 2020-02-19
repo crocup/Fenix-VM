@@ -41,8 +41,8 @@ def process_scanner_ip():
 def process_scanner_full():
     try:
         omicron_server.logger.info("full-scanner-service start")
-        target_ip = get_json()
-        results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(target_ip,), result_ttl=600)
+        target_ip = omicron_server.config.get("NETWORK_IP", "IP")
+        results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(str(target_ip),), result_ttl=500)
         return results.id
     except Exception as e:
         omicron_server.logging.error(e)
