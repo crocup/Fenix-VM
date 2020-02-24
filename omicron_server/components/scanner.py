@@ -16,7 +16,6 @@ def callback_result(host, scan_result):
                                             coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
         record.database_scanner(host=host, scan_result=scan_result)
         result = record.find_ip(ip=host)
-        vulnerabilities_api = omicron_server.VulnerabilitySearch(vulners_api=omicron_server.config.get("VULNERS", "API"))
         for port in result['result_scan']['tcp']:
             cpe = result['result_scan']['tcp'][port]['cpe']
             product = result['result_scan']['tcp'][port]['product']
@@ -26,10 +25,11 @@ def callback_result(host, scan_result):
             # get CVE
             vulnerabilities_cve_list = omicron_server.search_circl(cpe=cpe)
             # Get vulnerabilities and exploits by software name and version
-            vulnerabilities_exploit_list_software = vulnerabilities_api.get_vulnerabilities_by_software(name=product,
-                                                                                                        version=version)
+            vulnerabilities_exploit_list_software = omicron_server.vulnerabilities_api.get_vulnerabilities_by_software(
+                name=product,
+                version=version)
             # Get vulnerabilities by CPE product and version string
-            vulnerabilities_exploit_list_cpe = vulnerabilities_api.get_vulnerabilities_by_cpe(cpe=cpe)
+            vulnerabilities_exploit_list_cpe = omicron_server.vulnerabilities_api.get_vulnerabilities_by_cpe(cpe=cpe)
             record.database_vulner_search_tcp(ip=host, time=now, port=port,
                                               cve=vulnerabilities_cve_list,
                                               exploit_software=vulnerabilities_exploit_list_software,
