@@ -22,16 +22,22 @@ class RecordMongo(object):
     def database_inventory(self, result, date_now):
         """
         update or upsert data in mongo db
+        :param full_scanning:
         :param result: list ip address
         :param date_now: format date and time
         :return: None
         """
+        status_inventory = []
         for data in result:
             ips_hostname = {"ip": data}
             sets = {"$set": {
-                "date_update": date_now.strftime("%d-%m-%Y %H:%M")
+                "date_update_inventory": date_now.strftime("%d-%m-%Y %H:%M")
             }}
-            self.coll.update_one(ips_hostname, sets, upsert=True)
+            result_inventory = self.coll.update_one(ips_hostname, sets, upsert=True)
+            update_result = result_inventory.matched_count
+            if update_result == 0:
+                status_inventory.append(data)
+        return status_inventory
 
     def database_vulner(self, name_json):
         """
@@ -65,9 +71,10 @@ class RecordMongo(object):
         now = datetime.datetime.now()
         sets = {"$set": {
             "result_scan": result_json,
-            "last_update": now.strftime("%d-%m-%Y %H:%M")
+            "date_update_scanner": now.strftime("%d-%m-%Y %H:%M")
         }}
-        return self.coll.update_one(ips_hostname, sets, upsert=True)
+        result_scanner = self.coll.update_one(ips_hostname, sets, upsert=True)
+        return result_scanner
 
     def database_vulner_search_tcp(self, ip, time, port, cve, exploit_software, exploit_cpe):
         """
@@ -82,7 +89,7 @@ class RecordMongo(object):
         """
         ips_hostname = {"ip": ip}
         sets = {"$set": {
-            "last_update": time.strftime("%d-%m-%Y %H:%M"),
+            "date_update_vulnerability": time.strftime("%d-%m-%Y %H:%M"),
             'result_scan.tcp.' + str(port) + '.cve': cve,
             'result_scan.tcp.' + str(port) + '.exploit_by_software': exploit_software,
             'result_scan.tcp.' + str(port) + '.exploit_by_cpe': exploit_cpe}}

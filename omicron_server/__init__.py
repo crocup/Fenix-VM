@@ -21,5 +21,8 @@ logger = logging.getLogger("OmicronApp")
 _path = "setting/settings.conf"
 config = configparser.ConfigParser()
 config.read(_path)
+logger.info("Server start...")
 
+vulnerabilities_api = VulnerabilitySearch(
+            vulners_api=config.get("VULNERS", "API"))
 from . import views

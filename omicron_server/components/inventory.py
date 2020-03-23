@@ -10,10 +10,14 @@ def record_in_mongo(result_inventory, now_time):
     """
 
     """
-    record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_INVENTORY", "BASE"),
-                                              coll=omicron_server.config.get("DATABASE_INVENTORY", "COLLECTION"))
-    record_mongo.database_inventory(result=result_inventory, date_now=now_time)
+    record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
+                                              coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
+    result = record_mongo.database_inventory(result=result_inventory, date_now=now_time)
     record_mongo.close_connection()
+    # if new ip, then start full-scanning
+    if len(result) > 0:
+        for ips in result:
+            omicron_server.full_scan_ip(ips=ips)
 
 
 def my_ip():
@@ -67,7 +71,7 @@ class Inventory(object):
                 result.append(str(all_hosts[hostname]))
         return result
 
-    def result_scan(self):
+    def result_scan(self, full_scanning=False):
         """
         :return:
         """

@@ -15,7 +15,7 @@ def get_json():
 def process_inventory():
     try:
         omicron_server.logger.info("inventory-service start")
-        target_mask = get_json()
+        target_mask = omicron_server.config.get("NETWORK_IP", "IP")
         inventory_service = omicron_server.Inventory(target=target_mask)
         results = omicron_server.q.enqueue_call(inventory_service.result_scan, result_ttl=500)
         return results.id
@@ -41,8 +41,8 @@ def process_scanner_ip():
 def process_scanner_full():
     try:
         omicron_server.logger.info("full-scanner-service start")
-        target_ip = get_json()
-        results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(target_ip,), result_ttl=600)
+        target_ip = omicron_server.config.get("NETWORK_IP", "IP")
+        results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(str(target_ip),), result_ttl=500)
         return results.id
     except Exception as e:
         omicron_server.logging.error(e)
@@ -60,3 +60,21 @@ def result(uuid):
     except Exception as e:
         omicron_server.logging.error("Error: Not found! {0}".format(e))
         return omicron_server.jsonify({"status": "Not found"}), 404
+
+
+@app.route('/api/v1/process/vulnerability/start/cve', methods=["POST"])
+def search_vulners():
+    """
+    Example:
+    json:
+    target: "CVE-2017-0012"
+    :return:
+    """
+    try:
+        omicron_server.logger.info("search-vulners-service start")
+        target_vulnerability_cve = get_json()
+        results = omicron_server.vulnerabilities_api.get_cve(target_vulnerability_cve)
+        return results
+    except Exception as e:
+        omicron_server.logging.error(e)
+        exit(0)
