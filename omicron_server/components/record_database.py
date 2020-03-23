@@ -74,7 +74,6 @@ class RecordMongo(object):
             "date_update_scanner": now.strftime("%d-%m-%Y %H:%M")
         }}
         result_scanner = self.coll.update_one(ips_hostname, sets, upsert=True)
-        print(result_scanner)
         return result_scanner
 
     def database_vulner_search_tcp(self, ip, time, port, cve, exploit_software, exploit_cpe):
