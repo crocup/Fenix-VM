@@ -78,3 +78,4 @@ def search_vulners():
     except Exception as e:
         omicron_server.logging.error(e)
         exit(0)
+
