@@ -31,6 +31,18 @@ def my_ip():
                   for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0]
 
 
+def adding_scan(result):
+    """
+
+    :param result:
+    :return:
+    """
+    now_time = datetime.datetime.now()
+    record_in_mongo(result, now_time)
+    status = "success"
+    return status
+
+
 class Inventory(object):
 
     def __init__(self, target):
