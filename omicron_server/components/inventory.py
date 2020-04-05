@@ -12,12 +12,8 @@ def record_in_mongo(result_inventory, now_time):
     """
     record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
                                               coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
-    result = record_mongo.database_inventory(result=result_inventory, date_now=now_time)
+    record_mongo.database_inventory(result=result_inventory, date_now=now_time)
     record_mongo.close_connection()
-    # if new ip, then start full-scanning
-    if len(result) > 0:
-        for ips in result:
-            omicron_server.full_scan_ip(ips=ips)
 
 
 def my_ip():
@@ -29,18 +25,6 @@ def my_ip():
               if not ip.startswith("127.")]
              or [[(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close())
                   for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0]
-
-
-def adding_scan(result):
-    """
-
-    :param result:
-    :return:
-    """
-    now_time = datetime.datetime.now()
-    record_in_mongo(result, now_time)
-    status = "success"
-    return status
 
 
 class Inventory(object):
@@ -83,18 +67,36 @@ class Inventory(object):
                 result.append(str(all_hosts[hostname]))
         return result
 
-    def result_scan(self, full_scanning=False):
+    def result_scan(self, ping):
         """
+
+        :param ping: True/False
         :return:
         """
         try:
-            # result = list(set(self.scan_arp() + self.ping_scan()))
-            result = list(set(self.scan_arp()))
-            # print(result)
+            if ping:
+                result = list(set(self.scan_arp() + self.ping_scan()))
+            else:
+                result = list(set(self.scan_arp()))
             now_time = datetime.datetime.now()
             record_in_mongo(result, now_time)
             status = "success"
             return status, result
         except Exception as e:
             status = "error: {}".format(e)
+            return status
+
+    def adding_scan_inventory(self):
+        """
+
+        :return:
+        """
+        try:
+            now_time = datetime.datetime.now()
+            target = [self.target]
+            record_in_mongo(target, now_time)
+            status = "success"
+            return status
+        except Exception as e:
+            status = e
             return status
