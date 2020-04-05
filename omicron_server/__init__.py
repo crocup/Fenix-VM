@@ -23,6 +23,10 @@ config = configparser.ConfigParser()
 config.read(_path)
 logger.info("Server start...")
 
+# open config file
+with open('setting/config.json', 'r') as f:
+    config_json = json.load(f)
+
 vulnerabilities_api = VulnerabilitySearch(
             vulners_api=config.get("VULNERS", "API"))
 from . import views
