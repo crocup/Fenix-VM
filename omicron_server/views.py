@@ -15,10 +15,24 @@ def get_json():
 def process_inventory():
     try:
         omicron_server.logger.info("inventory-service start")
-        target_mask = omicron_server.config.get("NETWORK_IP", "IP")
+        target_mask = omicron_server.config_json["network"]["ip"]
+        body_json = omicron_server.request.get_json()
+        ping = body_json['ping']
         inventory_service = omicron_server.Inventory(target=target_mask)
-        results = omicron_server.q.enqueue_call(inventory_service.result_scan, result_ttl=500)
+        results = omicron_server.q.enqueue_call(inventory_service.result_scan, args=(ping,), result_ttl=500)
         return results.id
+    except Exception as e:
+        omicron_server.logging.error(e)
+        exit(0)
+
+
+@app.route('/api/v1/process/inventory/add', methods=["POST"])
+def process_inventory_add():
+    try:
+        target_inventory = get_json()
+        inventory_service = omicron_server.Inventory(target=target_inventory)
+        inventory_add_scan = inventory_service.adding_scan_inventory()
+        return omicron_server.jsonify(result=inventory_add_scan)
     except Exception as e:
         omicron_server.logging.error(e)
         exit(0)
@@ -41,7 +55,7 @@ def process_scanner_ip():
 def process_scanner_full():
     try:
         omicron_server.logger.info("full-scanner-service start")
-        target_ip = omicron_server.config.get("NETWORK_IP", "IP")
+        target_ip = omicron_server.config_json["network"]["ip"]
         results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(str(target_ip),), result_ttl=500)
         return results.id
     except Exception as e:
