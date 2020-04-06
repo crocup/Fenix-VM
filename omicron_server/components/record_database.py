@@ -110,3 +110,10 @@ class RecordMongo(object):
         :return:
         """
         return self.coll.find_one({"ip": ip})
+
+    def find(self):
+        """
+
+        :return:
+        """
+        return self.coll.find()

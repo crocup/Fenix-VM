@@ -4,6 +4,15 @@ import nmap
 import omicron_server
 
 
+def connect_mongo():
+    with open('setting/config.json', 'r') as f:
+        config_json = json.load(f)
+    db_scanner = config_json["database"]["scanner"]["base"]
+    collection_scanner = config_json["database"]["scanner"]["collection"]
+    connect = omicron_server.RecordMongo(db=db_scanner, coll=collection_scanner)
+    return connect
+
+
 def callback_result(host, scan_result):
     """
 
@@ -12,29 +21,8 @@ def callback_result(host, scan_result):
     :return:
     """
     try:
-        record = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
-                                            coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
-        record.database_scanner(host=host, scan_result=scan_result)
-        result = record.find_ip(ip=host)
-        for port in result['result_scan']['tcp']:
-            cpe = result['result_scan']['tcp'][port]['cpe']
-            product = result['result_scan']['tcp'][port]['product']
-            version = result['result_scan']['tcp'][port]['version']
-            # Get now data
-            now = datetime.datetime.now()
-            # get CVE
-            vulnerabilities_cve_list = omicron_server.search_circl(cpe=cpe)
-            # Get vulnerabilities and exploits by software name and version
-            vulnerabilities_exploit_list_software = omicron_server.vulnerabilities_api.get_vulnerabilities_by_software(
-                name=product,
-                version=version)
-            # Get vulnerabilities by CPE product and version string
-            vulnerabilities_exploit_list_cpe = omicron_server.vulnerabilities_api.get_vulnerabilities_by_cpe(cpe=cpe)
-            record.database_vulner_search_tcp(ip=host, time=now, port=port,
-                                              cve=vulnerabilities_cve_list,
-                                              exploit_software=vulnerabilities_exploit_list_software,
-                                              exploit_cpe=vulnerabilities_exploit_list_cpe)
-        record.close_connection()
+        connect_mongo().database_scanner(host=host, scan_result=scan_result)
+        connect_mongo().close_connection()
     except Exception as e:
         status = "error: {}".format(e)
         return status
@@ -42,28 +30,26 @@ def callback_result(host, scan_result):
 
 class Scanner(object):
 
-    def __init__(self, host, mac=None, arguments='-sV --host-timeout 15m', ports='1-65535'):
+    def __init__(self, mac=None, arguments='-sV --host-timeout 10m', ports='1-65535'):
         """
 
-        :param host:
         :param mac:
         :param arguments:
         :param ports:
         """
-        self.host = host
         self.mac = mac
         self.arguments = arguments
         self.ports = ports
 
-    def scanner(self):
+    def scanner(self, host):
         """
 
         :return:
         """
         try:
             nm = nmap.PortScanner()
-            nm.scan(hosts=self.host, ports=self.ports, arguments=self.arguments)
-            result = {"ip": self.host, "mac": self.mac, "result": []}
+            nm.scan(hosts=host, ports=self.ports, arguments=self.arguments)
+            result = {"ip": host, "mac": self.mac, "result": []}
             i = 0
             for host in nm.all_hosts():
                 result["result"].append({"state": str(nm[host].state()),
@@ -85,33 +71,31 @@ class Scanner(object):
             print(error)
             exit(1)
 
-    def scanner_async(self):
+    def scanner_async(self, full_scan, target):
         """
 
+        :param full_scan:
+        :param target:
         :return:
         """
         try:
-            nma = nmap.PortScannerAsync()
-            nma.scan(hosts=self.host, arguments=self.arguments, callback=callback_result)
-            now = datetime.datetime.now()
-            while nma.still_scanning():
-                time_delta_sec = datetime.datetime.now() - now
-                print("Waiting ... {0} sec.".format(time_delta_sec.seconds))
-                nma.wait(60)
+            ips = []
+            if full_scan:
+                for host in connect_mongo().find():
+                    ips.append(host["ip"])
+                connect_mongo().close_connection()
+            else:
+                ips.append(target)
+            for ip in ips:
+                nma = nmap.PortScannerAsync()
+                nma.scan(hosts=ip, arguments=self.arguments, callback=callback_result)
+                now = datetime.datetime.now()
+                while nma.still_scanning():
+                    time_delta_sec = datetime.datetime.now() - now
+                    print("Waiting ... {0} sec.".format(time_delta_sec.seconds))
+                    nma.wait(60)
             status = "success"
             return status
         except Exception as e:
             status = "error: {}".format(e)
             return status
-
-    def scanner_yield(self):
-        """
-
-        :return:
-        """
-        nm = nmap.PortScannerYield()
-        for progressive_result in nm.scan(self.host, self.ports):
-            print(progressive_result)
-
-    def scanner_dmz(self):
-        pass

@@ -1,3 +1,4 @@
+import json
 import omicron_server
 from omicron_server import app
 
@@ -15,7 +16,10 @@ def get_json():
 def process_inventory():
     try:
         omicron_server.logger.info("inventory-service start")
-        target_mask = omicron_server.config_json["network"]["ip"]
+        # open config file
+        with open('setting/config.json', 'r') as f:
+            config_json = json.load(f)
+        target_mask = config_json["network"]["ip"]
         body_json = omicron_server.request.get_json()
         ping = body_json['ping']
         inventory_service = omicron_server.Inventory(target=target_mask)
@@ -38,25 +42,16 @@ def process_inventory_add():
         exit(0)
 
 
-@app.route('/api/v1/process/scanner/ip/start', methods=["POST"])
+@app.route('/api/v1/process/scanner/start', methods=["POST"])
 def process_scanner_ip():
     try:
         omicron_server.logger.info("scanner-service start")
-        target_ip = get_json()
-        scanner_service = omicron_server.Scanner(host=target_ip)
-        results = omicron_server.q.enqueue_call(scanner_service.scanner_async, result_ttl=500)
-        return results.id
-    except Exception as e:
-        omicron_server.logging.error(e)
-        exit(0)
-
-
-@app.route('/api/v1/process/scanner/full/start', methods=["POST"])
-def process_scanner_full():
-    try:
-        omicron_server.logger.info("full-scanner-service start")
-        target_ip = omicron_server.config_json["network"]["ip"]
-        results = omicron_server.q.enqueue_call(omicron_server.full_scan, args=(str(target_ip),), result_ttl=500)
+        body_json = omicron_server.request.get_json()
+        full_scan = body_json['full_scan']
+        target = body_json['target']
+        scanner_service = omicron_server.Scanner()
+        results = omicron_server.q.enqueue_call(scanner_service.scanner_async,
+                                                args=(full_scan, target,), result_ttl=500)
         return results.id
     except Exception as e:
         omicron_server.logging.error(e)

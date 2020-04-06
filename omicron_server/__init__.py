@@ -8,7 +8,6 @@ from .components.scanner import *
 from .components.record_database import *
 from .components.full_scan import *
 from .components.search_vulnerability import *
-from omicron_server import scheduler
 
 app = Flask(__name__)
 q = Queue(connection=Redis(), default_timeout=3600)
@@ -18,14 +17,11 @@ logging.config.fileConfig('setting/log.conf')
 logger = logging.getLogger("OmicronApp")
 
 # read settings file
-_path = "setting/settings.conf"
+path = "setting/settings.conf"
 config = configparser.ConfigParser()
-config.read(_path)
+config.read(path)
 logger.info("Server start...")
 
-# open config file
-with open('setting/config.json', 'r') as f:
-    config_json = json.load(f)
 
 vulnerabilities_api = VulnerabilitySearch(
             vulners_api=config.get("VULNERS", "API"))
