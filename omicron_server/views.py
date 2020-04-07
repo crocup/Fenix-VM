@@ -3,15 +3,6 @@ import omicron_server
 from omicron_server import app
 
 
-def get_json():
-    """
-    :return:
-    """
-    body_json = omicron_server.request.get_json()
-    target = body_json['target']
-    return target
-
-
 @app.route('/api/v1/process/inventory/start', methods=["POST"])
 def process_inventory():
     try:
@@ -33,7 +24,8 @@ def process_inventory():
 @app.route('/api/v1/process/inventory/add', methods=["POST"])
 def process_inventory_add():
     try:
-        target_inventory = get_json()
+        body_json = omicron_server.request.get_json()
+        target_inventory = body_json['target']
         inventory_service = omicron_server.Inventory(target=target_inventory)
         inventory_add_scan = inventory_service.adding_scan_inventory()
         return omicron_server.jsonify(result=inventory_add_scan)
@@ -81,10 +73,24 @@ def search_vulners():
     """
     try:
         omicron_server.logger.info("search-vulners-service start")
-        target_vulnerability_cve = get_json()
+        body_json = omicron_server.request.get_json()
+        target_vulnerability_cve = body_json['cve']
         results = omicron_server.vulnerabilities_api.get_cve(target_vulnerability_cve)
         return results
     except Exception as e:
         omicron_server.logging.error(e)
         exit(0)
 
+
+@app.route('/api/v1/process/vulnerability/search', methods=["POST"])
+def search_v():
+    """
+
+    :return:
+    """
+    try:
+        results = omicron_server.q.enqueue_call(omicron_server.full_search, result_ttl=500)
+        return results.id
+    except Exception as e:
+        omicron_server.logging.error(e)
+        exit(0)

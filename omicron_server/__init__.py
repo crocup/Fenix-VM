@@ -6,7 +6,6 @@ import configparser
 from .components.inventory import *
 from .components.scanner import *
 from .components.record_database import *
-from .components.full_scan import *
 from .components.search_vulnerability import *
 
 app = Flask(__name__)
@@ -22,7 +21,4 @@ config = configparser.ConfigParser()
 config.read(path)
 logger.info("Server start...")
 
-
-vulnerabilities_api = VulnerabilitySearch(
-            vulners_api=config.get("VULNERS", "API"))
 from . import views
