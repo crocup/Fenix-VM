@@ -16,9 +16,9 @@ logging.config.fileConfig('setting/log.conf')
 logger = logging.getLogger("OmicronApp")
 
 # read settings file
-path = "setting/settings.conf"
-config = configparser.ConfigParser()
-config.read(path)
+# path = "setting/settings.conf"
+# config = configparser.ConfigParser()
+# config.read(path)
 logger.info("Server start...")
 
 from . import views

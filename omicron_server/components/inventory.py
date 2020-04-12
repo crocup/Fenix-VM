@@ -1,4 +1,5 @@
 import ipaddress
+import json
 import os
 import scapy.all
 import socket
@@ -10,8 +11,10 @@ def record_in_mongo(result_inventory, now_time):
     """
 
     """
-    record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
-                                              coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
+    with open('setting/config.json', 'r') as f:
+        config_json = json.load(f)
+    record_mongo = omicron_server.RecordMongo(db=config_json["database"]["scanner"]["base"],
+                                              coll=config_json["database"]["scanner"]["collection"])
     record_mongo.database_inventory(result=result_inventory, date_now=now_time)
     record_mongo.close_connection()
 
