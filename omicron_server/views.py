@@ -36,6 +36,10 @@ def process_inventory_add():
 
 @app.route('/api/v1/process/scanner/start', methods=["POST"])
 def process_scanner_ip():
+    """
+
+    :return:
+    """
     try:
         omicron_server.logger.info("scanner-service start")
         body_json = omicron_server.request.get_json()
@@ -52,6 +56,11 @@ def process_scanner_ip():
 
 @app.route('/api/v1/result/<uuid>', methods=["POST"])
 def result(uuid):
+    """
+
+    :param uuid:
+    :return:
+    """
     try:
         job = omicron_server.q.fetch_job(uuid)
         if job.is_finished:
@@ -64,7 +73,7 @@ def result(uuid):
 
 
 @app.route('/api/v1/process/vulnerability/start/cve', methods=["POST"])
-def search_vulners():
+def search_cve():
     """
     Example:
     json:
@@ -72,10 +81,9 @@ def search_vulners():
     :return:
     """
     try:
-        omicron_server.logger.info("search-vulners-service start")
         body_json = omicron_server.request.get_json()
         target_vulnerability_cve = body_json['cve']
-        results = omicron_server.vulnerabilities_api.get_cve(target_vulnerability_cve)
+        results = omicron_server.search_cve_details(target_vulnerability_cve)
         return results
     except Exception as e:
         omicron_server.logging.error(e)
