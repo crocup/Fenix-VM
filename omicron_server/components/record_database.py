@@ -76,25 +76,25 @@ class RecordMongo(object):
         result_scanner = self.coll.update_one(ips_hostname, sets, upsert=True)
         return result_scanner
 
-    def database_vulner_search_tcp(self, ip, time, port, cve, exploit_software, exploit_cpe):
+    def database_vulner_search_tcp(self, ip, port, cve, exploit_software, exploit_cpe):
         """
 
         :param ip:
-        :param time:
         :param port:
         :param cve:
         :param exploit_software:
         :param exploit_cpe:
         :return:
         """
-        ips_hostname = {"ip": ip}
+        ips = {"ip": str(ip)}
+        now = datetime.datetime.now()
         sets = {"$set": {
-            "date_update_vulnerability": time.strftime("%d-%m-%Y %H:%M"),
+            "date_update_vulnerability": now.strftime("%d-%m-%Y %H:%M"),
             'result_scan.tcp.' + str(port) + '.cve': cve,
             'result_scan.tcp.' + str(port) + '.exploit_by_software': exploit_software,
             'result_scan.tcp.' + str(port) + '.exploit_by_cpe': exploit_cpe}}
         # json.dumps(sets)
-        return self.coll.update_one(ips_hostname, sets, upsert=True)
+        return self.coll.update_one(ips, sets, upsert=True)
 
     def close_connection(self):
         """
