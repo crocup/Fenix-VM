@@ -1,15 +1,15 @@
 import json
 import omicron_server
 from omicron_server import app
+from omicron_server.components import full
+
+with open('setting/config.json', 'r') as f:
+    config_json = json.load(f)
 
 
 @app.route('/api/v1/process/inventory/start', methods=["POST"])
 def process_inventory():
     try:
-        omicron_server.logger.info("inventory-service start")
-        # open config file
-        with open('setting/config.json', 'r') as f:
-            config_json = json.load(f)
         target_mask = config_json["network"]["ip"]
         body_json = omicron_server.request.get_json()
         ping = body_json['ping']
@@ -98,6 +98,18 @@ def search_v():
     """
     try:
         results = omicron_server.q.enqueue_call(omicron_server.full_search, result_ttl=500)
+        return results.id
+    except Exception as e:
+        omicron_server.logging.error(e)
+        exit(0)
+
+
+@app.route('/api/v1/process/full/start', methods=["POST"])
+def process_full_scan():
+    try:
+        # open config file
+        target = config_json["network"]["ip"]
+        results = omicron_server.q.enqueue_call(full.full_scan, args=(target,), result_ttl=500)
         return results.id
     except Exception as e:
         omicron_server.logging.error(e)

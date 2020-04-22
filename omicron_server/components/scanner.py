@@ -71,7 +71,7 @@ class Scanner(object):
             print(error)
             exit(1)
 
-    def scanner_async(self, full_scan, target):
+    def scanner_async(self, full_scan, target=""):
         """
 
         :param full_scan:
