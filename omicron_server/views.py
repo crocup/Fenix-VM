@@ -114,3 +114,8 @@ def process_full_scan():
     except Exception as e:
         omicron_server.logging.error(e)
         exit(0)
+
+
+@app.route('/api/v1/process/agent', methods=["POST"])
+def agent():
+    pass
