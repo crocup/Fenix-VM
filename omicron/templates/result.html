@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">Result Task</h4>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.result_task') }}">Reload</a>
+                        <span class="separator"></span>
+    </div>
+<div class="content-body">
+
+                    </div>
+    <div class="table-container">
+    <table class="table is-bordered is-fullwidth is-hoverable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th><div style="width: 40px;">Name</div></th>
+                <th>UUID</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <th>{{item.0}}</th>
+                <th>{{item.2}}</th>
+                <th>{{item.1}}</th>
+                <th>{{item.3}}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+</div>
+{% endblock %}

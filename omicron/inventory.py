@@ -1,30 +1,45 @@
 import ipaddress
 import os
 import scapy.all
-import socket
-import datetime
-import omicron_server
+from . import time
+from .models import InventoryPost, db
 
 
-def record_in_mongo(result_inventory, now_time):
+def record_db(result_inventory):
     """
 
-    """
-    record_mongo = omicron_server.RecordMongo(db=omicron_server.config.get("DATABASE_SCANNER", "BASE"),
-                                              coll=omicron_server.config.get("DATABASE_SCANNER", "COLLECTION"))
-    record_mongo.database_inventory(result=result_inventory, date_now=now_time)
-    record_mongo.close_connection()
-
-
-def my_ip():
-    """
-
+    :param result_inventory:
     :return:
     """
-    return (([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-              if not ip.startswith("127.")]
-             or [[(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close())
-                  for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0]
+    for res in result_inventory:
+        ips_find = InventoryPost.query.filter_by(ip=res).first()
+        if ips_find is None:
+            reg = InventoryPost(res, time())
+            db.session.add(reg)
+        else:
+            ips_find.dateofreg = time()
+            db.session.add(ips_find)
+    db.session.commit()
+
+
+def all_data():
+    ary = []
+    all_ip = InventoryPost.query.all()
+    for u in all_ip:
+        lists = [u.ip, u.name, u.dateofreg]
+        ary.append(lists)
+    # print(ary)
+    return ary
+
+
+def data_delete(ip):
+    """
+
+    :param ip:
+    :return:
+    """
+    InventoryPost.query.filter_by(ip=ip).delete()
+    db.session.commit()
 
 
 class Inventory(object):
@@ -67,36 +82,17 @@ class Inventory(object):
                 result.append(str(all_hosts[hostname]))
         return result
 
-    def result_scan(self, ping):
+    def result_scan(self):
         """
 
         :param ping: True/False
         :return:
         """
         try:
-            if ping:
-                result = list(set(self.scan_arp() + self.ping_scan()))
-            else:
-                result = list(set(self.scan_arp()))
-            now_time = datetime.datetime.now()
-            record_in_mongo(result, now_time)
+            result = list(set(self.ping_scan()+self.scan_arp()))
+            record_db(result)
             status = "success"
             return status, result
         except Exception as e:
             status = "error: {}".format(e)
-            return status
-
-    def adding_scan_inventory(self):
-        """
-
-        :return:
-        """
-        try:
-            now_time = datetime.datetime.now()
-            target = [self.target]
-            record_in_mongo(target, now_time)
-            status = "success"
-            return status
-        except Exception as e:
-            status = e
             return status
