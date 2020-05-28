@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+            <div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">Inventory</h4>
+        <span class="separator"></span>
+                        <form method="POST" action="/inventory">
+                        <button class="button is-success" href="{{ url_for('main.inventory_post') }}">Start</button>
+                        </form>
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.inventory') }}">Reload</a>
+                        <span class="separator"></span>
+                        {% if uid %}
+                    <h1>UUID: {{ uid }}</h1>
+                    {% else %}
+                        <h1> </h1>
+                    {% endif %}
+    </div>
+                <div class="content-body">
+
+                    </div>
+
+         {% for item in items %}
+                <div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      {{item.0}}
+    </p>
+      <a class="button is-white" href="/inventory/delete/{{item.0}}">
+      <span class="icon">
+                        <i class="fa fa-lg fa-close"></i>
+                    </span>
+      </a>
+
+  </header>
+  <div class="card-content">
+    <div class="content">
+<!--      Name: {{item.1}}-->
+<!--      <br>-->
+      <time datetime="2016-1-1">Update date: {{item.2}}</time>
+    </div>
+  </div>
+  <footer class="card-footer">
+
+<!--    <a href="#" class="card-footer-item">Edit</a>-->
+<!--    <a href="/inventory/delete/{{item.0}}" class="card-footer-item">Delete</a>-->
+  </footer>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
