@@ -1,4 +1,4 @@
-from omicron.models import ResultPost
+from onicron.models import ResultPost
 
 
 def all_result():

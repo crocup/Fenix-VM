@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>omicron</title>
+        <title>Onicron Community</title>
 
 <!--        <meta charset="UTF-8">-->
 <!--        <meta name="description" content="Free Admin Dashboard Template Build with Bulma.io By nafplann">-->
@@ -22,18 +22,11 @@
         <!-- START NAV -->
         <nav class="navbar columns is-fixed-top" role="navigation" aria-label="main navigation" id="app-header">
     <div class="navbar-brand column is-2 is-paddingless">
-        <a class="navbar-item" href="{{ url_for('main.dashboard') }}">OMICRON</a>
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="touchMenu">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </a>
+<!--        <figure class = "image is-64x64">-->
+<!--               <img src = "static/images/3.png">-->
+<!--            </figure>-->
+        <a class="navbar-item" href="{{ url_for('main.dashboard') }}">Onicron Community</a>
     </div>
-
-    <div id="touchMenu">
-
-    </div>
-
     <div id="navMenu" class="navbar-menu column is-hidden-touch">
         <div class="navbar-end">
 
@@ -62,6 +55,16 @@
                     <h1>Login</h1>
 
                 </a>
+
+                <a class="button is-white" href="{{ url_for('auth.signup') }}">
+                    <span class="icon">
+
+                        <i class="fa fa-lg fa-send"></i>
+                    </span>
+                    <h1>Sign Up</h1>
+
+                </a>
+
                 {% endif %}
 
 
@@ -82,6 +85,7 @@
 <!--            General-->
 <!--        </p>-->
         <ul class="menu-list">
+
             {% if current_user.is_authenticated %}
             <li>
                 <a class="is-active" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
@@ -115,23 +119,23 @@
 <!--            </li>-->
             {% endif %}
 
-            {% if not current_user.is_authenticated %}
-            <li>
-                <a class="" href="{{ url_for('auth.signup') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Sign Up</a>
-            </li>
+<!--            {% if not current_user.is_authenticated %}-->
+<!--            <li>-->
+<!--                <a class="" href="{{ url_for('auth.signup') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Sign Up</a>-->
+<!--            </li>-->
 
-            {% endif %}
+<!--            {% endif %}-->
 
 <!--            {% if current_user.is_authenticated %}-->
 <!--            <li>-->
 <!--                <a class="" href="{{ url_for('auth.logout') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Logout</a>-->
 <!--            </li>-->
 <!--            {% endif %}-->
-
-
         </ul>
     </aside>
+
 </div>
+
             {% block content %}
         {% endblock %}
         </div>
