@@ -46,5 +46,5 @@ app.register_blueprint(main_blueprint)
 #
 # app.register_blueprint(api_blueprint)
 
-from omicron import models
-from omicron import main
+from onicron import models
+from onicron import main

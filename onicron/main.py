@@ -4,7 +4,7 @@ from . import db, time
 from redis import Redis
 from rq import Queue
 import json
-from omicron.inventory import Inventory, all_data, data_delete
+from onicron.inventory import Inventory, all_data, data_delete
 from .models import ResultPost
 from .result import all_result
 
@@ -26,7 +26,7 @@ def about():
 @main.route('/setting')
 @login_required
 def setting():
-    with open('omicron/config.json', 'r') as f:
+    with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
                            api=config_json['vulners']['api'])
@@ -35,15 +35,15 @@ def setting():
 @main.route('/setting', methods=['POST'])
 @login_required
 def setting_post():
-    with open('omicron/config.json', 'r') as f:
+    with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     ips = request.form.get('text')
     api_s = request.form.get('api')
     config_json['network']['ip'] = ips
     config_json['vulners']['api'] = api_s
-    with open('omicron/config.json', 'w') as f:
+    with open('onicron/config.json', 'w') as f:
         json.dump(config_json, f, indent=4)
-    with open('omicron/config.json', 'r') as f:
+    with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
                            api=config_json['vulners']['api'])
@@ -59,7 +59,7 @@ def inventory():
 @main.route('/inventory', methods=['POST'])
 @login_required
 def inventory_post():
-    with open('omicron/config.json', 'r') as f:
+    with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     target_mask = config_json["network"]["ip"]
     inventory_service = Inventory(target=target_mask)

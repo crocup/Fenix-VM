@@ -1,7 +1,7 @@
 # from redis import Redis
 # from rq import Queue
 # import json
-# from omicron.inventory import Inventory
+# from onicron.inventory import Inventory
 # from flask import jsonify, Blueprint, redirect, url_for, render_template
 # from flask_login import login_required
 #
@@ -12,7 +12,7 @@
 # # @api.route('/inventory', methods=['POST'])
 # # @login_required
 # # def inventory_post():
-# #     with open('omicron/config.json', 'r') as f:
+# #     with open('onicron/config.json', 'r') as f:
 # #         config_json = json.load(f)
 # #     target_mask = config_json["network"]["ip"]
 # #     inventory_service = Inventory(target=target_mask)
