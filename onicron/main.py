@@ -15,7 +15,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     # return render_template('index.html')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.dashboard'))
 
 
 @main.route('/about')
@@ -54,7 +54,8 @@ def setting_post():
 @login_required
 def inventory():
     items = all_data()
-    return render_template('inventory.html', name=current_user.name, items=items)
+    # res_uuid = result('0f2fbd7e-6312-46bd-a48f-cd6b29f6eaea')[1]
+    return render_template('inventory.html', name=current_user.name, uid='test', items=items)
 
 
 @main.route('/inventory', methods=['POST'])
@@ -96,8 +97,8 @@ def result(uuid):
             return jsonify({"status": job.result}), 200
         else:
             return jsonify({"status": "pending"}), 202
-    except Exception as e:
-        pass
+    except Exception:
+        return jsonify({"status": "not found"}), 404
 
 
 @main.route('/dashboard')
