@@ -14,7 +14,8 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    # return render_template('index.html')
+    return redirect(url_for('auth.login'))
 
 
 @main.route('/about')
