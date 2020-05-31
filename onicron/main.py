@@ -1,14 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, request
+from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import db, time
 from redis import Redis
 from rq import Queue
 import json
-from onicron.inventory import Inventory, all_data, data_delete
-from .models import ResultPost
-from .result import all_result
+from onicron.inventory import Inventory, data_delete
+from .models import ResultPost, InventoryPost
+from .result import last_result
 
-q = Queue(connection=Redis(), default_timeout=3600)
+q = Queue(connection=Redis(), default_timeout=500)
 main = Blueprint('main', __name__)
 
 
@@ -53,9 +53,8 @@ def setting_post():
 @main.route('/inventory')
 @login_required
 def inventory():
-    items = all_data()
-    # res_uuid = result('0f2fbd7e-6312-46bd-a48f-cd6b29f6eaea')[1]
-    return render_template('inventory.html', name=current_user.name, uid='test', items=items)
+    res_uuid = result(last_result())
+    return render_template('inventory.html', name=current_user.name, uid=res_uuid, items=InventoryPost.query.all())
 
 
 @main.route('/inventory', methods=['POST'])
@@ -66,12 +65,11 @@ def inventory_post():
     target_mask = config_json["network"]["ip"]
     inventory_service = Inventory(target=target_mask)
     results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
-    items = all_data()
     # record result.id in table
     res_id = ResultPost(results.id, 'Inventory', time())
     db.session.add(res_id)
     db.session.commit()
-    return render_template('inventory.html', name=current_user.name, uid=results.id, items=items)
+    return render_template('inventory.html', name=current_user.name, uid=results.id, items=InventoryPost.query.all())
 
 
 @main.route('/inventory/delete/<ips>')
@@ -84,8 +82,7 @@ def inventory_delete(ips):
 @main.route('/result')
 @login_required
 def result_task():
-    items = all_result()
-    return render_template('result.html', name=current_user.name, items=items)
+    return render_template('result.html', name=current_user.name, items=ResultPost.query.all())
 
 
 @main.route('/result/<uuid>')
@@ -94,11 +91,11 @@ def result(uuid):
     try:
         job = q.fetch_job(uuid)
         if job.is_finished:
-            return jsonify({"status": job.result}), 200
+            return make_response(jsonify({"status": job.result}), 200).json['status']
         else:
-            return jsonify({"status": "pending"}), 202
+            return make_response(jsonify({"status": "pending"}), 202).json['status']
     except Exception:
-        return jsonify({"status": "not found"}), 404
+        return make_response(jsonify({"status": ""}), 404).json['status']
 
 
 @main.route('/dashboard')

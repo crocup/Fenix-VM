@@ -22,16 +22,6 @@ def record_db(result_inventory):
     db.session.commit()
 
 
-def all_data():
-    ary = []
-    all_ip = InventoryPost.query.all()
-    for u in all_ip:
-        lists = [u.ip, u.name, u.dateofreg]
-        ary.append(lists)
-    # print(ary)
-    return ary
-
-
 def data_delete(ip):
     """
 
@@ -91,8 +81,7 @@ class Inventory(object):
         try:
             result = list(set(self.ping_scan()+self.scan_arp()))
             record_db(result)
-            status = "success"
-            return status, result
+            return "success"
         except Exception as e:
             status = "error: {}".format(e)
             return status
