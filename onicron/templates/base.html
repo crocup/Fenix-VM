@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Onicron Community</title>
-
-<!--        <meta charset="UTF-8">-->
-<!--        <meta name="description" content="Free Admin Dashboard Template Build with Bulma.io By nafplann">-->
-<!--        <meta name="keywords" content="Bulma,CSS,Admin,Template,Free,Download">-->
-<!--        <meta name="language" content="en-EN">-->
-<!--        <meta name="author" content="Abdul Manaaf">-->
-
         <link href="https://fonts.googleapis.com/icon?family=Poppins" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
         <link rel="stylesheet" href="../static/css/app.css">
     </head>
     <body>
-        <!-- START NAV -->
         <nav class="navbar columns is-fixed-top" role="navigation" aria-label="main navigation" id="app-header">
     <div class="navbar-brand column is-2 is-paddingless">
-<!--        <figure class = "image is-64x64">-->
-<!--               <img src = "static/images/3.png">-->
-<!--            </figure>-->
         <a class="navbar-item" href="{{ url_for('main.dashboard') }}">Onicron Community</a>
     </div>
     <div id="navMenu" class="navbar-menu column is-hidden-touch">
         <div class="navbar-end">
-
             <div class="navbar-item">
                 {% if current_user.is_authenticated %}
                 <a class="button is-white" href="{{ url_for('auth.logout') }}">
@@ -41,61 +28,29 @@
                     {% else %}
                         <h1>Hello!</h1>
                     {% endif %}
-
                 </a>
                 {% endif %}
-
-
-                {% if not current_user.is_authenticated %}
-                <a class="button is-white" href="{{ url_for('auth.login') }}">
-                    <span class="icon">
-
-                        <i class="fa fa-lg fa-sign-in"></i>
-                    </span>
-                    <h1>Login</h1>
-
-                </a>
-
-                <a class="button is-white" href="{{ url_for('auth.signup') }}">
-                    <span class="icon">
-
-                        <i class="fa fa-lg fa-send"></i>
-                    </span>
-                    <h1>Sign Up</h1>
-
-                </a>
-
-                {% endif %}
-
-
             </div>
             <div class="navbar-item has-dropdown">
                 <div class="navbar-dropdown is-right">
-
                 </div>
             </div>
         </div>
     </div>
-</nav>        <!-- END NAV -->
-
+</nav>
         <div class="columns" id="app-content">
             <div class="column is-2 is-fullheight is-hidden-touch" id="navigation">
     <aside class="menu">
-<!--        <p class="menu-label is-hidden-touch">-->
-<!--            General-->
-<!--        </p>-->
         <ul class="menu-list">
-
             {% if current_user.is_authenticated %}
             <li>
-                <a class="is-active" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
+                <a class="" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
             </li>
             {% endif %}
             {% if current_user.is_authenticated %}
             <li>
                 <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Inventory</a>
             </li>
-
             <li>
                 <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</a>
             </li>
@@ -114,36 +69,14 @@
             <li>
                 <a class="" href="{{ url_for('main.about') }}"><span class="icon"><i class="fa fa-info"></i></span> About</a>
             </li>
-<!--            <li>-->
-<!--                <a class="" href="{{ url_for('auth.signup') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Sign Up</a>-->
-<!--            </li>-->
             {% endif %}
-
-<!--            {% if not current_user.is_authenticated %}-->
-<!--            <li>-->
-<!--                <a class="" href="{{ url_for('auth.signup') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Sign Up</a>-->
-<!--            </li>-->
-
-<!--            {% endif %}-->
-
-<!--            {% if current_user.is_authenticated %}-->
-<!--            <li>-->
-<!--                <a class="" href="{{ url_for('auth.logout') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Logout</a>-->
-<!--            </li>-->
-<!--            {% endif %}-->
         </ul>
     </aside>
-
 </div>
-
             {% block content %}
+
         {% endblock %}
         </div>
-
         <script src="../static/js/app.js"></script>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89250524-7"></script>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
     </body>
 </html>
