@@ -63,7 +63,8 @@ def inventory_post():
     with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     target_mask = config_json["network"]["ip"]
-    inventory_service = Inventory(target=target_mask)
+    traget_interface = config_json["network"]["interface"]
+    inventory_service = Inventory(target=target_mask, interface=traget_interface)
     results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
     # record result.id in table
     res_id = ResultPost(results.id, 'Inventory', time())

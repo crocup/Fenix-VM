@@ -1,6 +1,6 @@
 import ipaddress
 import os
-import scapy.all
+from scapy.all import srp, Ether, ARP, conf
 from . import time
 from .models import InventoryPost, db
 
@@ -34,12 +34,13 @@ def data_delete(ip):
 
 class Inventory(object):
 
-    def __init__(self, target):
+    def __init__(self, target, interface):
         """
 
         :param target: ip address/mask network (example 192.168.100.0/24)
         """
         self.target = target
+        self.interface = interface
 
     def scan_arp(self):
         """
@@ -47,15 +48,14 @@ class Inventory(object):
         :return: list ip address and mac
         """
         try:
-            arp_request = scapy.all.ARP(pdst=self.target)
-            broadcast = scapy.all.Ether(dst='ff:ff:ff:ff:ff:ff')
-            arp_request_broadcast = broadcast / arp_request
-            answered_list = scapy.all.srp(arp_request_broadcast, timeout=3, verbose=False)[0]
             clients_list = []
-            for element in answered_list:
-                clients_list.append(element[1].psrc)
-        except Exception as e:
-            print(e)
+            conf.verb = 0
+            pkt = Ether(dst='ff:ff:ff:ff:ff:ff') / ARP(pdst=self.target)
+            ans, unans = srp(pkt, iface=self.interface, timeout=2, verbose=False, inter=0.1)
+            for snt, recv in ans:
+                if recv:
+                    clients_list.append(recv[ARP].psrc)
+        except Exception:
             clients_list = []
         return clients_list
 
@@ -75,11 +75,23 @@ class Inventory(object):
     def result_scan(self):
         """
 
-        :param ping: True/False
         :return:
         """
         try:
-            result = list(set(self.ping_scan()+self.scan_arp()))
+            result = list(self.ping_scan()+self.scan_arp())
+            record_db(result)
+            return "success"
+        except Exception as e:
+            status = "error: {}".format(e)
+            return status
+
+    def result_scan_arp(self):
+        """
+
+        :return:
+        """
+        try:
+            result = list(self.scan_arp())
             record_db(result)
             return "success"
         except Exception as e:
