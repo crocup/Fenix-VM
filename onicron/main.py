@@ -30,7 +30,7 @@ def setting():
     with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'])
+                           api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
 
 
 @main.route('/setting', methods=['POST'])
@@ -47,7 +47,7 @@ def setting_post():
     with open('onicron/config.json', 'r') as f:
         config_json = json.load(f)
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'])
+                           api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
 
 
 @main.route('/inventory')
