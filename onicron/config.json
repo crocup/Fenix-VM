@@ -4,9 +4,14 @@
         "interface": "wlo1"
     },
     "vulners": {
-        "api": "api"
+        "api": "apis"
     },
     "cve": {
         "year": 2021
+    },
+    "scheduler": {
+        "inventory": "1",
+        "scanner": "48",
+        "cve": "24"
     }
 }

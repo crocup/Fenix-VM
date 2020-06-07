@@ -12,6 +12,12 @@ q = Queue(connection=Redis(), default_timeout=500)
 main = Blueprint('main', __name__)
 
 
+def get_config():
+    with open('onicron/config.json', 'r') as f:
+        config_json = json.load(f)
+    return config_json
+
+
 @main.route('/')
 def index():
     # return render_template('index.html')
@@ -27,8 +33,7 @@ def about():
 @main.route('/setting')
 @login_required
 def setting():
-    with open('onicron/config.json', 'r') as f:
-        config_json = json.load(f)
+    config_json = get_config()
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
                            api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
 
@@ -36,16 +41,16 @@ def setting():
 @main.route('/setting', methods=['POST'])
 @login_required
 def setting_post():
-    with open('onicron/config.json', 'r') as f:
-        config_json = json.load(f)
+    config_json = get_config()
     ips = request.form.get('text')
+    interface = request.form.get('interface')
     api_s = request.form.get('api')
     config_json['network']['ip'] = ips
+    config_json['network']['interface'] = interface
     config_json['vulners']['api'] = api_s
     with open('onicron/config.json', 'w') as f:
         json.dump(config_json, f, indent=4)
-    with open('onicron/config.json', 'r') as f:
-        config_json = json.load(f)
+    config_json = get_config()
     return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
                            api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
 
@@ -115,3 +120,28 @@ def scanner():
 @login_required
 def cve():
     return render_template('cve.html', name=current_user.name)
+
+
+@main.route('/scheduler')
+@login_required
+def scheduler():
+    config_json = get_config()
+    return render_template('scheduler.html', name=current_user.name, inventory=config_json['scheduler']['inventory'],
+                           scanner=config_json['scheduler']['scanner'], cve=config_json['scheduler']['cve'])
+
+
+@main.route('/scheduler', methods=['POST'])
+@login_required
+def scheduler_post():
+    config_json = get_config()
+    inventory_p = request.form.get('inventory')
+    scanner_p = request.form.get('scanner')
+    cve_p = request.form.get('cve')
+    config_json['scheduler']['inventory'] = inventory_p
+    config_json['scheduler']['scanner'] = scanner_p
+    config_json['scheduler']['cve'] = cve_p
+    with open('onicron/config.json', 'w') as f:
+        json.dump(config_json, f, indent=4)
+    config_json = get_config()
+    return render_template('scheduler.html', name=current_user.name, inventory=config_json['scheduler']['inventory'],
+                           scanner=config_json['scheduler']['scanner'], cve=config_json['scheduler']['cve'])
