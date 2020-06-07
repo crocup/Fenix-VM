@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import db, time
+from . import db, time, get_config
 from redis import Redis
 from rq import Queue
 import json
@@ -12,10 +12,14 @@ q = Queue(connection=Redis(), default_timeout=500)
 main = Blueprint('main', __name__)
 
 
-def get_config():
-    with open('onicron/config.json', 'r') as f:
-        config_json = json.load(f)
-    return config_json
+@main.app_errorhandler(404)
+def handle404(e):
+    return render_template('404.html', name=current_user.name), 404
+
+
+@main.app_errorhandler(500)
+def handle500(e):
+    return 'Error 500'
 
 
 @main.route('/')
@@ -34,8 +38,15 @@ def about():
 @login_required
 def setting():
     config_json = get_config()
-    return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
+    return render_template('setting.html',
+                           name=current_user.name,
+                           ips=config_json['network']['ip'],
+                           api=config_json['vulners']['api'],
+                           interface=config_json["network"]["interface"],
+                           inventory=config_json['scheduler']['inventory'],
+                           scanner=config_json['scheduler']['scanner'],
+                           cve=config_json['scheduler']['cve']
+                           )
 
 
 @main.route('/setting', methods=['POST'])
@@ -45,21 +56,38 @@ def setting_post():
     ips = request.form.get('text')
     interface = request.form.get('interface')
     api_s = request.form.get('api')
+    inventory_p = request.form.get('inventory')
+    scanner_p = request.form.get('scanner')
+    cve_p = request.form.get('cve')
     config_json['network']['ip'] = ips
     config_json['network']['interface'] = interface
     config_json['vulners']['api'] = api_s
+    config_json['scheduler']['inventory'] = inventory_p
+    config_json['scheduler']['scanner'] = scanner_p
+    config_json['scheduler']['cve'] = cve_p
     with open('onicron/config.json', 'w') as f:
         json.dump(config_json, f, indent=4)
     config_json = get_config()
-    return render_template('setting.html', name=current_user.name, ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'], interface=config_json["network"]["interface"])
+    return render_template('setting.html',
+                           name=current_user.name,
+                           ips=config_json['network']['ip'],
+                           api=config_json['vulners']['api'],
+                           interface=config_json["network"]["interface"],
+                           inventory=config_json['scheduler']['inventory'],
+                           scanner=config_json['scheduler']['scanner'],
+                           cve=config_json['scheduler']['cve']
+                           )
 
 
 @main.route('/inventory')
 @login_required
 def inventory():
     res_uuid = result(last_result())
-    return render_template('inventory.html', name=current_user.name, uid=res_uuid, items=InventoryPost.query.all())
+    return render_template('inventory.html',
+                           name=current_user.name,
+                           uid=res_uuid,
+                           items=InventoryPost.query.all()
+                           )
 
 
 @main.route('/inventory', methods=['POST'])
@@ -75,7 +103,11 @@ def inventory_post():
     res_id = ResultPost(results.id, 'Inventory', time())
     db.session.add(res_id)
     db.session.commit()
-    return render_template('inventory.html', name=current_user.name, uid=results.id, items=InventoryPost.query.all())
+    return render_template('inventory.html',
+                           name=current_user.name,
+                           uid=results.id,
+                           items=InventoryPost.query.all()
+                           )
 
 
 @main.route('/inventory/delete/<ips>')
@@ -88,7 +120,10 @@ def inventory_delete(ips):
 @main.route('/result')
 @login_required
 def result_task():
-    return render_template('result.html', name=current_user.name, items=ResultPost.query.all())
+    return render_template('result.html',
+                           name=current_user.name,
+                           items=ResultPost.query.all()
+                           )
 
 
 @main.route('/result/<uuid>')
@@ -107,13 +142,17 @@ def result(uuid):
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', name=current_user.name)
+    return render_template('dashboard.html',
+                           name=current_user.name
+                           )
 
 
 @main.route('/scanner')
 @login_required
 def scanner():
-    return render_template('scanner.html', name=current_user.name)
+    return render_template('scanner.html',
+                           name=current_user.name
+                           )
 
 
 @main.route('/cve')
@@ -122,26 +161,18 @@ def cve():
     return render_template('cve.html', name=current_user.name)
 
 
-@main.route('/scheduler')
+@main.route('/cve', methods=['POST'])
 @login_required
-def scheduler():
-    config_json = get_config()
-    return render_template('scheduler.html', name=current_user.name, inventory=config_json['scheduler']['inventory'],
-                           scanner=config_json['scheduler']['scanner'], cve=config_json['scheduler']['cve'])
+def cve_post():
+    cve_text_p = request.form.get('cve_text')
+    return render_template('cve.html',
+                           name=current_user.name,
+                           cve_info=cve_text_p
+                           )
 
 
-@main.route('/scheduler', methods=['POST'])
+@main.route('/news')
 @login_required
-def scheduler_post():
-    config_json = get_config()
-    inventory_p = request.form.get('inventory')
-    scanner_p = request.form.get('scanner')
-    cve_p = request.form.get('cve')
-    config_json['scheduler']['inventory'] = inventory_p
-    config_json['scheduler']['scanner'] = scanner_p
-    config_json['scheduler']['cve'] = cve_p
-    with open('onicron/config.json', 'w') as f:
-        json.dump(config_json, f, indent=4)
-    config_json = get_config()
-    return render_template('scheduler.html', name=current_user.name, inventory=config_json['scheduler']['inventory'],
-                           scanner=config_json['scheduler']['scanner'], cve=config_json['scheduler']['cve'])
+def news():
+    return render_template('news.html', name=current_user.name)
+

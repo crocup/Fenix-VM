@@ -1,5 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">CVE DB</h4>
+        <span class="separator"></span>
+                        <form method="POST" action="/cve">
+    <div class="field has-addons">
+  <div class="control">
+    <input class="input" type="text" name="cve_text" placeholder="Find a CVE (Example: cve-2020-0010)">
+  </div>
+  <div class="control">
+    <button class="button is-info" href="{{ url_for('main.cve_post') }}">
+      Search
+    </button>
+  </div>
+</div>
+</form>
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.cve') }}">Reload</a>
+                        <span class="separator"></span>
+    </div>
+
+
+
+    <div class="content-body">
+
+                    </div>
+                    {% if cve_info %}
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      CVE-2020-1000
+    </p>
+
+  </header>
+  <div class="card-content">
+    <div class="content">
+        <h3>test</h3>
+      <br>
+      test
+    </div>
+  </div>
+  <footer class="card-footer">
+
+    <a href="#" class="card-footer-item">Info</a>
+    <a href="#" class="card-footer-item">Print</a>
+  </footer>
+</div>
+                    {% endif %}
+                    </div>
+
 
 {% endblock %}

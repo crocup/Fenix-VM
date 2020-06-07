@@ -1,4 +1,6 @@
-from flask import Flask
+import json
+
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -31,6 +33,13 @@ def time():
     now = datetime.now()  # current date and time
     date_time = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_time
+
+
+def get_config():
+    with open('onicron/config.json', 'r') as f:
+        config_json = json.load(f)
+    return config_json
+
 
 # blueprint for auth routes in our app
 from .auth import auth as auth_blueprint

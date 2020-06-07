@@ -4,7 +4,7 @@
         "interface": "wlo1"
     },
     "vulners": {
-        "api": "apis"
+        "api": "api"
     },
     "cve": {
         "year": 2021
@@ -13,5 +13,9 @@
         "inventory": "1",
         "scanner": "48",
         "cve": "24"
+    },
+    "mongo": {
+        "base": "test",
+        "collection": "test"
     }
 }
