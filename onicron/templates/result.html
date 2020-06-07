@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#table_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
 <div class="column is-10" id="page-content">
                     <div class="content-header">
         <h4 class="title is-4">Result Task</h4>
@@ -8,10 +15,9 @@
                         <span class="separator"></span>
     </div>
 <div class="content-body">
-
                     </div>
     <div class="table-container">
-    <table class="table is-bordered is-fullwidth is-hoverable">
+        <table id="table_id" class="display" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -23,10 +29,10 @@
         <tbody>
         {% for item in items %}
             <tr>
-                <th>{{item.0}}</th>
-                <th>{{item.2}}</th>
-                <th>{{item.1}}</th>
-                <th>{{item.3}}</th>
+                <th>{{item.uid}}</th>
+                <th>{{item.name}}</th>
+                <th>{{item.uuid}}</th>
+                <th>{{item.dateofreg}}</th>
             </tr>
         {% endfor %}
         </tbody>
@@ -35,4 +41,5 @@
 
 
 </div>
+
 {% endblock %}
