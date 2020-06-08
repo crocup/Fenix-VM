@@ -25,7 +25,7 @@ def handle500(e):
 @main.route('/')
 def index():
     # return render_template('index.html')
-    return redirect(url_for('main.dashboard'))
+    return redirect(url_for('auth.login'))
 
 
 @main.route('/about')
