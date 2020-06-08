@@ -15,7 +15,7 @@
         "cve": "24"
     },
     "mongo": {
-        "base": "test",
-        "collection": "test"
+        "base": "vulndb",
+        "collection": "cve"
     }
 }

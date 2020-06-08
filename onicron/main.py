@@ -7,6 +7,7 @@ import json
 from onicron.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost
 from .result import last_result
+from .cve import find_cve
 
 q = Queue(connection=Redis(), default_timeout=500)
 main = Blueprint('main', __name__)
@@ -164,7 +165,12 @@ def cve():
 @main.route('/cve', methods=['POST'])
 @login_required
 def cve_post():
-    cve_text_p = request.form.get('cve_text')
+    cve_form_get = request.form.get('cve_text')
+    if len(cve_form_get) == 0:
+        return render_template('cve.html', name=current_user.name, cve_info="")
+    cve_upper = str(cve_form_get).upper().replace(' ', '')
+    cve_text_p = find_cve(cve_upper)
+
     return render_template('cve.html',
                            name=current_user.name,
                            cve_info=cve_text_p

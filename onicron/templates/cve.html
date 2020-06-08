@@ -21,9 +21,6 @@
                         <a class="button is-info" href="{{ url_for('main.cve') }}">Reload</a>
                         <span class="separator"></span>
     </div>
-
-
-
     <div class="content-body">
 
                     </div>
@@ -31,24 +28,43 @@
 <div class="card">
   <header class="card-header">
     <p class="card-header-title">
-      CVE-2020-1000
+      {{cve_info['cve']}}
     </p>
 
   </header>
   <div class="card-content">
     <div class="content">
-        <h3>test</h3>
-      <br>
-      test
+<!--      <br>-->
+        <h4>{{cve_info['value']}}</h4>
+        {% if cve_info['impact']['baseMetricV2'] %}
+        <p><strong>Version:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['version']}}</p>
+        <p><strong>Vector String:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['vectorString']}}</p>
+        <p><strong>Access Vector:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['accessVector']}}</p>
+        <p><strong>Access Complexity:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['accessComplexity']}}</p>
+        <p><strong>Authentication:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['authentication']}}</p>
+        <p><strong>Confidentiality Impact:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['confidentialityImpact']}}</p>
+        <p><strong>Integrity Impact:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['integrityImpact']}}</p>
+        <p><strong>Availability Impact:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['availabilityImpact']}}</p>
+        <p><strong>Base Score:</strong> {{cve_info['impact']['baseMetricV2']['cvssV2']['baseScore']}}</p>
+        <p><strong>Severity:</strong> {{cve_info['impact']['baseMetricV2']['severity']}}</p>
+        <p><strong>Exploitability Score:</strong> {{cve_info['impact']['baseMetricV2']['exploitabilityScore']}}</p>
+        <p><strong>Impact Score:</strong> {{cve_info['impact']['baseMetricV2']['impactScore']}}</p>
+        <p><strong>Obtain All Privilege:</strong> {{cve_info['impact']['baseMetricV2']['obtainAllPrivilege']}}</p>
+        <p><strong>Obtain User Privilege:</strong> {{cve_info['impact']['baseMetricV2']['obtainUserPrivilege']}}</p>
+        <p><strong>Obtain Other Privilege:</strong> {{cve_info['impact']['baseMetricV2']['obtainOtherPrivilege']}}</p>
+        <p><strong>User Interaction Required:</strong> {{cve_info['impact']['baseMetricV2']['userInteractionRequired']}}</p>
+        {% endif %}
+        <p><strong>Last Modified Date:</strong> {{cve_info['lastModifiedDate']}}</p>
+        <p><strong>Published Date:</strong> {{cve_info['publishedDate']}}</p>
     </div>
   </div>
   <footer class="card-footer">
 
-    <a href="#" class="card-footer-item">Info</a>
-    <a href="#" class="card-footer-item">Print</a>
+<!--    <a href="#" class="card-footer-item">Info</a>-->
+<!--    <a href="#" class="card-footer-item">Print</a>-->
   </footer>
 </div>
-                    {% endif %}
+{% endif %}
                     </div>
 
 
