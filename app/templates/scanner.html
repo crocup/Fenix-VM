@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">Scanner</h4>
+                        <span class="separator"></span>
+                        <label class="checkbox">
+  <input type="checkbox">
+  Full Scan
+</label>
+        <span class="separator"></span>
+                        <form method="POST" action="/scanner">
+    <div class="field has-addons">
+  <div class="control">
+    <input class="input" type="text" name="cve_text" placeholder="IP (Example: 192.168.1.20)">
+  </div>
+  <div class="control">
+    <button class="button is-success" href="{{ url_for('main.scanner') }}">
+      Start
+    </button>
+  </div>
+</div>
+</form>
+
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
+                        <span class="separator"></span>
+    </div>
+<div class="content-body">
+                    </div>
+
+  <div class="container">
+
+
+  </div>
+    <div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      test
+    </p>
+      <a class="button is-white" href="#">
+      <span class="icon">
+                        <i class="fa fa-lg fa-close"></i>
+                    </span>
+      </a>
+
+  </header>
+  <div class="card-content">
+    <div class="content">
+      test
+      <br>
+      <time datetime="2016-1-1">test</time>
+    </div>
+  </div>
+  <footer class="card-footer">
+    <a href="#" class="card-footer-item">Info</a>
+  </footer>
+</div>
+
+</div>
+{% endblock %}

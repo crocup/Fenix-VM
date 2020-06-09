@@ -4,7 +4,7 @@ from . import db, time, get_config
 from redis import Redis
 from rq import Queue
 import json
-from onicron.inventory import Inventory, data_delete
+from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost
 from .result import last_result
 from .cve import find_cve
@@ -16,11 +16,6 @@ main = Blueprint('main', __name__)
 @main.app_errorhandler(404)
 def handle404(e):
     return render_template('404.html', name=current_user.name), 404
-
-
-@main.app_errorhandler(500)
-def handle500(e):
-    return 'Error 500'
 
 
 @main.route('/')
@@ -66,7 +61,7 @@ def setting_post():
     config_json['scheduler']['inventory'] = inventory_p
     config_json['scheduler']['scanner'] = scanner_p
     config_json['scheduler']['cve'] = cve_p
-    with open('onicron/config.json', 'w') as f:
+    with open('app/config.json', 'w') as f:
         json.dump(config_json, f, indent=4)
     config_json = get_config()
     return render_template('setting.html',
@@ -94,7 +89,7 @@ def inventory():
 @main.route('/inventory', methods=['POST'])
 @login_required
 def inventory_post():
-    with open('onicron/config.json', 'r') as f:
+    with open('app/config.json', 'r') as f:
         config_json = json.load(f)
     target_mask = config_json["network"]["ip"]
     traget_interface = config_json["network"]["interface"]

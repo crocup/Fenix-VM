@@ -1,4 +1,4 @@
-from onicron.models import ResultPost
+from app.models import ResultPost
 
 
 def last_result():

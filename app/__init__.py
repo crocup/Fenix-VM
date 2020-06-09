@@ -36,7 +36,7 @@ def time():
 
 
 def get_config():
-    with open('onicron/config.json', 'r') as f:
+    with open('app/config.json', 'r') as f:
         config_json = json.load(f)
     return config_json
 
@@ -55,5 +55,5 @@ app.register_blueprint(main_blueprint)
 #
 # app.register_blueprint(api_blueprint)
 
-from onicron import models
-from onicron import main
+from app import models
+from app import main

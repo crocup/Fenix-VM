@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from onicron import get_config
+from app import get_config
 
 client = MongoClient()
 config_json = get_config()
