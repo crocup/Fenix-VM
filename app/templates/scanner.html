@@ -27,36 +27,127 @@
                         <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
                         <span class="separator"></span>
     </div>
-<div class="content-body">
-                    </div>
 
-  <div class="container">
-
-
-  </div>
-    <div class="card">
-  <header class="card-header">
-    <p class="card-header-title">
-      test
-    </p>
-      <a class="button is-white" href="#">
-      <span class="icon">
-                        <i class="fa fa-lg fa-close"></i>
-                    </span>
+    <div class="tabs is-centered">
+    <ul>
+      <li id="all-tab" class="is-active">
+        <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-support"></i></span>
+        <span>Result</span>
       </a>
-
-  </header>
-  <div class="card-content">
-    <div class="content">
-      test
-      <br>
-      <time datetime="2016-1-1">test</time>
-    </div>
+      </li>
+      <li id="adaptivedesign-tab">
+        <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-info"></i></span>
+        <span>IP Info</span>
+      </a>
+      </li>
+    </ul>
+    <!--/tabs is-centered-->
   </div>
-  <footer class="card-footer">
-    <a href="#" class="card-footer-item">Info</a>
-  </footer>
+  <div class="container">
+    <div id="all-tab-content">
+            <table id="scanner_id" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th><div style="width: 40px;">IP</div></th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <th>test</th>
+                <th>test</th>
+                <th>test</th>
+            </tr>
+            <tr>
+                <th>test</th>
+                <th>test</th>
+                <th>test</th>
+            </tr>
+
+        </tbody>
+    </table>
+    </div>
+    <div class="is-hidden" id="adaptivedesign-tab-content">
+
+    <div class="field has-addons">
+  <div class="control is-centered" style="width:100%">
+    <input class="input" type="text" name="cve_text" placeholder="Find a IP address (Example: cve-2020-0010)">
+  </div>
+  <div class="control">
+      <form method="POST" action="/cve">
+    <button class="button is-info" href="{{ url_for('main.cve_post') }}">
+      Search
+    </button>
+          </form>
+  </div>
 </div>
 
+
+<!--                    <div class="card">-->
+<!--  <header class="card-header">-->
+<!--    <p class="card-header-title">-->
+<!--      test-->
+<!--    </p>-->
+<!--      <a class="button is-white" href="#">-->
+<!--      <span class="icon">-->
+<!--                        <i class="fa fa-lg fa-close"></i>-->
+<!--                    </span>-->
+<!--      </a>-->
+
+<!--  </header>-->
+<!--  <div class="card-content">-->
+<!--    <div class="content">-->
+<!--test-->
+<!--      <time datetime="2016-1-1">Update date: test</time>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <footer class="card-footer">-->
+
+<!--  </footer>-->
+<!--</div>-->
+
+<div class="field">
+  <div class="field-label">
+    <!-- Left empty for spacing -->
+  </div>
+</div>
+
+    </div>
+  </div>
+        </form>
+  <script>
+    function switchToAll() {
+      removeActive();
+      hideAll();
+      $("#all-tab").addClass("is-active");
+      $("#all-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesign() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab").addClass("is-active");
+      $("#adaptivedesign-tab-content").removeClass("is-hidden");
+    }
+    function removeActive() {
+      $("li").each(function() {
+        $(this).removeClass("is-active");
+      });
+    }
+    function hideAll(){
+      $("#all-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-content").addClass("is-hidden");
+    }
+  </script>
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#scanner_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
 </div>
 {% endblock %}

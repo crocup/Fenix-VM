@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#inventory_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
             <div class="column is-10" id="page-content">
                     <div class="content-header">
         <h4 class="title is-4">Inventory</h4>
@@ -20,33 +27,53 @@
                 <div class="content-body">
 
                     </div>
-
-         {% for item in items %}
-                <div class="card">
-  <header class="card-header">
-    <p class="card-header-title">
-      {{item.ip}}
-    </p>
-      <a class="button is-white" href="/inventory/delete/{{item.0}}">
-      <span class="icon">
-                        <i class="fa fa-lg fa-close"></i>
-                    </span>
-      </a>
-
-  </header>
-  <div class="card-content">
-    <div class="content">
-<!--      Name: {{item.1}}-->
-<!--      <br>-->
-      <time datetime="2016-1-1">Update date: {{item.dateofreg}}</time>
-    </div>
-  </div>
-  <footer class="card-footer">
-
-<!--    <a href="#" class="card-footer-item">Edit</a>-->
-<!--    <a href="/inventory/delete/{{item.0}}" class="card-footer-item">Delete</a>-->
-  </footer>
+<div class="table-container">
+        <table id="inventory_id" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th><div style="width: 40px;">IP</div></th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <th>{{item.uid}}</th>
+                <th>{{item.ip}}</th>
+                <th>{{item.dateofreg}}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
-{% endfor %}
+
+<!--         {% for item in items %}-->
+<!--                <div class="card">-->
+<!--  <header class="card-header">-->
+<!--    <p class="card-header-title">-->
+<!--      {{item.ip}}-->
+<!--    </p>-->
+<!--      <a class="button is-white" href="/inventory/delete/{{item.0}}">-->
+<!--      <span class="icon">-->
+<!--                        <i class="fa fa-lg fa-close"></i>-->
+<!--                    </span>-->
+<!--      </a>-->
+
+<!--  </header>-->
+<!--  <div class="card-content">-->
+<!--    <div class="content">-->
+<!--&lt;!&ndash;      Name: {{item.1}}&ndash;&gt;-->
+<!--&lt;!&ndash;      <br>&ndash;&gt;-->
+<!--      <time datetime="2016-1-1">Update date: {{item.dateofreg}}</time>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <footer class="card-footer">-->
+
+<!--&lt;!&ndash;    <a href="#" class="card-footer-item">Edit</a>&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/inventory/delete/{{item.0}}" class="card-footer-item">Delete</a>&ndash;&gt;-->
+<!--  </footer>-->
+<!--</div>-->
+<!--{% endfor %}-->
 </div>
 {% endblock %}
