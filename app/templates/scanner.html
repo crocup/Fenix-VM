@@ -5,11 +5,6 @@
                     <div class="content-header">
         <h4 class="title is-4">Scanner</h4>
                         <span class="separator"></span>
-                        <label class="checkbox">
-  <input type="checkbox">
-  Full Scan
-</label>
-        <span class="separator"></span>
                         <form method="POST" action="/scanner">
     <div class="field has-addons">
   <div class="control">
@@ -22,6 +17,11 @@
   </div>
 </div>
 </form>
+
+        <span class="separator"></span>
+                        <form method="POST" action="/inventory">
+                        <button class="button is-success" href="{{ url_for('main.scanner') }}">Full Scan</button>
+                        </form>
 
                         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>

@@ -89,8 +89,7 @@ def inventory():
 @main.route('/inventory', methods=['POST'])
 @login_required
 def inventory_post():
-    with open('app/config.json', 'r') as f:
-        config_json = json.load(f)
+    config_json = get_config()
     target_mask = config_json["network"]["ip"]
     traget_interface = config_json["network"]["interface"]
     inventory_service = Inventory(target=target_mask, interface=traget_interface)
@@ -146,6 +145,14 @@ def dashboard():
 @main.route('/scanner')
 @login_required
 def scanner():
+    return render_template('scanner.html',
+                           name=current_user.name
+                           )
+
+
+@main.route('/scanner', methods=['POST'])
+@login_required
+def scanner_post():
     return render_template('scanner.html',
                            name=current_user.name
                            )
