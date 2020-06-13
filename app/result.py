@@ -6,5 +6,9 @@ def last_result():
 
     :return:
     """
-    item_last = ResultPost.query.all()
-    return item_last[-1].uuid
+    try:
+        item_last = ResultPost.query.all()
+        l_result = item_last[-1].uuid
+        return l_result
+    except IndexError:
+        return None
