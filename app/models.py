@@ -26,6 +26,7 @@ class InventoryPost(db.Model):
 class ScannerPost(db.Model):
     __tablename__ = 'scanner'
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    protocol = db.Column(db.String(10))
     port = db.Column(db.String(7))
     service_name = db.Column(db.String(20))
     service_version = db.Column(db.String(20))

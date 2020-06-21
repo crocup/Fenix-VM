@@ -8,7 +8,7 @@
                         <form method="POST" action="/scanner">
     <div class="field has-addons">
   <div class="control">
-    <input class="input" type="text" name="cve_text" placeholder="IP (Example: 192.168.1.20)">
+    <input class="input" type="text" name="scanner_text" placeholder="IP (Example: 192.168.1.20)">
   </div>
   <div class="control">
     <button class="button is-success" href="{{ url_for('main.scanner') }}">
@@ -19,7 +19,7 @@
 </form>
 
         <span class="separator"></span>
-                        <form method="POST" action="/inventory">
+                        <form method="POST" action="/scanner">
                         <button class="button is-success" href="{{ url_for('main.scanner') }}">Full Scan</button>
                         </form>
 
@@ -75,11 +75,11 @@
 
     <div class="field has-addons">
   <div class="control is-centered" style="width:100%">
-    <input class="input" type="text" name="cve_text" placeholder="Find a IP address (Example: cve-2020-0010)">
+    <input class="input" type="text" name="cve_text" placeholder="Find a IP address (Example: 192.168.100.12)">
   </div>
   <div class="control">
       <form method="POST" action="/cve">
-    <button class="button is-info" href="{{ url_for('main.cve_post') }}">
+    <button class="button is-info" href="{{ url_for('main.cve') }}">
       Search
     </button>
           </form>

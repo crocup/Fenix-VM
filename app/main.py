@@ -8,14 +8,16 @@ from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost
 from .result import last_result
 from .cve import find_cve
+from .scanner import Scanner
 
 q = Queue(connection=Redis(), default_timeout=500)
 main = Blueprint('main', __name__)
 
 
 @main.app_errorhandler(404)
+@login_required
 def handle404(e):
-    return render_template('404.html', name=current_user.name), 404
+    return render_template('404.html', name=current_user.name)
 
 
 @main.route('/')
@@ -33,15 +35,15 @@ def about():
 @main.route('/setting')
 @login_required
 def setting():
-    config_json = get_config()
+    config_json_setting = get_config()
     return render_template('setting.html',
                            name=current_user.name,
-                           ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'],
-                           interface=config_json["network"]["interface"],
-                           inventory=config_json['scheduler']['inventory'],
-                           scanner=config_json['scheduler']['scanner'],
-                           cve=config_json['scheduler']['cve']
+                           ips=config_json_setting['network']['ip'],
+                           api=config_json_setting['vulners']['api'],
+                           interface=config_json_setting["network"]["interface"],
+                           inventory=config_json_setting['scheduler']['inventory'],
+                           scanner=config_json_setting['scheduler']['scanner'],
+                           cve=config_json_setting['scheduler']['cve']
                            )
 
 
@@ -142,45 +144,39 @@ def dashboard():
                            )
 
 
-@main.route('/scanner')
+@main.route('/scanner', methods=['GET', 'POST'])
 @login_required
 def scanner():
-    return render_template('scanner.html',
-                           name=current_user.name
-                           )
+    if request.method == 'POST':
+        scanner_host = request.form["scanner_text"]
+        config_json = get_config()
+        target_mask = config_json["network"]["ip"]
+        if len(scanner_host) > 0:
+            scanner_service = Scanner(host=scanner_host)
+        else:
+            scanner_service = Scanner(host=target_mask)
+        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=500)
+        return render_template('scanner.html',
+                               name=current_user.name
+                               )
+    else:
+        return render_template('scanner.html',
+                               name=current_user.name
+                               )
 
 
-@main.route('/scanner', methods=['POST'])
-@login_required
-def scanner_post():
-    return render_template('scanner.html',
-                           name=current_user.name
-                           )
-
-
-@main.route('/cve')
+@main.route('/cve', methods=['GET', 'POST'])
 @login_required
 def cve():
-    return render_template('cve.html', name=current_user.name)
-
-
-@main.route('/cve', methods=['POST'])
-@login_required
-def cve_post():
-    cve_form_get = request.form.get('cve_text')
-    if len(cve_form_get) == 0:
-        return render_template('cve.html', name=current_user.name, cve_info="")
-    cve_upper = str(cve_form_get).upper().replace(' ', '')
-    cve_text_p = find_cve(cve_upper)
-
-    return render_template('cve.html',
-                           name=current_user.name,
-                           cve_info=cve_text_p
-                           )
-
-
-@main.route('/news')
-@login_required
-def news():
-    return render_template('news.html', name=current_user.name)
-
+    if request.method == 'POST':
+        cve_form_get = request.form.get('cve_text')
+        if len(cve_form_get) == 0:
+            return render_template('cve.html', name=current_user.name, cve_info="")
+        cve_upper = str(cve_form_get).upper().replace(' ', '')
+        cve_text_p = find_cve(cve_upper)
+        return render_template('cve.html',
+                               name=current_user.name,
+                               cve_info=cve_text_p
+                               )
+    else:
+        return render_template('cve.html', name=current_user.name)
