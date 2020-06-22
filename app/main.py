@@ -10,7 +10,7 @@ from .result import last_result
 from .cve import find_cve
 from .scanner import Scanner
 
-q = Queue(connection=Redis(), default_timeout=500)
+q = Queue(connection=Redis(), default_timeout=1500)
 main = Blueprint('main', __name__)
 
 
@@ -32,79 +32,73 @@ def about():
     return render_template('about.html', name=current_user.name)
 
 
-@main.route('/setting')
+@main.route('/setting', methods=['GET', 'POST'])
 @login_required
 def setting():
-    config_json_setting = get_config()
-    return render_template('setting.html',
-                           name=current_user.name,
-                           ips=config_json_setting['network']['ip'],
-                           api=config_json_setting['vulners']['api'],
-                           interface=config_json_setting["network"]["interface"],
-                           inventory=config_json_setting['scheduler']['inventory'],
-                           scanner=config_json_setting['scheduler']['scanner'],
-                           cve=config_json_setting['scheduler']['cve']
-                           )
+    if request.method == 'POST':
+        config_json = get_config()
+        ips = request.form.get('text')
+        interface = request.form.get('interface')
+        api_s = request.form.get('api')
+        inventory_p = request.form.get('inventory')
+        scanner_p = request.form.get('scanner')
+        cve_p = request.form.get('cve')
+        config_json['network']['ip'] = ips
+        config_json['network']['interface'] = interface
+        config_json['vulners']['api'] = api_s
+        config_json['scheduler']['inventory'] = inventory_p
+        config_json['scheduler']['scanner'] = scanner_p
+        config_json['scheduler']['cve'] = cve_p
+        with open('app/config.json', 'w') as f:
+            json.dump(config_json, f, indent=4)
+        config_json = get_config()
+        return render_template('setting.html',
+                               name=current_user.name,
+                               ips=config_json['network']['ip'],
+                               api=config_json['vulners']['api'],
+                               interface=config_json["network"]["interface"],
+                               inventory=config_json['scheduler']['inventory'],
+                               scanner=config_json['scheduler']['scanner'],
+                               cve=config_json['scheduler']['cve']
+                               )
+    else:
+        config_json_setting = get_config()
+        return render_template('setting.html',
+                               name=current_user.name,
+                               ips=config_json_setting['network']['ip'],
+                               api=config_json_setting['vulners']['api'],
+                               interface=config_json_setting["network"]["interface"],
+                               inventory=config_json_setting['scheduler']['inventory'],
+                               scanner=config_json_setting['scheduler']['scanner'],
+                               cve=config_json_setting['scheduler']['cve']
+                               )
 
 
-@main.route('/setting', methods=['POST'])
-@login_required
-def setting_post():
-    config_json = get_config()
-    ips = request.form.get('text')
-    interface = request.form.get('interface')
-    api_s = request.form.get('api')
-    inventory_p = request.form.get('inventory')
-    scanner_p = request.form.get('scanner')
-    cve_p = request.form.get('cve')
-    config_json['network']['ip'] = ips
-    config_json['network']['interface'] = interface
-    config_json['vulners']['api'] = api_s
-    config_json['scheduler']['inventory'] = inventory_p
-    config_json['scheduler']['scanner'] = scanner_p
-    config_json['scheduler']['cve'] = cve_p
-    with open('app/config.json', 'w') as f:
-        json.dump(config_json, f, indent=4)
-    config_json = get_config()
-    return render_template('setting.html',
-                           name=current_user.name,
-                           ips=config_json['network']['ip'],
-                           api=config_json['vulners']['api'],
-                           interface=config_json["network"]["interface"],
-                           inventory=config_json['scheduler']['inventory'],
-                           scanner=config_json['scheduler']['scanner'],
-                           cve=config_json['scheduler']['cve']
-                           )
-
-
-@main.route('/inventory')
+@main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
-    res_uuid = result(last_result())
-    return render_template('inventory.html',
-                           name=current_user.name,
-                           uid=res_uuid,
-                           items=InventoryPost.query.all()
-                           )
-
-
-@main.route('/inventory', methods=['POST'])
-@login_required
-def inventory_post():
-    config_json = get_config()
-    target_mask = config_json["network"]["ip"]
-    traget_interface = config_json["network"]["interface"]
-    inventory_service = Inventory(target=target_mask, interface=traget_interface)
-    results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
-    # record result.id in table
-    res_id = ResultPost(results.id, 'Inventory', time())
-    db.session.add(res_id)
-    db.session.commit()
-    return render_template('inventory.html',
-                           name=current_user.name,
-                           uid=results.id,
-                           items=InventoryPost.query.all()
-                           )
+    if request.method == 'POST':
+        config_json = get_config()
+        target_mask = config_json["network"]["ip"]
+        traget_interface = config_json["network"]["interface"]
+        inventory_service = Inventory(target=target_mask, interface=traget_interface)
+        results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
+        # record result.id in table
+        res_id = ResultPost(results.id, 'Inventory', time())
+        db.session.add(res_id)
+        db.session.commit()
+        return render_template('inventory.html',
+                               name=current_user.name,
+                               uid=results.id,
+                               items=InventoryPost.query.all()
+                               )
+    else:
+        res_uuid = result(last_result())
+        return render_template('inventory.html',
+                               name=current_user.name,
+                               uid=res_uuid,
+                               items=InventoryPost.query.all()
+                               )
 
 
 @main.route('/inventory/delete/<ips>')
@@ -155,7 +149,7 @@ def scanner():
             scanner_service = Scanner(host=scanner_host)
         else:
             scanner_service = Scanner(host=target_mask)
-        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=500)
+        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=1500)
         return render_template('scanner.html',
                                name=current_user.name
                                )
