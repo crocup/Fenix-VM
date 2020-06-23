@@ -1,16 +1,16 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import db, time, get_config
+from . import time, get_config
 from redis import Redis
 from rq import Queue
 import json
 from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost
-from .result import last_result
+from .result import last_result, result_post
 from .cve import find_cve
 from .scanner import Scanner
 
-q = Queue(connection=Redis(), default_timeout=1500)
+q = Queue(connection=Redis(), default_timeout=1000)
 main = Blueprint('main', __name__)
 
 
@@ -22,7 +22,6 @@ def handle404(e):
 
 @main.route('/')
 def index():
-    # return render_template('index.html')
     return redirect(url_for('auth.login'))
 
 
@@ -51,27 +50,12 @@ def setting():
         config_json['scheduler']['cve'] = cve_p
         with open('app/config.json', 'w') as f:
             json.dump(config_json, f, indent=4)
-        config_json = get_config()
-        return render_template('setting.html',
-                               name=current_user.name,
-                               ips=config_json['network']['ip'],
-                               api=config_json['vulners']['api'],
-                               interface=config_json["network"]["interface"],
-                               inventory=config_json['scheduler']['inventory'],
-                               scanner=config_json['scheduler']['scanner'],
-                               cve=config_json['scheduler']['cve']
-                               )
-    else:
-        config_json_setting = get_config()
-        return render_template('setting.html',
-                               name=current_user.name,
-                               ips=config_json_setting['network']['ip'],
-                               api=config_json_setting['vulners']['api'],
-                               interface=config_json_setting["network"]["interface"],
-                               inventory=config_json_setting['scheduler']['inventory'],
-                               scanner=config_json_setting['scheduler']['scanner'],
-                               cve=config_json_setting['scheduler']['cve']
-                               )
+    config_json_setting = get_config()
+    return render_template('setting.html', name=current_user.name, ips=config_json_setting['network']['ip'],
+                           api=config_json_setting['vulners']['api'], interface=config_json_setting["network"]["interface"],
+                           inventory=config_json_setting['scheduler']['inventory'], scanner=config_json_setting['scheduler']['scanner'],
+                           cve=config_json_setting['scheduler']['cve']
+                           )
 
 
 @main.route('/inventory', methods=['GET', 'POST'])
@@ -84,14 +68,9 @@ def inventory():
         inventory_service = Inventory(target=target_mask, interface=traget_interface)
         results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
         # record result.id in table
-        res_id = ResultPost(results.id, 'Inventory', time())
-        db.session.add(res_id)
-        db.session.commit()
-        return render_template('inventory.html',
-                               name=current_user.name,
-                               uid=results.id,
-                               items=InventoryPost.query.all()
-                               )
+        result_post(uid=results.id, name='Inventory', time=time())
+        return render_template('inventory.html', name=current_user.name,
+                               uid=results.id, items=InventoryPost.query.all())
     else:
         res_uuid = result(last_result())
         return render_template('inventory.html',
@@ -149,7 +128,8 @@ def scanner():
             scanner_service = Scanner(host=scanner_host)
         else:
             scanner_service = Scanner(host=target_mask)
-        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=1500)
+        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=500)
+        result_post(uid=results.id, name='Scanner', time=time())
         return render_template('scanner.html',
                                name=current_user.name
                                )

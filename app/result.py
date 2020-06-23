@@ -1,3 +1,4 @@
+from app import db
 from app.models import ResultPost
 
 
@@ -12,3 +13,9 @@ def last_result():
         return l_result
     except IndexError:
         return None
+
+
+def result_post(uid, name, time):
+    res_id = ResultPost(uid, name, time)
+    db.session.add(res_id)
+    db.session.commit()
