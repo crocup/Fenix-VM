@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = 'hellos'
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///onicron.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///onicron2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)

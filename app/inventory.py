@@ -32,13 +32,12 @@ def data_delete(ip):
 
 class Inventory(object):
 
-    def __init__(self, target, interface):
+    def __init__(self, target):
         """
 
         :param target: ip address/mask network (example 192.168.100.0/24)
         """
         self.target = target
-        self.interface = interface
 
     def scan_arp(self):
         """

@@ -31,6 +31,7 @@ class ScannerPost(db.Model):
     service_name = db.Column(db.String(20))
     service_version = db.Column(db.String(20))
     dateofreg = db.Column(db.String(20))
+    ip = db.Column(db.String(50))
     owner_uid = db.Column(db.Integer, db.ForeignKey('inventory.uid'), nullable=False)
 
 

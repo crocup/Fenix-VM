@@ -1,3 +1,5 @@
+import re
+
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import time, get_config
@@ -5,12 +7,12 @@ from redis import Redis
 from rq import Queue
 import json
 from app.inventory import Inventory, data_delete
-from .models import ResultPost, InventoryPost
+from .models import ResultPost, InventoryPost, ScannerPost
 from .result import last_result, result_post
 from .cve import find_cve
 from .scanner import Scanner
 
-q = Queue(connection=Redis(), default_timeout=1000)
+q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
 
 
@@ -64,8 +66,7 @@ def inventory():
     if request.method == 'POST':
         config_json = get_config()
         target_mask = config_json["network"]["ip"]
-        traget_interface = config_json["network"]["interface"]
-        inventory_service = Inventory(target=target_mask, interface=traget_interface)
+        inventory_service = Inventory(target=target_mask)
         results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
         # record result.id in table
         result_post(uid=results.id, name='Inventory', time=time())
@@ -120,22 +121,21 @@ def dashboard():
 @main.route('/scanner', methods=['GET', 'POST'])
 @login_required
 def scanner():
+    global results
+    config_json = get_config()
+    target_mask = config_json["network"]["ip"]
+    scan = ScannerPost.query.all()
     if request.method == 'POST':
-        scanner_host = request.form["scanner_text"]
-        config_json = get_config()
-        target_mask = config_json["network"]["ip"]
-        if len(scanner_host) > 0:
-            scanner_service = Scanner(host=scanner_host)
-        else:
-            scanner_service = Scanner(host=target_mask)
-        results = q.enqueue_call(scanner_service.scanner_nmap, result_ttl=500)
+        scanner_host = request.form.get("scanner_text")
+        scanner_service = Scanner(host=scanner_host)
+        results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
         result_post(uid=results.id, name='Scanner', time=time())
         return render_template('scanner.html',
-                               name=current_user.name
+                               name=current_user.name, ips=target_mask, items=scan
                                )
     else:
         return render_template('scanner.html',
-                               name=current_user.name
+                               name=current_user.name, ips=target_mask, items=scan
                                )
 
 

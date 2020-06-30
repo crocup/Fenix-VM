@@ -8,7 +8,7 @@
                         <form method="POST" action="/scanner">
     <div class="field has-addons">
   <div class="control">
-    <input class="input" type="text" name="scanner_text" placeholder="IP (Example: 192.168.1.20)">
+    <input class="input" type="text" name="scanner_text" value='{{ ips }}'>
   </div>
   <div class="control">
     <button class="button is-success" href="{{ url_for('main.scanner') }}">
@@ -17,12 +17,6 @@
   </div>
 </div>
 </form>
-
-        <span class="separator"></span>
-                        <form method="POST" action="/scanner">
-                        <button class="button is-success" href="{{ url_for('main.scanner') }}">Full Scan</button>
-                        </form>
-
                         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
                         <span class="separator"></span>
@@ -52,22 +46,25 @@
             <tr>
                 <th>#</th>
                 <th><div style="width: 40px;">IP</div></th>
+                <th>Protocol</th>
+                <th>Port</th>
+                <th>Service Name</th>
+                <th>Service Version</th>
                 <th>Update Date</th>
             </tr>
         </thead>
         <tbody>
-
+{% for item in items %}
             <tr>
-                <th>1</th>
-                <th>192.168.100.1</th>
-                <th>2020-06-10 23:02:58</th>
+                <th>{{item.uid}}</th>
+                <th>{{item.ip}}</th>
+                <th>{{item.protocol}}</th>
+                <th>{{item.port}}</th>
+                <th>{{item.service_name}}</th>
+                <th>{{item.service_version}}</th>
+                <th>{{item.dateofreg}}</th>
             </tr>
-            <tr>
-                <th>2</th>
-                <th>192.168.100.2</th>
-                <th>2020-06-11 23:02:58</th>
-            </tr>
-
+{% endfor %}
         </tbody>
     </table>
     </div>
