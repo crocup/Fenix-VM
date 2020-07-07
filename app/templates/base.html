@@ -9,14 +9,14 @@
         <link rel="stylesheet" href="../static/css/app.css">
         <link href="https://fonts.googleapis.com/icon?family=Poppins" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+        <link rel="stylesheet" type="text/css" href="../static/css/jquery.dataTables.css">
 
-        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="../static/js/jquery-3.5.1.js"></script>
+        <script type="text/javascript" charset="utf8" src="../static/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="../static/js/dataTables.select.min.js"></script>
     </head>
     <body>
+    {% if current_user.is_authenticated %}
         <nav class="navbar columns is-fixed-top" role="navigation" aria-label="main navigation" id="app-header">
     <div class="navbar-brand column is-2 is-paddingless">
         <a class="navbar-item" href="{{ url_for('main.dashboard') }}">Onicron Community</a>
@@ -48,37 +48,18 @@
             <div class="column is-2 is-fullheight is-hidden-touch" id="navigation">
     <aside class="menu">
         <ul class="menu-list">
-            {% if current_user.is_authenticated %}
+
             <li>
                 <a class="" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
-            </li>
-            {% endif %}
-            {% if current_user.is_authenticated %}
-            <li>
                 <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Inventory</a>
-            </li>
-            <li>
                 <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</a>
-            </li>
-            <li>
+                <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-eraser"></i></span> Vulnerability</a>
                 <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-table"></i></span> CVE DB</a>
-            </li>
-            <li>
-                <a class="" href="{{ url_for('main.result_task') }}"><span class="icon"><i class="fa fa-tasks"></i></span> Result Task</a>
-            </li>
-            <li>
-                <a class="" href="{{ url_for('main.scheduler') }}"><span class="icon"><i class="fa fa-calendar"></i></span> Scheduler</a>
-            </li>
-            <li>
-                <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-hacker-news"></i></span> News</a>
-            </li>
-            <li>
+                <a class="" href="{{ url_for('main.result_task') }}"><span class="icon"><i class="fa fa-tasks"></i></span> History</a>
                 <a class="" href="{{ url_for('main.setting') }}"><span class="icon"><i class="fa fa-certificate"></i></span> Setting</a>
-            </li>
-            <li>
                 <a class="" href="{{ url_for('main.about') }}"><span class="icon"><i class="fa fa-info"></i></span> About</a>
             </li>
-            {% endif %}
+
         </ul>
     </aside>
 </div>
@@ -86,5 +67,6 @@
 
         {% endblock %}
         </div>
+    {% endif %}
     </body>
 </html>

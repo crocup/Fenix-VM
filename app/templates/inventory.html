@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#inventory_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
+            <div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">Inventory</h4>
+        <span class="separator"></span>
+                        <form method="POST" action="/inventory">
+                        <button class="button is-success" href="{{ url_for('main.inventory') }}">Start</button>
+                        </form>
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.inventory') }}">Reload</a>
+                        <span class="separator"></span>
+                        {% if uid %}
+                    <h1>Status: {{ uid }}</h1>
+                    {% else %}
+                        <h1> </h1>
+                    {% endif %}
+    </div>
+                <div class="content-body">
+
+                    </div>
+<div class="table-container">
+        <table id="inventory_id" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th><div style="width: 40px;">IP</div></th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <th>{{item.uid}}</th>
+                <th>{{item.ip}}</th>
+                <th>{{item.dateofreg}}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}

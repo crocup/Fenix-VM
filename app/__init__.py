@@ -1,14 +1,16 @@
-from flask import Flask
+import json
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from datetime import datetime
 
+
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'hellos'
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///onicron2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)
@@ -32,6 +34,13 @@ def time():
     date_time = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_time
 
+
+def get_config():
+    with open('app/config.json', 'r') as f:
+        config_json = json.load(f)
+    return config_json
+
+
 # blueprint for auth routes in our app
 from .auth import auth as auth_blueprint
 
@@ -46,5 +55,5 @@ app.register_blueprint(main_blueprint)
 #
 # app.register_blueprint(api_blueprint)
 
-from onicron import models
-from onicron import main
+from app import models
+from app import main

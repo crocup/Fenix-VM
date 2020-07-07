@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+    <form method="POST" action="/setting">
+                    <div class="content-header">
+        <h4 class="title is-4">Setting</h4>
+        <span class="separator"></span>
+                        <button class="button is-success" href="{{ url_for('main.setting') }}">Save</button>
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.setting') }}">Reload</a>
+                        <span class="separator"></span>
+    </div>
+
+<div class="tabs is-toggle is-toggle-rounded">
+    <ul>
+      <li id="all-tab" class="is-active">
+        <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-server"></i></span>
+        <span>Network</span>
+      </a>
+      </li>
+      <li id="adaptivedesign-tab">
+        <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Scheduler</span>
+      </a>
+      </li>
+    </ul>
+    <!--/tabs is-centered-->
+  </div>
+<!--  <div class="container">-->
+    <div id="all-tab-content">
+            <div class="field">
+                <label class="label">IP</label>
+                    <div class="control">
+                        <input class="input" type="text" name="text" value='{{ ips }}'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+            <div class="field">
+                <label class="label">INTERFACE</label>
+                    <div class="control">
+                        <input class="input" type="text" name="interface" value='{{ interface }}'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+            <div class="field">
+                <label class="label">API</label>
+                    <div class="control">
+                        <input class="input" type="text" name="api" value='{{ api }}'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+    </div>
+    <div class="is-hidden" id="adaptivedesign-tab-content">
+    <div class="field">
+  <label class="label">INVENTORY</label>
+  <div class="control">
+    <input class="input" type="text" name="inventory" value='{{ inventory }}'>
+  </div>
+  <p class="help">Time in hours</p>
+</div>
+    <div class="field">
+  <label class="label">SCANNER</label>
+  <div class="control">
+    <input class="input" type="text" name="scanner" value='{{ scanner }}'>
+  </div>
+  <p class="help">Time in hours</p>
+</div>
+
+    <div class="field">
+  <label class="label">CVE</label>
+  <div class="control">
+    <input class="input" type="text" name="cve" value='{{ cve }}'>
+  </div>
+  <p class="help">Time in hours</p>
+</div>
+
+<div class="field">
+  <div class="field-label">
+    <!-- Left empty for spacing -->
+  </div>
+</div>
+    </div>
+<!--  </div>-->
+        </form>
+  <script>
+    function switchToAll() {
+      removeActive();
+      hideAll();
+      $("#all-tab").addClass("is-active");
+      $("#all-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesign() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab").addClass("is-active");
+      $("#adaptivedesign-tab-content").removeClass("is-hidden");
+    }
+    function removeActive() {
+      $("li").each(function() {
+        $(this).removeClass("is-active");
+      });
+    }
+    function hideAll(){
+      $("#all-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-content").addClass("is-hidden");
+    }
+  </script>
+</div>
+{% endblock %}
