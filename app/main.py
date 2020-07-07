@@ -1,5 +1,4 @@
 import re
-
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import time, get_config
@@ -10,7 +9,7 @@ from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost, ScannerPost
 from .result import last_result, result_post
 from .cve import find_cve
-from .scanner import Scanner
+from .scanner import Scanner, group_ip_date
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -124,7 +123,8 @@ def scanner():
     global results
     config_json = get_config()
     target_mask = config_json["network"]["ip"]
-    scan = ScannerPost.query.all()
+    # scan = ScannerPost.query.all()
+    scan = group_ip_date()
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         scanner_service = Scanner(host=scanner_host)
@@ -137,6 +137,14 @@ def scanner():
         return render_template('scanner.html',
                                name=current_user.name, ips=target_mask, items=scan
                                )
+
+
+@main.route('/scanner_info', methods=['POST'])
+@login_required
+def scanner_info():
+    return render_template('scanner.html',
+                           name=current_user.name
+                           )
 
 
 @main.route('/cve', methods=['GET', 'POST'])

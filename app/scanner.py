@@ -5,6 +5,10 @@ from app.models import InventoryPost, ScannerPost
 from app.inventory import Inventory
 
 
+def group_ip_date():
+    return db.session.query(ScannerPost.ip, ScannerPost.dateofreg).group_by(ScannerPost.dateofreg).all()
+
+
 def record_scan(host, proto, port, product, version):
     """
 
@@ -42,7 +46,6 @@ class Scanner:
         nm = nmap3.Nmap()
         inventory_service = Inventory(target=self.host)
         result_inventory = inventory_service.scan_arp()
-        print(result_inventory)
         for inv_host in result_inventory:
             result = nm.nmap_version_detection(inv_host)
             for i in result:
@@ -60,7 +63,6 @@ class Scanner:
                 else:
                     product = None
                     version = None
-                print(inv_host, proto, port, product, version)
                 record_scan(self.host, proto, port, product, version)
         return "success"
 
@@ -87,5 +89,4 @@ class Scanner:
         :return:
         """
         nm = nmap3.Nmap()
-        result = nm.nmap_subnet_scan(self.host)
-        pprint(result)
+        return nm.nmap_subnet_scan(self.host)
