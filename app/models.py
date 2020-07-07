@@ -16,6 +16,7 @@ class InventoryPost(db.Model):
     ip = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50), default="None")
     dateofreg = db.Column(db.String(20))
+    scanners = db.relationship('ScannerPost', backref='owner')
 
     def __init__(self, ip, dateofreg):
         self.ip = ip
@@ -25,18 +26,13 @@ class InventoryPost(db.Model):
 class ScannerPost(db.Model):
     __tablename__ = 'scanner'
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ip = db.Column(db.Integer, db.ForeignKey('inventory.ip'), nullable=False)
-    port = db.Column(db.String(6))
+    protocol = db.Column(db.String(10))
+    port = db.Column(db.String(7))
     service_name = db.Column(db.String(20))
     service_version = db.Column(db.String(20))
     dateofreg = db.Column(db.String(20))
-
-    def __init__(self, ip, port, service_name, service_version, dateofreg):
-        self.ip = ip
-        self.port = port
-        self.service_name = service_name
-        self.service_version = service_version
-        self.dateofreg = dateofreg
+    ip = db.Column(db.String(50))
+    owner_uid = db.Column(db.Integer, db.ForeignKey('inventory.uid'), nullable=False)
 
 
 class ResultPost(db.Model):

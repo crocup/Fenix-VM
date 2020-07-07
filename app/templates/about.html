@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">About</h4>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.about') }}">Reload</a>
+                        <span class="separator"></span>
+    </div>
+<div class="tabs is-toggle is-toggle-rounded">
+    <ul>
+      <li id="all-tab" class="is-active">
+        <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-info"></i></span>
+        <span>Info</span>
+      </a>
+      </li>
+      <li id="adaptivedesign-tab">
+        <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-book"></i></span>
+        <span>Licence</span>
+      </a>
+      </li>
+        <li id="adaptivedesign-tab-update">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-download"></i></span>
+        <span>Update</span>
+      </a>
+      </li>
+    </ul>
+    <!--/tabs is-centered-->
+  </div>
+<!--  <div class="container">-->
+    <div id="all-tab-content">
+        <p>1</p>
+    </div>
+    <div class="is-hidden" id="adaptivedesign-tab-content">
+<p>2</p>
+    </div>
+    <div class="is-hidden" id="adaptivedesign-tab-update-content">
+<p>3</p>
+    </div>
+<!--  </div>-->
+  <script>
+    function switchToAll() {
+      removeActive();
+      hideAll();
+      $("#all-tab").addClass("is-active");
+      $("#all-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesign() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab").addClass("is-active");
+      $("#adaptivedesign-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesignUpdate() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab-update").addClass("is-active");
+      $("#adaptivedesign-tab-update-content").removeClass("is-hidden");
+    }
+    function removeActive() {
+      $("li").each(function() {
+        $(this).removeClass("is-active");
+      });
+    }
+    function hideAll(){
+      $("#all-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-update-content").addClass("is-hidden");
+    }
+  </script>
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#scanner_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
+</div>
+{% endblock %}
