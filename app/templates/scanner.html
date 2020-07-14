@@ -20,35 +20,26 @@
                         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
                         <span class="separator"></span>
+
     </div>
-<!--  <div class="container">-->
     <table id="scanner_id" class="display" style="width:100%">
         <thead>
             <tr>
-<!--                <th>#</th>-->
+                <th>UUID</th>
                 <th><div style="width: 40px;">IP</div></th>
-<!--                <th>Protocol</th>-->
-<!--                <th>Port</th>-->
-<!--                <th>Service Name</th>-->
-<!--                <th>Service Version</th>-->
                 <th>Update Date</th>
             </tr>
         </thead>
         <tbody>
 {% for item in items %}
             <tr>
-<!--                <th>{{item.uid}}</th>-->
-                <th>{{item[0]}}</th>
-<!--                <th>{{item.protocol}}</th>-->
-<!--                <th>{{item.port}}</th>-->
-<!--                <th>{{item.service_name}}</th>-->
-<!--                <th>{{item.service_version}}</th>-->
-                <th>{{item[1]}}</th>
+                <td><a href="{{ url_for('main.scanner_info', uuid=item[2]) }}">{{item[2]}}</a></td>
+                <td>{{item[0]}}</td>
+                <td>{{item[1]}}</td>
             </tr>
 {% endfor %}
         </tbody>
     </table>
-<!--  </div>-->
         </form>
 
 <script type="text/javascript" class="init">
@@ -58,5 +49,5 @@
 	        } );
         } );
 </script>
-</div>
+    </div>
 {% endblock %}

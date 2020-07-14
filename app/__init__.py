@@ -4,18 +4,19 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from datetime import datetime
+from flask_uuid import FlaskUUID
 
 
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'hellos'
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///onicron2.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)
 Migrate(app, db)
-
+FlaskUUID(app)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
@@ -31,7 +32,7 @@ def load_user(user_id):
 
 def time():
     now = datetime.now()  # current date and time
-    date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    date_time = now.strftime("%d.%m.%Y %H:%M:%S")
     return date_time
 
 

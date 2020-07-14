@@ -9,7 +9,7 @@ from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost, ScannerPost
 from .result import last_result, result_post
 from .cve import find_cve
-from .scanner import Scanner, group_ip_date
+from .scanner import Scanner, group_ip_date, group_by
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -139,12 +139,12 @@ def scanner():
                                )
 
 
-@main.route('/scanner_info', methods=['POST'])
+@main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
-def scanner_info():
-    return render_template('scanner.html',
-                           name=current_user.name
-                           )
+def scanner_info(uuid):
+    print(uuid)
+    dct = group_by(uid=uuid)
+    return render_template('info.html', uid=dct, name=current_user.name)
 
 
 @main.route('/cve', methods=['GET', 'POST'])

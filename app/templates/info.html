@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+                    <div class="content-header">
+        <h4 class="title is-4">Scanner Info</h4>
+                        <span class="separator"></span>
+    <div class="field has-addons">
+                        <a class="button is-info" href="#">Reload</a>
+                        <span class="separator"></span>
+</div>
+             </div>
+    <p>UUID: {{uid.uuid}}</p>
+<p>IP: {{uid.ip}}</p>
+    <p>DATE: {{uid.dateofreg}}</p>
+            </div>
+{% endblock %}
