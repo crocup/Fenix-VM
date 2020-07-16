@@ -7,19 +7,29 @@ from app.inventory import Inventory
 
 
 def group_by(uid):
-    try:
-        dictionary = {}
-        r = ScannerPost.query.filter(ScannerPost.uuid == str(uid))
-        for i in r:
-            dictionary['ip'] = i.ip
-            dictionary['port'] = i.port
-            dictionary['dateofreg'] = i.dateofreg
-            dictionary['uuid'] = uid
-            print(dictionary)
-        return dictionary
-    except Exception as e:
-        print(e)
-        return {}
+    dictionary = {}
+    service_list = []
+    r = ScannerPost.query.filter(ScannerPost.uuid == str(uid))
+
+    for i in r:
+        dictionary = {
+            'ip': i.ip,
+            'dateofreg': i.dateofreg,
+            'uuid': uid,
+            'port': []
+        }
+        s_ver = {
+            'port': i.port,
+            'protocol': i.protocol,
+            'service_name': i.service_name,
+            'service_version': i.service_version
+        }
+        service_list.append(s_ver)
+        for item in service_list:
+            dictionary['port'].append(item)
+
+    pprint(dictionary)
+    return dictionary
 
 
 def group_ip_date():

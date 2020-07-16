@@ -142,7 +142,6 @@ def scanner():
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
 def scanner_info(uuid):
-    print(uuid)
     dct = group_by(uid=uuid)
     return render_template('info.html', uid=dct, name=current_user.name)
 
