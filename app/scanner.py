@@ -28,7 +28,7 @@ def group_by(uid):
         for item in service_list:
             dictionary['port'].append(item)
 
-    pprint(dictionary)
+    # pprint(dictionary)
     return dictionary
 
 
