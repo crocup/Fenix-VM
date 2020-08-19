@@ -74,12 +74,12 @@ class Scanner:
         inventory_service = Inventory(target=self.host)
         result_inventory = inventory_service.scan_arp()
         inventory_service.result_scan()
-        print(result_inventory)
+        # print(result_inventory)
         for inv_host in result_inventory:
             uuid = str(uuid4())
-            print(uuid)
+            # print(uuid)
             result = nm.nmap_version_detection(inv_host)
-            print(result)
+            pprint(result)
             for i in result:
                 proto = i['protocol']
                 port = i['port']

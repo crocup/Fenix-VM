@@ -27,6 +27,7 @@
             <tr>
                 <th>UUID</th>
                 <th><div style="width: 40px;">IP</div></th>
+                <th>Tags</th>
                 <th>Update Date</th>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
             <tr>
                 <td><a href="{{ url_for('main.scanner_info', uuid=item[2]) }}">{{item[2]}}</a></td>
                 <td>{{item[0]}}</td>
+                <td><span class="tag is-warning">Tags</span></td>
                 <td>{{item[1]}}</td>
             </tr>
 {% endfor %}
