@@ -58,7 +58,10 @@
 </div>
         </div>
     <div class="is-hidden" id="adaptivedesign-tab-content">
-        <p>2</p>
+        {% for item in logs %}
+<!--        <textarea class="textarea" placeholder="10 lines of textarea" rows="30">{{logs}}</textarea>-->
+        <p>{{item}}</p>
+        {% endfor %}
 </div>
 </div>
 <script>

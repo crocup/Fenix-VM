@@ -1,13 +1,13 @@
 import re
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import time, get_config
+from . import time, get_config, logger
 from redis import Redis
 from rq import Queue
 import json
 from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost, ScannerPost
-from .result import last_result, result_post
+from .result import last_result, result_post, log_file
 from .cve import find_cve
 from .scanner import Scanner, group_ip_date, group_by
 
@@ -35,6 +35,7 @@ def about():
 @main.route('/setting', methods=['GET', 'POST'])
 @login_required
 def setting():
+    logger.info('Setting...')
     if request.method == 'POST':
         config_json = get_config()
         ips = request.form.get('text')
@@ -49,7 +50,7 @@ def setting():
         config_json['scheduler']['inventory'] = inventory_p
         config_json['scheduler']['scanner'] = scanner_p
         config_json['scheduler']['cve'] = cve_p
-        with open('app/config.json', 'w') as f:
+        with open('config.json', 'w') as f:
             json.dump(config_json, f, indent=4)
     config_json_setting = get_config()
     return render_template('setting.html', name=current_user.name, ips=config_json_setting['network']['ip'],
@@ -92,7 +93,8 @@ def inventory_delete(ips):
 def result_task():
     return render_template('result.html',
                            name=current_user.name,
-                           items=ResultPost.query.all()
+                           items=ResultPost.query.all(),
+                           logs=log_file('logs/logging.log')
                            )
 
 

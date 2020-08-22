@@ -27,7 +27,6 @@
                 <div class="content-body">
 
                     </div>
-<div class="table-container">
         <table id="inventory_id" class="display" style="width:100%">
         <thead>
             <tr>
@@ -40,14 +39,13 @@
         <tbody>
         {% for item in items %}
             <tr>
-                <th>{{item.uid}}</th>
-                <th>{{item.ip}}</th>
-                <th><a href="#"><span class="tag is-warning">Unknown</span></a></th>
-                <th>{{item.dateofreg}}</th>
+                <td>{{item.uid}}</td>
+                <td>{{item.ip}}</td>
+                <td><a href="#"><span class="tag is-warning">Unknown</span></a></td>
+                <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-</div>
 </div>
 {% endblock %}

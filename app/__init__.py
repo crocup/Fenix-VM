@@ -1,10 +1,14 @@
 import json
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from datetime import datetime
 from flask_uuid import FlaskUUID
+import logging
+import logging.config
+import json
 
 
 app = Flask(__name__)
@@ -20,7 +24,12 @@ FlaskUUID(app)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
+with open("logging.json", 'r') as logging_configuration_file:
+    config_dict = json.load(logging_configuration_file)
 
+logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+logger.info("Program start")
 from .models import User
 
 
@@ -37,7 +46,7 @@ def time():
 
 
 def get_config():
-    with open('app/config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         config_json = json.load(f)
     return config_json
 
