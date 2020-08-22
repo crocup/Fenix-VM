@@ -1,9 +1,9 @@
 {  
   "version": 1,  
-  "disable_existing_loggers": false,  
+  "disable_existing_loggers": false,
   "formatters": {  
     "simple": {  
-      "format": "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s"
+      "format": "[%(levelname)s]: %(name)s: [%(asctime)s] - %(message)s"
   }  
   },  
   "handlers": {  
@@ -12,7 +12,7 @@
       "level": "INFO",
       "formatter": "simple",
       "filename": "logs/logging.log",
-      "maxBytes": 10240,
+      "maxBytes": 102400,
       "backupCount": 5,
       "encoding": "utf8"
   }

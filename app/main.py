@@ -153,6 +153,7 @@ def scanner_info(uuid):
 def cve():
     if request.method == 'POST':
         cve_form_get = request.form.get('cve_text')
+        logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
             return render_template('cve.html', name=current_user.name, cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')

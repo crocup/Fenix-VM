@@ -1,12 +1,9 @@
-import json
-from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from datetime import datetime
 from flask_uuid import FlaskUUID
-import logging
 import logging.config
 import json
 
