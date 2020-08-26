@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#info_scanner_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
+<div class="column is-10" id="page-content">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+      <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('main.scanner') }}">Scanner</a></li>
+    <li class="is-active"><a href="#" aria-current="page">{{uid.uuid}}</a></li>
+  </ul>
+</nav>
+    <div class="card">
+  <div class="card-content">
+    <div class="media">
+      <div class="media-content">
+        <p class="title is-4">{{uid.ip}} <span class="tag is-warning">Tags</span></p>
+        <p class="subtitle is-6">{{uid.uuid}}</p>
+      </div>
+    </div>
+    <div class="content">
+      <time datetime="2016-1-1">{{uid.dateofreg}}</time>
+    </div>
+  </div>
+</div>
+    <div class="tabs is-toggle is-toggle-rounded">
+    <ul>
+      <li id="all-tab" class="is-active">
+        <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-server"></i></span>
+        <span>Open Port</span>
+      </a>
+      </li>
+        <li id="adaptivedesign-tab-agent">
+        <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Agent</span>
+      </a>
+      </li>
+      <li id="adaptivedesign-tab-vulnerabilities">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Vulnerabilities</span>
+      </a>
+      </li>
+    </ul>
+    <!--/tabs is-centered-->
+  </div>
+
+    <div class="table-container" id="all-tab-content">
+        <table id="info_scanner_id" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Port</th>
+                <th><div style="width: 40px;">Protocol</div></th>
+                <th>Service name</th>
+                <th>Service version</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in uid.port %}
+            <tr>
+                <th>{{item.port}}</th>
+                <th>{{item.protocol}}</th>
+                <th>{{item.service_name}}</th>
+                <th>{{item.service_version}}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <div class="is-hidden" id="adaptivedesign-tab-content">
+<p>2</p>
+    </div>
+    <div class="is-hidden" id="adaptivedesign-tab-update-content">
+<p>3</p>
+    </div>
+<script>
+
+    function switchToAll() {
+      removeActive();
+      hideAll();
+      $("#all-tab").addClass("is-active");
+      $("#all-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesign() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab-agent").addClass("is-active");
+      $("#adaptivedesign-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesignUpdate() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab-vulnerabilities").addClass("is-active");
+      $("#adaptivedesign-tab-update-content").removeClass("is-hidden");
+    }
+    function removeActive() {
+      $("li").each(function() {
+        $(this).removeClass("is-active");
+      });
+    }
+    function hideAll(){
+      $("#all-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-update-content").addClass("is-hidden");
+    }
+  </script>
+
+            </div>
+{% endblock %}

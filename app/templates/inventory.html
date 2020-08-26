@@ -27,25 +27,25 @@
                 <div class="content-body">
 
                     </div>
-<div class="table-container">
         <table id="inventory_id" class="display" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
                 <th><div style="width: 40px;">IP</div></th>
+                <th>Tags</th>
                 <th>Update Date</th>
             </tr>
         </thead>
         <tbody>
         {% for item in items %}
             <tr>
-                <th>{{item.uid}}</th>
-                <th>{{item.ip}}</th>
-                <th>{{item.dateofreg}}</th>
+                <td>{{item.uid}}</td>
+                <td>{{item.ip}}</td>
+                <td><a href="#"><span class="tag is-warning">Unknown</span></a></td>
+                <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-</div>
 </div>
 {% endblock %}

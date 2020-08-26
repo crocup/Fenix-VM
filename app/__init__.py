@@ -1,25 +1,32 @@
-import json
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from datetime import datetime
+from flask_uuid import FlaskUUID
+import logging.config
+import json
 
 
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'hellos'
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///onicron2.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)
 Migrate(app, db)
-
+FlaskUUID(app)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
+with open("logging.json", 'r') as logging_configuration_file:
+    config_dict = json.load(logging_configuration_file)
 
+logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+logger.info("Program start")
 from .models import User
 
 
@@ -31,12 +38,12 @@ def load_user(user_id):
 
 def time():
     now = datetime.now()  # current date and time
-    date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    date_time = now.strftime("%d.%m.%Y %H:%M:%S")
     return date_time
 
 
 def get_config():
-    with open('app/config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         config_json = json.load(f)
     return config_json
 
