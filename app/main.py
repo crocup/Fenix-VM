@@ -1,15 +1,15 @@
 import re
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import time, get_config
+from . import time, get_config, logger
 from redis import Redis
 from rq import Queue
 import json
 from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost, ScannerPost
-from .result import last_result, result_post
+from .result import last_result, result_post, log_file
 from .cve import find_cve
-from .scanner import Scanner, group_ip_date
+from .scanner import Scanner, group_ip_date, group_by
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -35,6 +35,7 @@ def about():
 @main.route('/setting', methods=['GET', 'POST'])
 @login_required
 def setting():
+    logger.info('Setting...')
     if request.method == 'POST':
         config_json = get_config()
         ips = request.form.get('text')
@@ -49,7 +50,7 @@ def setting():
         config_json['scheduler']['inventory'] = inventory_p
         config_json['scheduler']['scanner'] = scanner_p
         config_json['scheduler']['cve'] = cve_p
-        with open('app/config.json', 'w') as f:
+        with open('config.json', 'w') as f:
             json.dump(config_json, f, indent=4)
     config_json_setting = get_config()
     return render_template('setting.html', name=current_user.name, ips=config_json_setting['network']['ip'],
@@ -92,7 +93,8 @@ def inventory_delete(ips):
 def result_task():
     return render_template('result.html',
                            name=current_user.name,
-                           items=ResultPost.query.all()
+                           items=ResultPost.query.all(),
+                           logs=log_file('logs/logging.log')
                            )
 
 
@@ -139,12 +141,11 @@ def scanner():
                                )
 
 
-@main.route('/scanner_info', methods=['POST'])
+@main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
-def scanner_info():
-    return render_template('scanner.html',
-                           name=current_user.name
-                           )
+def scanner_info(uuid):
+    dct = group_by(uid=uuid)
+    return render_template('info.html', uid=dct, name=current_user.name)
 
 
 @main.route('/cve', methods=['GET', 'POST'])
@@ -152,6 +153,7 @@ def scanner_info():
 def cve():
     if request.method == 'POST':
         cve_form_get = request.form.get('cve_text')
+        logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
             return render_template('cve.html', name=current_user.name, cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')
