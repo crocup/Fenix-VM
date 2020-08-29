@@ -40,8 +40,8 @@
         {% for item in items %}
             <tr>
                 <td>{{item.uid}}</td>
-                <td>{{item.ip}}</td>
-                <td><a href="#"><span class="tag is-warning">Unknown</span></a></td>
+                <td><a href="{{ url_for('main.tags', ip=item.ip) }}">{{item.ip}}</a></td>
+                <td><span class="tag is-warning">{{item.tags}}</span></td>
                 <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}

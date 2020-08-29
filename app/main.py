@@ -9,7 +9,8 @@ from app.inventory import Inventory, data_delete
 from .models import ResultPost, InventoryPost, ScannerPost
 from .result import last_result, result_post, log_file
 from .cve import find_cve
-from .scanner import Scanner, group_ip_date, group_by
+from .scanner import Scanner
+from .database import group_by_inventory, group_ip_date, group_by
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -35,7 +36,6 @@ def about():
 @main.route('/setting', methods=['GET', 'POST'])
 @login_required
 def setting():
-    logger.info('Setting...')
     if request.method == 'POST':
         config_json = get_config()
         ips = request.form.get('text')
@@ -54,8 +54,10 @@ def setting():
             json.dump(config_json, f, indent=4)
     config_json_setting = get_config()
     return render_template('setting.html', name=current_user.name, ips=config_json_setting['network']['ip'],
-                           api=config_json_setting['vulners']['api'], interface=config_json_setting["network"]["interface"],
-                           inventory=config_json_setting['scheduler']['inventory'], scanner=config_json_setting['scheduler']['scanner'],
+                           api=config_json_setting['vulners']['api'],
+                           interface=config_json_setting["network"]["interface"],
+                           inventory=config_json_setting['scheduler']['inventory'],
+                           scanner=config_json_setting['scheduler']['scanner'],
                            cve=config_json_setting['scheduler']['cve']
                            )
 
@@ -146,6 +148,18 @@ def scanner():
 def scanner_info(uuid):
     dct = group_by(uid=uuid)
     return render_template('info.html', uid=dct, name=current_user.name)
+
+
+@main.route('/inventory/<ip>', methods=['GET', 'POST'])
+@login_required
+def tags(ip):
+    res_ip = group_by_inventory(ip)
+    if request.method == 'POST':
+        tag_get = request.form.get("tag")
+        print(f" {tag_get} post")
+        return redirect(url_for('main.inventory'))
+    else:
+        return render_template('tag.html', ips=res_ip, name=current_user.name)
 
 
 @main.route('/cve', methods=['GET', 'POST'])
