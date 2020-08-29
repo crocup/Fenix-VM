@@ -69,11 +69,11 @@ def inventory():
         config_json = get_config()
         target_mask = config_json["network"]["ip"]
         inventory_service = Inventory(target=target_mask)
-        results = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
+        results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
         # record result.id in table
-        result_post(uid=results.id, name='Inventory', time=time())
+        result_post(uid=results_inventory.id, name='Inventory', time=time())
         return render_template('inventory.html', name=current_user.name,
-                               uid=results.id, items=InventoryPost.query.all())
+                               uid=results_inventory.id, items=InventoryPost.query.all())
     else:
         res_uuid = result(last_result())
         return render_template('inventory.html',
@@ -109,7 +109,8 @@ def result(uuid):
             return make_response(jsonify({"status": job.result}), 200).json['status']
         else:
             return make_response(jsonify({"status": "pending"}), 202).json['status']
-    except Exception:
+    except Exception as e:
+        print(e)
         return make_response(jsonify({"status": ""}), 404).json['status']
 
 
