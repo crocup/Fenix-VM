@@ -6,7 +6,13 @@ from datetime import datetime
 from flask_uuid import FlaskUUID
 import logging.config
 import json
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
+sentry_sdk.init(
+    dsn="https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896",
+    integrations=[FlaskIntegration()]
+)
 
 app = Flask(__name__)
 app.debug = True
@@ -26,7 +32,7 @@ with open("logging.json", 'r') as logging_configuration_file:
 
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
-logger.info("Program start")
+
 from .models import User
 
 
