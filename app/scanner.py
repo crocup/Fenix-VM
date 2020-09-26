@@ -1,7 +1,7 @@
 from pprint import pprint
 from uuid import uuid4
 import nmap3
-from app.database import record_scan
+from app.database import Scanner_Data_Record
 from app.inventory import Inventory
 
 
@@ -44,7 +44,7 @@ class Scanner:
                 else:
                     product = None
                     version = None
-                record_scan(inv_host, proto, port, product, version, uuid)
+                Scanner_Data_Record(inv_host, proto, port, product, version, uuid)
         return "success"
 
     def scan_arp(self):
