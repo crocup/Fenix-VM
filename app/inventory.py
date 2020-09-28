@@ -1,33 +1,5 @@
 import nmap3
-from . import time
-from .models import InventoryPost, db
-
-
-def record_db(result_inventory):
-    """
-
-    :param result_inventory:
-    :return:
-    """
-    for res in result_inventory:
-        ips_find = InventoryPost.query.filter_by(ip=res).first()
-        if ips_find is None:
-            reg = InventoryPost(res, time())
-            db.session.add(reg)
-        else:
-            ips_find.dateofreg = time()
-            db.session.add(ips_find)
-    db.session.commit()
-
-
-def data_delete(ip):
-    """
-
-    :param ip:
-    :return:
-    """
-    InventoryPost.query.filter_by(ip=ip).delete()
-    db.session.commit()
+from app.database import Inventory_Data_Record
 
 
 class Inventory(object):
@@ -62,7 +34,7 @@ class Inventory(object):
         """
         try:
             result = list(self.scan_arp())
-            record_db(result)
+            Inventory_Data_Record(result)
             return "success"
         except Exception as e:
             status = "error: {}".format(e)

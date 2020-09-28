@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script type="text/javascript" class="init">
-        $(document).ready(function() {
-	    $('#info_scanner_id').DataTable( {
-		select: true
-	        } );
-        } );
-</script>
 <div class="column is-10" id="page-content">
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
@@ -20,7 +13,7 @@
   <div class="card-content">
     <div class="media">
       <div class="media-content">
-        <p class="title is-4">{{uid.ip}} <span class="tag is-warning">Tags</span></p>
+        <p class="title is-4">{{uid.ip}} <span class="tag is-warning">{{uid.tag}}</span></p>
         <p class="subtitle is-6">{{uid.uuid}}</p>
       </div>
     </div>
@@ -35,12 +28,6 @@
         <a onClick="switchToAll()">
         <span class="icon is-small"><i class="fa fa-server"></i></span>
         <span>Open Port</span>
-      </a>
-      </li>
-        <li id="adaptivedesign-tab-agent">
-        <a onClick="switchToAdaptiveDesign()">
-        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
-        <span>Agent</span>
       </a>
       </li>
       <li id="adaptivedesign-tab-vulnerabilities">
@@ -75,12 +62,16 @@
         </tbody>
     </table>
 </div>
-    <div class="is-hidden" id="adaptivedesign-tab-content">
-<p>2</p>
-    </div>
     <div class="is-hidden" id="adaptivedesign-tab-update-content">
 <p>3</p>
     </div>
+    <script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#info_scanner_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
 <script>
 
     function switchToAll() {
@@ -88,12 +79,6 @@
       hideAll();
       $("#all-tab").addClass("is-active");
       $("#all-tab-content").removeClass("is-hidden");
-    }
-    function switchToAdaptiveDesign() {
-      removeActive();
-      hideAll();
-      $("#adaptivedesign-tab-agent").addClass("is-active");
-      $("#adaptivedesign-tab-content").removeClass("is-hidden");
     }
     function switchToAdaptiveDesignUpdate() {
       removeActive();

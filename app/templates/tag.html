@@ -5,7 +5,7 @@
     <div class="content-header">
         <h4 class="title is-4">{{ips.ip}}</h4>
         <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.tags', ip=ips.ip) }}">Reload</a>
+                        <a class="button is-info" href="{{ url_for('main.tags', ip=ips.ip) }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
                         {% if uid %}
                     <h1>Status: {{ uid }}</h1>

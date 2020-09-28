@@ -3,7 +3,7 @@
 {% block content %}
 <div class="column is-10" id="page-content">
                     <div class="content-header">
-        <h4 class="title is-4">Scanner</h4>
+        <h4 class="title is-4"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</h4>
                         <span class="separator"></span>
                         <form method="POST" action="/scanner">
     <div class="field has-addons">
@@ -11,14 +11,14 @@
     <input class="input" type="text" name="scanner_text" value='{{ ips }}'>
   </div>
   <div class="control">
-    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}">
+    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}"><i class="fa fa-play"></i>
       Start
     </button>
   </div>
 </div>
 </form>
                         <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
+                        <a class="button is-info" href="{{ url_for('main.scanner') }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
 
     </div>
@@ -34,10 +34,10 @@
         <tbody>
 {% for item in items %}
             <tr>
-                <td><a href="{{ url_for('main.scanner_info', uuid=item[2]) }}">{{item[2]}}</a></td>
-                <td>{{item[0]}}</td>
-                <td><span class="tag is-warning">Tags</span></td>
-                <td>{{item[1]}}</td>
+                <td><a href="{{ url_for('main.scanner_info', uuid=item.uuid) }}">{{item.uuid}}</a></td>
+                <td>{{item.ip}}</td>
+                <td><span class="tag is-warning">{{item.tag}}</span></td>
+                <td>{{item.date}}</td>
             </tr>
 {% endfor %}
         </tbody>

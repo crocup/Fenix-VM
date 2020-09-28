@@ -1,16 +1,14 @@
-import re
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import time, get_config, logger
+from . import get_config, logger
 from redis import Redis
 from rq import Queue
 import json
-from app.inventory import Inventory, data_delete
-from .models import ResultPost, InventoryPost, ScannerPost
-from .result import last_result, result_post, log_file
-from .cve import find_cve
-from .scanner import Scanner
-from .database import group_by_inventory, group_ip_date, group_by
+from app.inventory import Inventory
+from app.result import log_file
+from app.cve import find_cve
+from app.scanner import Scanner
+from app.database import *
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -19,7 +17,7 @@ main = Blueprint('main', __name__)
 @main.app_errorhandler(404)
 @login_required
 def handle404(e):
-    return render_template('404.html', name=current_user.name)
+    return render_template('404.html')
 
 
 @main.route('/')
@@ -30,7 +28,7 @@ def index():
 @main.route('/about')
 @login_required
 def about():
-    return render_template('about.html', name=current_user.name)
+    return render_template('about.html')
 
 
 @main.route('/setting', methods=['GET', 'POST'])
@@ -53,7 +51,7 @@ def setting():
         with open('config.json', 'w') as f:
             json.dump(config_json, f, indent=4)
     config_json_setting = get_config()
-    return render_template('setting.html', name=current_user.name, ips=config_json_setting['network']['ip'],
+    return render_template('setting.html', ips=config_json_setting['network']['ip'],
                            api=config_json_setting['vulners']['api'],
                            interface=config_json_setting["network"]["interface"],
                            inventory=config_json_setting['scheduler']['inventory'],
@@ -69,32 +67,29 @@ def inventory():
         config_json = get_config()
         target_mask = config_json["network"]["ip"]
         inventory_service = Inventory(target=target_mask)
-        results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=500)
-        # record result.id in table
-        result_post(uid=results_inventory.id, name='Inventory', time=time())
-        return render_template('inventory.html', name=current_user.name,
-                               uid=results_inventory.id, items=InventoryPost.query.all())
+        results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
+        Result_Data(uid=results_inventory.id, name='Inventory', time=time())
+        return render_template('inventory.html', items=Inventory_Data_All())
     else:
-        res_uuid = result(last_result())
-        return render_template('inventory.html',
-                               name=current_user.name,
-                               uid=res_uuid,
-                               items=InventoryPost.query.all()
-                               )
+        return render_template('inventory.html', items=Inventory_Data_All())
 
 
-@main.route('/inventory/delete/<ips>')
+@main.route('/inventory/<ip>', methods=['GET', 'POST'])
 @login_required
-def inventory_delete(ips):
-    data_delete(ips)
-    return redirect(url_for('main.inventory'))
+def tags(ip):
+    res_ip = Inventory_Data_Filter_IP(ip)
+    if request.method == 'POST':
+        tag_get = request.form.get("tag")
+        Inventory_Tag_Record(ip=res_ip['ip'], tag=tag_get)
+        return redirect(url_for('main.inventory'))
+    else:
+        return render_template('tag.html', ips=res_ip)
 
 
 @main.route('/result')
 @login_required
 def result_task():
     return render_template('result.html',
-                           name=current_user.name,
                            items=ResultPost.query.all(),
                            logs=log_file('logs/logging.log')
                            )
@@ -109,17 +104,14 @@ def result(uuid):
             return make_response(jsonify({"status": job.result}), 200).json['status']
         else:
             return make_response(jsonify({"status": "pending"}), 202).json['status']
-    except Exception as e:
-        print(e)
+    except Exception:
         return make_response(jsonify({"status": ""}), 404).json['status']
 
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html',
-                           name=current_user.name
-                           )
+    return render_template('dashboard.html', name=current_user.name)
 
 
 @main.route('/scanner', methods=['GET', 'POST'])
@@ -128,39 +120,32 @@ def scanner():
     global results
     config_json = get_config()
     target_mask = config_json["network"]["ip"]
-    # scan = ScannerPost.query.all()
-    scan = group_ip_date()
+    scan = Scanner_Data_All()
+    arr_ip = []
+    for ip in scan:
+        tag_ip = Inventory_Data_Filter_IP(ip[0])
+        dict_ip = {
+            'ip': ip[0],
+            'tag': tag_ip['tag'],
+            'date': ip[1],
+            'uuid': ip[2]
+        }
+        arr_ip.append(dict_ip)
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         scanner_service = Scanner(host=scanner_host)
         results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
-        result_post(uid=results.id, name='Scanner', time=time())
-        return render_template('scanner.html',
-                               name=current_user.name, ips=target_mask, items=scan
-                               )
-    else:
-        return render_template('scanner.html',
-                               name=current_user.name, ips=target_mask, items=scan
-                               )
+        Result_Data(uid=results.id, name='Scanner', time=time())
+    return render_template('scanner.html',
+                           ips=target_mask, items=arr_ip
+                           )
 
 
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
 def scanner_info(uuid):
-    dct = group_by(uid=uuid)
-    return render_template('info.html', uid=dct, name=current_user.name)
-
-
-@main.route('/inventory/<ip>', methods=['GET', 'POST'])
-@login_required
-def tags(ip):
-    res_ip = group_by_inventory(ip)
-    if request.method == 'POST':
-        tag_get = request.form.get("tag")
-        print(f" {tag_get} post")
-        return redirect(url_for('main.inventory'))
-    else:
-        return render_template('tag.html', ips=res_ip, name=current_user.name)
+    dct = Scanner_Data_Filter_UUID(uid=uuid)
+    return render_template('info.html', uid=dct)
 
 
 @main.route('/cve', methods=['GET', 'POST'])
@@ -170,12 +155,11 @@ def cve():
         cve_form_get = request.form.get('cve_text')
         logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
-            return render_template('cve.html', name=current_user.name, cve_info="")
+            return render_template('cve.html', cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')
         cve_text_p = find_cve(cve_upper)
         return render_template('cve.html',
-                               name=current_user.name,
                                cve_info=cve_text_p
                                )
     else:
-        return render_template('cve.html', name=current_user.name)
+        return render_template('cve.html')

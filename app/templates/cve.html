@@ -3,7 +3,7 @@
 {% block content %}
 <div class="column is-10" id="page-content">
                     <div class="content-header">
-        <h4 class="title is-4">CVE DB</h4>
+        <h4 class="title is-4"><span class="icon"><i class="fa fa-table"></i></span> CVE DB</h4>
         <span class="separator"></span>
                         <form method="POST" action="/cve">
     <div class="field has-addons">
@@ -11,14 +11,14 @@
     <input class="input" type="text" name="cve_text" placeholder="Find a CVE (Example: cve-2020-0010)">
   </div>
   <div class="control">
-    <button class="button is-info" href="{{ url_for('main.cve') }}">
+    <button class="button is-info" href="{{ url_for('main.cve') }}"><i class="fa fa-search"></i>
       Search
     </button>
   </div>
 </div>
 </form>
                         <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.cve') }}">Reload</a>
+                        <a class="button is-info" href="{{ url_for('main.cve') }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
     </div>
     <div class="content-body">
