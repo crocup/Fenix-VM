@@ -9,9 +9,9 @@
 </script>
 <div class="column is-10" id="page-content">
                     <div class="content-header">
-        <h4 class="title is-4">History</h4>
+        <h4 class="title is-4"><span class="icon"><i class="fa fa-tasks"></i></span> History</h4>
         <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.result_task') }}">Reload</a>
+                        <a class="button is-info" href="{{ url_for('main.result_task') }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
     </div>
     <div class="tabs is-toggle is-toggle-rounded">
@@ -40,17 +40,17 @@
             <tr>
                 <th>#</th>
                 <th><div style="width: 40px;">Name</div></th>
-                <th>UUID</th>
+                <th>Task uuid</th>
                 <th>Date</th>
             </tr>
         </thead>
         <tbody>
         {% for item in items %}
             <tr>
-                <th>{{item.uid}}</th>
-                <th>{{item.name}}</th>
-                <th>{{item.uuid}}</th>
-                <th>{{item.dateofreg}}</th>
+                <td>{{item.uid}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.uuid}}</td>
+                <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}
         </tbody>

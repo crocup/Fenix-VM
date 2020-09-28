@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+    <div class="content-header">
+        <h4 class="title is-4">{{ips.ip}}</h4>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.tags', ip=ips.ip) }}"><i class="fa fa-refresh"></i>Refresh</a>
+                        <span class="separator"></span>
+                        {% if uid %}
+                    <h1>Status: {{ uid }}</h1>
+                    {% else %}
+                        <h1> </h1>
+                    {% endif %}
+    </div>
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+      <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
+    <li class="is-active"><a href="#" aria-current="page">{{ips.ip}}</a></li>
+  </ul>
+</nav>
+    <div class="card">
+        <div class="card-content">
+            <div class="field">
+
+                <label class="label">Tag</label>
+                <form method="POST" action="/inventory/{{ips.ip}}">
+                    <div class="field has-addons">
+                    <div class="control">
+                        <input class="input" type="text" name="tag" value='{{ ips.tag }}'>
+                    </div>
+                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips.ip) }}">Save</button>
+                        </div>
+                        </form>
+
+                <p class="help">Please enter a new tag and click to save</p>
+            </div>
+  </div>
+</div>
+            </div>
+{% endblock %}

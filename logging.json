@@ -9,16 +9,18 @@
   "handlers": {  
     "log_json": {
       "class": "logging.handlers.RotatingFileHandler",
-      "level": "INFO",
+      "level": "DEBUG",
       "formatter": "simple",
       "filename": "logs/logging.log",
-      "maxBytes": 102400,
+      "maxBytes": 4194304,
       "backupCount": 5,
       "encoding": "utf8"
   }
   },  
-  "root": {  
-    "level": "INFO",
-    "handlers": ["log_json"]
-  }  
+  "loggers": {
+        "app": {
+            "level": "DEBUG",
+            "handlers": ["log_json"]
+        }
+    }
 }

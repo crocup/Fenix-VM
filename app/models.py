@@ -17,6 +17,7 @@ class InventoryPost(db.Model):
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ip = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50), default="None")
+    tags = db.Column(db.String(20), default="None")
     dateofreg = db.Column(db.String(20))
     scanners = db.relationship('ScannerPost', backref='owner')
 
