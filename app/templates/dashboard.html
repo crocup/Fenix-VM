@@ -1,5 +1,552 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+<div class="column is-10" id="page-content">
+    <div class="content-header">
+    <h4 class="title is-4"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</h4>
+        <span class="separator"></span>
+    <a class="button is-info " href="{{ url_for('main.dashboard') }}"><i class="fa fa-refresh"></i>Refresh</a>
+    <span class="separator"></span>
+        </div>
 
+<!--    text-->
+
+<div class="box">
+  <article class="media">
+    <div class="media-left">
+      <figure class="image is-64x64">
+        <img src="static/images/man.png" alt="Image">
+      </figure>
+    </div>
+    <div class="media-content">
+      <div class="content">
+          {% if name %}
+        <p class="title is-4"> Hello, {{ name }}! </p>
+          {% else %}
+          <p class="title is-4"> Hello, {{ name }}! </p>
+          {% endif %}
+          <div class="content">
+          <p class="subtitle is-6">Last login <strong>12 mins ago</strong> from <strong>192.168.1.1</strong></p>
+              </div>
+      </div>
+      <nav class="level is-mobile">
+        <div class="level-left">
+        </div>
+      </nav>
+    </div>
+  </article>
+</div>
+
+<div class="content-body">
+        <div class="columns">
+            <div class="column">
+                <div class="box quick-stats has-background-primary has-text-white">
+                    <div class="quick-stats-icon">
+                        <span class="icon is-large">
+                            <i class="fa fa-3x fa-edit"></i>
+                        </span>
+                    </div>
+                    <div class="quick-stats-content">
+                        <h3 class="title is-4">Inventory</h3>
+                        <div class="content is-center">
+                        <h3 class="title is-4">5</h3>
+                            </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="column">
+                <div class="box quick-stats has-background-info has-text-white">
+                    <div class="quick-stats-icon">
+                        <span class="icon is-large">
+                            <i class="fa fa-3x fa-desktop"></i>
+                        </span>
+                    </div>
+                    <div class="quick-stats-content">
+                        <h3 class="title is-4">Scanner</h3>
+                        <div class="content is-center">
+                        <h3 class="title is-4">2</h3>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box quick-stats has-background-danger has-text-white">
+                    <div class="quick-stats-icon">
+                        <span class="icon is-large">
+                            <i class="fa fa-3x fa-tasks"></i>
+                        </span>
+                    </div>
+                    <div class="quick-stats-content">
+                        <h3 class="title is-4">Task</h3>
+                        <div class="content is-center">
+                        <h3 class="title is-4">10</h3>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <div id="container" class="chart_wrap"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <div id="container2" class="chart_wrap"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <div id="container3" class="chart_wrap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">List runner task</p>
+                        <table class="table">
+  <thead>
+    <tr>
+      <th><abbr title="№">№</abbr></th>
+      <th><abbr title="Name">Name</abbr></th>
+      <th><abbr title="Task ID">Task ID</abbr></th>
+      <th><abbr title="Date">Date</abbr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td>1</td>
+        <td>Inventory</td>
+        <td>bead51b6</td>
+        <td>23.08.2020 17:18:23</td>
+    </tr>
+    <tr>
+      <td>2</td>
+        <td>Inventory</td>
+        <td>ab6570a6</td>
+        <td>26.08.2020 21:45:23</td>
+      </tr>
+    <tr>
+      <td>3</td>
+        <td>Scanner</td>
+        <td>a00fc50d</td>
+        <td>29.08.2020 20:26:00</td>
+     </tr>
+  </tbody>
+</table>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">New Vulnerability</p>
+                        <table class="table">
+  <thead>
+    <tr>
+      <th><abbr title="№">№</abbr></th>
+      <th><abbr title="Name">Name</abbr></th>
+      <th><abbr title="Date">Date</abbr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td>1</td>
+        <td>CVE-2020-2340</td>
+        <td>23.08.2020 17:18:23</td>
+    </tr>
+    <tr>
+      <td>2</td>
+        <td>CVE-2020-2342</td>
+        <td>26.08.2020 21:45:23</td>
+      </tr>
+    <tr>
+      <td>3</td>
+        <td>CVE-2020-2350</td>
+        <td>29.08.2020 20:26:00</td>
+     </tr>
+  </tbody>
+</table>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">System Info</p>
+                        <div class="content">
+      <p class="title is-4">CPU: 12%</p>
+    </div>
+                        <div class="content">
+      <p class="title is-4">RAM: 20%</p>
+    </div>
+                        <div class="content">
+      <p class="title is-4">HDD: 38%</p>
+    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    Highcharts.chart('container', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Top open port'
+        },
+        xAxis: {
+            type: 'category'
+        },
+        yAxis: {
+            title: {
+                text: 'Total percent market share'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y:.1f}%'
+                }
+            }
+        },
+        tooltip: {
+            headerFormat: '{series.name}',
+            pointFormat: '{point.name}: {point.y:.2f}% of total'
+        },
+        series: [{
+            name: 'Port ',
+            colorByPoint: true,
+            data: [{
+                name: '22',
+                y: 56.33,
+                drilldown: '22'
+            }, {
+                name: '80',
+                y: 24.03,
+                drilldown: '80'
+            }, {
+                name: '443',
+                y: 10.38,
+                drilldown: '443'
+            }, {
+                name: '445',
+                y: 4.77,
+                drilldown: '445'
+            }, {
+                name: '21',
+                y: 0.91,
+                drilldown: '21'
+            }, {
+                name: '23',
+                y: 0.2,
+                drilldown: null
+            }]
+        }],
+        drilldown: {
+            series: [{
+                name: 'Microsoft Internet Explorer',
+                id: 'Microsoft Internet Explorer',
+                data: [
+                    [
+                        'v11.0',
+                        24.13
+                    ],
+                    [
+                        'v8.0',
+                        17.2
+                    ],
+                    [
+                        'v9.0',
+                        8.11
+                    ],
+                    [
+                        'v10.0',
+                        5.33
+                    ],
+                    [
+                        'v6.0',
+                        1.06
+                    ],
+                    [
+                        'v7.0',
+                        0.5
+                    ]
+                ]
+            }, {
+                name: 'Chrome',
+                id: 'Chrome',
+                data: [
+                    [
+                        'v40.0',
+                        5
+                    ],
+                    [
+                        'v41.0',
+                        4.32
+                    ],
+                    [
+                        'v42.0',
+                        3.68
+                    ],
+                    [
+                        'v39.0',
+                        2.96
+                    ],
+                    [
+                        'v36.0',
+                        2.53
+                    ],
+                    [
+                        'v43.0',
+                        1.45
+                    ],
+                    [
+                        'v31.0',
+                        1.24
+                    ],
+                    [
+                        'v35.0',
+                        0.85
+                    ],
+                    [
+                        'v38.0',
+                        0.6
+                    ],
+                    [
+                        'v32.0',
+                        0.55
+                    ],
+                    [
+                        'v37.0',
+                        0.38
+                    ],
+                    [
+                        'v33.0',
+                        0.19
+                    ],
+                    [
+                        'v34.0',
+                        0.14
+                    ],
+                    [
+                        'v30.0',
+                        0.14
+                    ]
+                ]
+            }, {
+                name: 'Firefox',
+                id: 'Firefox',
+                data: [
+                    [
+                        'v35',
+                        2.76
+                    ],
+                    [
+                        'v36',
+                        2.32
+                    ],
+                    [
+                        'v37',
+                        2.31
+                    ],
+                    [
+                        'v34',
+                        1.27
+                    ],
+                    [
+                        'v38',
+                        1.02
+                    ],
+                    [
+                        'v31',
+                        0.33
+                    ],
+                    [
+                        'v33',
+                        0.22
+                    ],
+                    [
+                        'v32',
+                        0.15
+                    ]
+                ]
+            }, {
+                name: 'Safari',
+                id: 'Safari',
+                data: [
+                    [
+                        'v8.0',
+                        2.56
+                    ],
+                    [
+                        'v7.1',
+                        0.77
+                    ],
+                    [
+                        'v5.1',
+                        0.42
+                    ],
+                    [
+                        'v5.0',
+                        0.3
+                    ],
+                    [
+                        'v6.1',
+                        0.29
+                    ],
+                    [
+                        'v7.0',
+                        0.26
+                    ],
+                    [
+                        'v6.2',
+                        0.17
+                    ]
+                ]
+            }, {
+                name: 'Opera',
+                id: 'Opera',
+                data: [
+                    [
+                        'v12.x',
+                        0.34
+                    ],
+                    [
+                        'v28',
+                        0.24
+                    ],
+                    [
+                        'v27',
+                        0.17
+                    ],
+                    [
+                        'v29',
+                        0.16
+                    ]
+                ]
+            }]
+        }
+    });
+</script>
+
+<script type="text/javascript">
+Highcharts.chart('container2', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'Top CVE'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: {point.percentage:.1f}%'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'CVE-2016-0124',
+                y: 16.33
+            }, {
+                name: 'CVE-2018-0045',
+                y: 24.03,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'CVE-2020-0643',
+                y: 10.38
+            }, {
+                name: 'CVE-2014-1324',
+                y: 3.77
+            }]
+        }]
+    });
+    </script>
+
+<script type="text/javascript">
+    Highcharts.chart('container3', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'Top service'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: {point.percentage:.1f}%'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'SSH',
+                y: 80.00
+            }, {
+                name: 'MySQL',
+                y: 14.03,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'DNS Bind',
+                y: 6.97
+            }]
+        }]
+    });
+    </script>
 {% endblock %}

@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script type="text/javascript" class="init">
-        $(document).ready(function() {
-	    $('#info_scanner_id').DataTable( {
-		select: true
-	        } );
-        } );
-</script>
 <div class="column is-10" id="page-content">
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
@@ -72,6 +65,13 @@
     <div class="is-hidden" id="adaptivedesign-tab-update-content">
 <p>3</p>
     </div>
+    <script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#info_scanner_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
 <script>
 
     function switchToAll() {

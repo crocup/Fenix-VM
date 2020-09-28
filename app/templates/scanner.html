@@ -3,7 +3,7 @@
 {% block content %}
 <div class="column is-10" id="page-content">
                     <div class="content-header">
-        <h4 class="title is-4">Scanner</h4>
+        <h4 class="title is-4"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</h4>
                         <span class="separator"></span>
                         <form method="POST" action="/scanner">
     <div class="field has-addons">
@@ -11,14 +11,14 @@
     <input class="input" type="text" name="scanner_text" value='{{ ips }}'>
   </div>
   <div class="control">
-    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}">
+    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}"><i class="fa fa-play"></i>
       Start
     </button>
   </div>
 </div>
 </form>
                         <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.scanner') }}">Reload</a>
+                        <a class="button is-info" href="{{ url_for('main.scanner') }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
 
     </div>
