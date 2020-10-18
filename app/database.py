@@ -1,10 +1,16 @@
+import datetime
+
+import pymongo
+
 from app import db, time
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
-def Scanner_Data_Record(host, proto, port, product, version, uuid):
+def Scanner_Data_Record(host, proto, port, product, version, uuid, state, name):
     """
 
+    :param name:
+    :param state:
     :param uuid:
     :param host:
     :param proto:
@@ -15,7 +21,7 @@ def Scanner_Data_Record(host, proto, port, product, version, uuid):
     """
     some_owner = InventoryPost.query.filter_by(ip=host).first()
     scanford = ScannerPost(protocol=proto, port=port, service_name=product, service_version=version,
-                           dateofreg=time(), owner=some_owner, ip=host, uuid=uuid)
+                           dateofreg=time(), owner=some_owner, ip=host, uuid=uuid, state=state, name=name)
     db.session.add(scanford)
     db.session.commit()
 
@@ -36,8 +42,10 @@ def Scanner_Data_Filter_UUID(uid):
         s_ver = {
             'port': i.port,
             'protocol': i.protocol,
+            'name': i.name,
             'service_name': i.service_name,
-            'service_version': i.service_version
+            'service_version': i.service_version,
+            'state': i.state
         }
         service_list.append(s_ver)
         for item in service_list:
@@ -106,3 +114,25 @@ def Result_Data(uid, name, time):
     db.session.commit()
 
 
+def Vulnerability_Data_Record(data, name, task, port, port_name):
+    """
+
+    :param task:
+    :param name:
+    :param data:
+    :return:
+    """
+    now = datetime.datetime.now()
+    mng = pymongo.MongoClient()
+    dbs = mng['scanner']
+    posts = dbs['vulnerability']
+    sets = {
+        "id": str(task),
+        "result": data,
+        "name": name,
+        "port": port,
+        "port_name": port_name,
+        "last_update": now.strftime("%d-%m-%Y %H:%M")
+    }
+    posts.insert(sets)
+    mng.close()

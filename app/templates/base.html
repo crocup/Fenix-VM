@@ -5,21 +5,29 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Onicron Community</title>
+        <title>Fenix Community</title>
         <link rel="stylesheet" href="../static/css/app.css">
         <link href="https://fonts.googleapis.com/icon?family=Poppins" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="../static/css/jquery.dataTables.css">
 
+        {% block usercss %}
+
+        {% endblock %}
+
         <script type="text/javascript" charset="utf8" src="../static/js/jquery-3.5.1.js"></script>
         <script type="text/javascript" charset="utf8" src="../static/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" charset="utf8" src="../static/js/dataTables.select.min.js"></script>
+
+        {% block userscript %}
+
+        {% endblock %}
     </head>
     <body>
 <!--    {% if current_user.is_authenticated %}-->
         <nav class="navbar columns is-fixed-top" role="navigation" aria-label="main navigation" id="app-header">
     <div class="navbar-brand column is-2 is-paddingless">
-        <a class="navbar-item" href="{{ url_for('main.dashboard') }}">ONICRON ver 0.0.3</a>
+        <a class="navbar-item" href="{{ url_for('main.dashboard') }}">Fenix Community</a>
     </div>
 
     <div id="navMenu" class="navbar-menu column is-hidden-touch">

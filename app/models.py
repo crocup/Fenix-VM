@@ -1,8 +1,6 @@
 from uuid import uuid4
-
 from flask_login import UserMixin
 from . import db
-from werkzeug.security import generate_password_hash,  check_password_hash
 
 
 class User(UserMixin, db.Model):
@@ -33,6 +31,8 @@ class ScannerPost(db.Model):
     port = db.Column(db.String(7))
     service_name = db.Column(db.String(20))
     service_version = db.Column(db.String(20))
+    name = db.Column(db.String(20))
+    state = db.Column(db.String(20))
     dateofreg = db.Column(db.String(20))
     ip = db.Column(db.String(50))
     owner_uid = db.Column(db.Integer, db.ForeignKey('inventory.uid'), nullable=False)

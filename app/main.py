@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import get_config, logger
@@ -6,7 +8,7 @@ from rq import Queue
 import json
 from app.inventory import Inventory
 from app.result import log_file
-from app.cve import find_cve
+from app.vulnerability.cve import find_cve, find_vulnerability
 from app.scanner import Scanner
 from app.database import *
 
@@ -144,8 +146,19 @@ def scanner():
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
 def scanner_info(uuid):
+    list_mng = []
     dct = Scanner_Data_Filter_UUID(uid=uuid)
-    return render_template('info.html', uid=dct)
+    mng = find_vulnerability(task=uuid)
+    # print(mng)
+    count_vulnerability = 0
+    count_exploit = 0
+    count_directory = 0
+    count_password = 0
+    avg_cve = 0
+    for k in mng:
+        list_mng.append(k)
+    return render_template('info.html', uid=dct, info_mng=list_mng, cntV=count_vulnerability, cntE=count_exploit,
+                           cntD=count_directory, cntP=count_password, avgS=avg_cve)
 
 
 @main.route('/cve', methods=['GET', 'POST'])
