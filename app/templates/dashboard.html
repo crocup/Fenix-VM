@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#table_ids').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -45,19 +52,19 @@
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">INVENTORY</p>
-      <p class="title">5</p>
+      <p class="title">{{count_inventory}}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">SCANNER</p>
-      <p class="title">10</p>
+      <p class="title">{{count_scanner}}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Vulnerability</p>
-      <p class="title">4,000</p>
+      <p class="title">{{count_vulners}}</p>
     </div>
   </div>
 </nav>
@@ -90,36 +97,28 @@
                 <div class="card">
                     <div class="card-content">
                         <p class="title is-4">List runner task</p>
-                        <table class="table">
-  <thead>
-    <tr>
-      <th><abbr title="№">№</abbr></th>
-      <th><abbr title="Name">Name</abbr></th>
-      <th><abbr title="Task ID">Task ID</abbr></th>
-      <th><abbr title="Date">Date</abbr></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>1</td>
-        <td>Inventory</td>
-        <td>bead51b6</td>
-        <td>23.08.2020 17:18:23</td>
-    </tr>
-    <tr>
-      <td>2</td>
-        <td>Inventory</td>
-        <td>ab6570a6</td>
-        <td>26.08.2020 21:45:23</td>
-      </tr>
-    <tr>
-      <td>3</td>
-        <td>Scanner</td>
-        <td>a00fc50d</td>
-        <td>29.08.2020 20:26:00</td>
-     </tr>
-  </tbody>
-</table>
+                        <div class="table-container">
+        <table id="table_ids" class="table" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th><div style="width: 40px;">Name</div></th>
+                <th>Task uuid</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <td>{{item.uid}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.uuid}}</td>
+                <td>{{item.dateofreg}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
                     </div>
                 </div>
             </div>
@@ -160,6 +159,7 @@
     </div>
 
 </div>
+
 <script type="text/javascript">
     Highcharts.chart('container', {
         chart: {

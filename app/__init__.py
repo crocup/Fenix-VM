@@ -7,6 +7,7 @@ from flask_uuid import FlaskUUID
 import logging.config
 import json
 import sentry_sdk
+from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 sentry_sdk.init(
@@ -32,6 +33,10 @@ with open("logging.json", 'r') as logging_configuration_file:
 
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
+client_mongo = MongoClient()
+db_vulndb = client_mongo['vulndb']
+db_scanner = client_mongo['scanner']
+db_vulnerability = client_mongo['scanner']
 
 from .models import User
 

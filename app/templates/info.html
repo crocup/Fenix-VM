@@ -24,12 +24,12 @@
   <div class="card-content">
     <div class="media">
       <div class="media-content">
-        <p class="title is-4">{{uid.ip}} <span class="tag is-warning">{{uid.tag}}</span></p>
+        <p class="title is-4">{{uid.host}} <span class="tag is-warning">{{uid.tag}}</span></p>
         <p class="subtitle is-6">{{uid.uuid}}</p>
       </div>
     </div>
     <div class="content">
-      <time datetime="2016-1-1">{{uid.dateofreg}}</time>
+      <time datetime="2016-1-1">{{uid.date}}</time>
     </div>
   </div>
 </div>
@@ -96,13 +96,13 @@
             </tr>
         </thead>
         <tbody>
-        {% for item in uid.port %}
+        {% for item in uid.scanner %}
             <tr>
                 <th>{{item.port}}</th>
                 <th>{{item.protocol}}</th>
-                <th>{{item.name}}</th>
-                <th>{{item.service_name}}</th>
-                <th>{{item.service_version}}</th>
+                <th>{{item.service.product}}</th>
+                <th>{{item.service.name}}</th>
+                <th>{{item.service.version}}</th>
                 <th>{{item.state}}</th>
             </tr>
         {% endfor %}
@@ -113,64 +113,51 @@
         <div id="tabs" >
 	<!-- Кнопки -->
 	<ul class="tabs-nav">
-        {% for item in uid.port %}
-		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.name}})</a></li>
+        {% for item in uid.scanner %}
+		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.product}})</a></li>
         {% endfor %}
-        <li><a href="#tab-directory">Directory</a></li>
-        <li><a href="#tab-password">Password</a></li>
+<!--        <li><a href="#tab-directory">Directory</a></li>-->
+<!--        <li><a href="#tab-password">Password</a></li>-->
 	</ul>
 
 	<div class="tabs-items">
-        {% for item in uid.port %}
+        {% for item in uid.scanner %}
         <div class="tabs-item" id="tab-{{item.port}}">
-            {% for inf in info_mng %}
 
-                {% if inf.port == item.port  %}
+            {% for cve in item.vulnerability['cve_mitre'] %}
 
-<!--                    <p>{{inf}}</p>-->
-            {% if inf.name == 'publicExploits'  %}
-                <article class="message is-danger">
-                    {% else  %}
-                    <article class="message is-dark">
-                    {% endif %}
-                    <div class="message-header">
-                        {% if inf.result.title  %}
-                            <p>{{ inf.result.title }}</p>
-                        {% else  %}
-                            <p>None title</p>
-                        {% endif %}
 
-                    </div>
 
-                    <div class="message-body">
-<!--                        {{ inf }}-->
-                        <p><strong>ID:</strong> {{ inf.id }}</p>
-                        <p><strong>Name:</strong> {{ inf.name }}</p>
-                        <p><strong>Last update:</strong> {{ inf.last_update }}</p>
-                        <p><strong>Port name:</strong> {{ inf.port_name }}</p>
-                        <p class="title is-3"></p>
-                        <p><strong>CVE LIST:</strong> {{ inf.result.cvelist }}</p>
-                        <p><strong>DESCRIPTIONS:</strong> {{ inf.result.description }}</p>
-                        <a href="{{ inf.result.href }}"><strong>LINK:</strong> {{ inf.result.href }}</a>
-                        <p><strong>TYPE:</strong> {{ inf.result.type }}</p>
-                        <p><strong>PUBLISHED:</strong> {{ inf.result.published }}</p>
-                        <p><strong>LAST SEEN:</strong> {{ inf.result.lastseen }}</p>
-                        <p><strong>MODIFIED:</strong> {{ inf.result.modified }}</p>
-                        <p><strong>CVSS SCORE:</strong> {{ inf.result.cvss.score }}</p>
-                        <p><strong>VECTOR:</strong> {{ inf.result.cvss.vector }}</p>
-
-                    </div>
-                </article>
-                {% endif %}
+            <div class="card">
+  <div class="card-content">
+<p>{{ cve['value'] }}</p>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>
+        {{ cve['cve'] }}
+      </span>
+    </p>
+    <p class="card-footer-item">
+      <span class="tag is-danger">
+          CVSS Score: {{ cve['CVSS Score'] }}
+      </span>
+    </p>
+  </footer>
+</div>
+</article>
             {% endfor %}
-		</div>
+
+<!--            <article class="message">-->
+<!--  <div class="message-body">1234</div>-->
+<!--</article>-->
+
+<!--            <article class="message">-->
+<!--  <div class="message-body">CVE-2018-0010<span class="tag is-danger">CVSS Score: 9.8</span> </div>-->
+<!--</article>-->
+
+        </div>
         {% endfor %}
-        <div class="tabs-item" id="tab-directory">
-            2
-            </div>
-        <div class="tabs-item" id="tab-password">
-            1
-            </div>
 	</div>
 </div>
      </div>

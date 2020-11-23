@@ -38,5 +38,40 @@
             </div>
   </div>
 </div>
+
+    <div class="card">
+        <div class="card-content">
+            <div class="field">
+                <label class="label">Scanner task</label>
+<table id="inventory_ip_id" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th><div style="width: 40px;">IP</div></th>
+                <th>Tags</th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for item in items %}
+            <tr>
+                <td><a href="{{ url_for('main.scanner_info', uuid=item.uuid) }}">{{item.uuid}}</a></td>
+                <td>{{item.ip}}</td>
+                <td><span class="tag is-warning">{{item.tag}}</span></td>
+                <td>{{item.date}}</td>
+            </tr>
+{% endfor %}
+        </tbody>
+    </table>
+            </div>
+  </div>
+</div>
+<script type="text/javascript" class="init">
+        $(document).ready(function() {
+	    $('#inventory_ip_id').DataTable( {
+		select: true
+	        } );
+        } );
+</script>
             </div>
 {% endblock %}

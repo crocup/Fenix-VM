@@ -1,12 +1,12 @@
 import datetime
+import json
+from pprint import pprint
 
-import pymongo
-
-from app import db, time
+from app import db, time, db_scanner, db_vulnerability
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
-def Scanner_Data_Record(host, proto, port, product, version, uuid, state, name):
+def Scanner_Data_Record(host, uuid):
     """
 
     :param name:
@@ -20,37 +20,13 @@ def Scanner_Data_Record(host, proto, port, product, version, uuid, state, name):
     :return:
     """
     some_owner = InventoryPost.query.filter_by(ip=host).first()
-    scanford = ScannerPost(protocol=proto, port=port, service_name=product, service_version=version,
-                           dateofreg=time(), owner=some_owner, ip=host, uuid=uuid, state=state, name=name)
+    scanford = ScannerPost(dateofreg=time(), owner=some_owner, ip=host, uuid=uuid)
     db.session.add(scanford)
     db.session.commit()
 
 
 def Scanner_Data_Filter_UUID(uid):
-    dictionary = {}
-    service_list = []
-    r = ScannerPost.query.filter(ScannerPost.uuid == str(uid))
-    for i in r:
-        tag_ip = Inventory_Data_Filter_IP(i.ip)
-        dictionary = {
-            'ip': i.ip,
-            'dateofreg': i.dateofreg,
-            'uuid': uid,
-            'tag': tag_ip['tag'],
-            'port': []
-        }
-        s_ver = {
-            'port': i.port,
-            'protocol': i.protocol,
-            'name': i.name,
-            'service_name': i.service_name,
-            'service_version': i.service_version,
-            'state': i.state
-        }
-        service_list.append(s_ver)
-        for item in service_list:
-            dictionary['port'].append(item)
-    return dictionary
+    return db_vulnerability.result.find({"uuid": uid})
 
 
 def Scanner_Data_All():
@@ -59,7 +35,19 @@ def Scanner_Data_All():
 
 
 def Inventory_Data_All():
-    return InventoryPost.query.all()
+    inventory_all = []
+    for i in InventoryPost.query.all():
+        # print(j, i)
+        ip_res = {
+            'ip': i.ip,
+            'uuid': i.uid,
+            'tag': i.tags,
+            'date': i.dateofreg
+        }
+        inventory_all.append(ip_res)
+    inventory_json = json.dumps(inventory_all, indent=4)
+    data = json.loads(inventory_json)
+    return data
 
 
 def Inventory_Data_Record(result_inventory):
@@ -123,9 +111,7 @@ def Vulnerability_Data_Record(data, name, task, port, port_name):
     :return:
     """
     now = datetime.datetime.now()
-    mng = pymongo.MongoClient()
-    dbs = mng['scanner']
-    posts = dbs['vulnerability']
+    posts = db_vulnerability['vulnerability']
     sets = {
         "id": str(task),
         "result": data,
@@ -135,4 +121,29 @@ def Vulnerability_Data_Record(data, name, task, port, port_name):
         "last_update": now.strftime("%d-%m-%Y %H:%M")
     }
     posts.insert(sets)
-    mng.close()
+
+
+def ssh_bruteforce_data_record(task, data, name, port):
+    now = datetime.datetime.now()
+    posts = db_scanner['ssh']
+    sets = {
+        "id": str(task),
+        "result": data,
+        "name": name,
+        "port": port,
+        "last_update": now.strftime("%d-%m-%Y %H:%M")
+    }
+    posts.insert(sets)
+
+
+def web_bruteforce_data_record(task, data, name, port):
+    now = datetime.datetime.now()
+    posts = db_scanner['web']
+    sets = {
+        "id": str(task),
+        "result": data,
+        "name": name,
+        "port": port,
+        "last_update": now.strftime("%d-%m-%Y %H:%M")
+    }
+    posts.insert(sets)

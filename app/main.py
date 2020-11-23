@@ -8,7 +8,7 @@ from rq import Queue
 import json
 from app.inventory import Inventory
 from app.result import log_file
-from app.vulnerability.cve import find_cve, find_vulnerability
+from app.vulnerability.cve import *
 from app.scanner import Scanner
 from app.database import *
 
@@ -80,12 +80,23 @@ def inventory():
 @login_required
 def tags(ip):
     res_ip = Inventory_Data_Filter_IP(ip)
+    inventory_array_ip = []
+    for ips in Scanner_Data_All():
+        tag_ip = Inventory_Data_Filter_IP(ips[0])
+        if ips[0] == ip:
+            dict_inventory_ip = {
+                'ip': ips[0],
+                'tag': tag_ip['tag'],
+                'date': ips[1],
+                'uuid': ips[2]
+            }
+            inventory_array_ip.append(dict_inventory_ip)
     if request.method == 'POST':
         tag_get = request.form.get("tag")
         Inventory_Tag_Record(ip=res_ip['ip'], tag=tag_get)
         return redirect(url_for('main.inventory'))
     else:
-        return render_template('tag.html', ips=res_ip)
+        return render_template('tag.html', ips=res_ip, items=inventory_array_ip)
 
 
 @main.route('/result')
@@ -113,7 +124,11 @@ def result(uuid):
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', name=current_user.name)
+    dashboard_task = ResultPost.query.all()
+    dashboard_task_last = dashboard_task[len(dashboard_task)-3:]
+    return render_template('dashboard.html', name=current_user.name, count_inventory=len(Inventory_Data_All()),
+                           count_scanner=len(Scanner_Data_All()), count_vulners=0,
+                           items=dashboard_task_last)
 
 
 @main.route('/scanner', methods=['GET', 'POST'])
@@ -133,6 +148,7 @@ def scanner():
             'uuid': ip[2]
         }
         arr_ip.append(dict_ip)
+
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         scanner_service = Scanner(host=scanner_host)
@@ -146,19 +162,12 @@ def scanner():
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
 def scanner_info(uuid):
-    list_mng = []
     dct = Scanner_Data_Filter_UUID(uid=uuid)
+    for dict_data in dct:
+        dct = dict_data
     mng = find_vulnerability(task=uuid)
-    # print(mng)
-    count_vulnerability = 0
-    count_exploit = 0
-    count_directory = 0
-    count_password = 0
-    avg_cve = 0
-    for k in mng:
-        list_mng.append(k)
-    return render_template('info.html', uid=dct, info_mng=list_mng, cntV=count_vulnerability, cntE=count_exploit,
-                           cntD=count_directory, cntP=count_password, avgS=avg_cve)
+    return render_template('info.html', uid=dct, info_mng=mng[0], cntV=0, cntE=0,
+                           cntD=0, cntP=0, avgS=0)
 
 
 @main.route('/cve', methods=['GET', 'POST'])
@@ -171,8 +180,6 @@ def cve():
             return render_template('cve.html', cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')
         cve_text_p = find_cve(cve_upper)
-        return render_template('cve.html',
-                               cve_info=cve_text_p
-                               )
+        return render_template('cve.html', cve_info=cve_text_p)
     else:
         return render_template('cve.html')
