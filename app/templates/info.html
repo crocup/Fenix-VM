@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
+{% block userscript %}
+<link rel="stylesheet" type="text/css" href="../static/css/tab.css">
+
+<script type="text/javascript" charset="utf8" src="../static/js/tab_info.js"></script>
+<script type="text/javascript" charset="utf8" src="../static/js/table.js"></script>
+<script type="text/javascript" charset="utf8" src="../static/js/tab.js"></script>
+{% endblock %}
+
 {% block content %}
+
+<!--<link rel="stylesheet" type="text/css" href="../static/css/list.css">-->
 <div class="column is-10" id="page-content">
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
@@ -9,19 +19,21 @@
     <li class="is-active"><a href="#" aria-current="page">{{uid.uuid}}</a></li>
   </ul>
 </nav>
+
     <div class="card">
   <div class="card-content">
     <div class="media">
       <div class="media-content">
-        <p class="title is-4">{{uid.ip}} <span class="tag is-warning">{{uid.tag}}</span></p>
+        <p class="title is-4">{{uid.host}} <span class="tag is-warning">{{uid.tag}}</span></p>
         <p class="subtitle is-6">{{uid.uuid}}</p>
       </div>
     </div>
     <div class="content">
-      <time datetime="2016-1-1">{{uid.dateofreg}}</time>
+      <time datetime="2016-1-1">{{uid.date}}</time>
     </div>
   </div>
 </div>
+
     <div class="tabs is-toggle is-toggle-rounded">
     <ul>
       <li id="all-tab" class="is-active">
@@ -39,64 +51,115 @@
     </ul>
     <!--/tabs is-centered-->
   </div>
-
+<nav class="level is-mobile">
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">TOTAL VULNERABILITY</p>
+      <p class="title">{{cntV}}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">TOTAL EXPLOIT</p>
+      <p class="title">{{cntE}}</p>
+    </div>
+  </div>
+    <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">TOTAL DIRECTORY</p>
+      <p class="title">{{cntD}}</p>
+    </div>
+  </div>
+    <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">LOGIN OR PASSWORD</p>
+      <p class="title">{{cntP}}</p>
+    </div>
+  </div>
+    <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">AVERAGE SCORE CVE</p>
+      <p class="title">{{avgS}}</p>
+    </div>
+  </div>
+</nav>
     <div class="table-container" id="all-tab-content">
         <table id="info_scanner_id" class="display" style="width:100%">
         <thead>
             <tr>
                 <th>Port</th>
                 <th><div style="width: 40px;">Protocol</div></th>
+                <th>Name</th>
                 <th>Service name</th>
                 <th>Service version</th>
+                <th>State</th>
             </tr>
         </thead>
         <tbody>
-        {% for item in uid.port %}
+        {% for item in uid.scanner %}
             <tr>
                 <th>{{item.port}}</th>
                 <th>{{item.protocol}}</th>
-                <th>{{item.service_name}}</th>
-                <th>{{item.service_version}}</th>
+                <th>{{item.service.product}}</th>
+                <th>{{item.service.name}}</th>
+                <th>{{item.service.version}}</th>
+                <th>{{item.state}}</th>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
     <div class="is-hidden" id="adaptivedesign-tab-update-content">
-<p>3</p>
+        <div id="tabs" >
+	<!-- Кнопки -->
+	<ul class="tabs-nav">
+        {% for item in uid.scanner %}
+		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.product}})</a></li>
+        {% endfor %}
+<!--        <li><a href="#tab-directory">Directory</a></li>-->
+<!--        <li><a href="#tab-password">Password</a></li>-->
+	</ul>
+
+	<div class="tabs-items">
+        {% for item in uid.scanner %}
+        <div class="tabs-item" id="tab-{{item.port}}">
+
+            {% for cve in item.vulnerability['cve_mitre'] %}
+
+
+
+            <div class="card">
+  <div class="card-content">
+<p>{{ cve['value'] }}</p>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>
+        {{ cve['cve'] }}
+      </span>
+    </p>
+    <p class="card-footer-item">
+      <span class="tag is-danger">
+          CVSS Score: {{ cve['CVSS Score'] }}
+      </span>
+    </p>
+  </footer>
+</div>
+</article>
+            {% endfor %}
+
+<!--            <article class="message">-->
+<!--  <div class="message-body">1234</div>-->
+<!--</article>-->
+
+<!--            <article class="message">-->
+<!--  <div class="message-body">CVE-2018-0010<span class="tag is-danger">CVSS Score: 9.8</span> </div>-->
+<!--</article>-->
+
+        </div>
+        {% endfor %}
+	</div>
+</div>
+     </div>
     </div>
-    <script type="text/javascript" class="init">
-        $(document).ready(function() {
-	    $('#info_scanner_id').DataTable( {
-		select: true
-	        } );
-        } );
-</script>
-<script>
-
-    function switchToAll() {
-      removeActive();
-      hideAll();
-      $("#all-tab").addClass("is-active");
-      $("#all-tab-content").removeClass("is-hidden");
-    }
-    function switchToAdaptiveDesignUpdate() {
-      removeActive();
-      hideAll();
-      $("#adaptivedesign-tab-vulnerabilities").addClass("is-active");
-      $("#adaptivedesign-tab-update-content").removeClass("is-hidden");
-    }
-    function removeActive() {
-      $("li").each(function() {
-        $(this).removeClass("is-active");
-      });
-    }
-    function hideAll(){
-      $("#all-tab-content").addClass("is-hidden");
-      $("#adaptivedesign-tab-content").addClass("is-hidden");
-      $("#adaptivedesign-tab-update-content").addClass("is-hidden");
-    }
-  </script>
-
-            </div>
 {% endblock %}
