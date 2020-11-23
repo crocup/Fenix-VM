@@ -1,8 +1,6 @@
 from uuid import uuid4
-
 from flask_login import UserMixin
 from . import db
-from werkzeug.security import generate_password_hash,  check_password_hash
 
 
 class User(UserMixin, db.Model):
@@ -29,10 +27,6 @@ class InventoryPost(db.Model):
 class ScannerPost(db.Model):
     __tablename__ = 'scanner'
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    protocol = db.Column(db.String(10))
-    port = db.Column(db.String(7))
-    service_name = db.Column(db.String(20))
-    service_version = db.Column(db.String(20))
     dateofreg = db.Column(db.String(20))
     ip = db.Column(db.String(50))
     owner_uid = db.Column(db.Integer, db.ForeignKey('inventory.uid'), nullable=False)
