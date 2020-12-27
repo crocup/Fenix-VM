@@ -2,6 +2,14 @@ import nmap3
 from app.database import Inventory_Data_Record
 
 
+def check_host_discovery():
+    """
+    проверка на наличие новых ip в системе
+    :return:
+    """
+    pass
+
+
 class Inventory(object):
 
     def __init__(self, target):

@@ -11,6 +11,8 @@ from app.result import log_file
 from app.vulnerability.cve import *
 from app.scanner import Scanner
 from app.database import *
+from .dashboard import new_vulnerability
+from .notification import notification_message, delete_notification
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -62,15 +64,20 @@ def setting():
                            )
 
 
+def host_discovery():
+    config_json = get_config()
+    target_mask = config_json["network"]["ip"]
+    inventory_service = Inventory(target=target_mask)
+    results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
+    return results_inventory
+
+
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
     if request.method == 'POST':
-        config_json = get_config()
-        target_mask = config_json["network"]["ip"]
-        inventory_service = Inventory(target=target_mask)
-        results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-        Result_Data(uid=results_inventory.id, name='Inventory', time=time())
+        host_discovery()
+        # Result_Data(uid=results_inventory.id, name='Host Discovery', time=time())
         return render_template('inventory.html', items=Inventory_Data_All())
     else:
         return render_template('inventory.html', items=Inventory_Data_All())
@@ -125,10 +132,11 @@ def result(uuid):
 @login_required
 def dashboard():
     dashboard_task = ResultPost.query.all()
-    dashboard_task_last = dashboard_task[len(dashboard_task)-3:]
+    dashboard_task_last = dashboard_task[len(dashboard_task) - 3:]
+    last_cve = new_vulnerability()
     return render_template('dashboard.html', name=current_user.name, count_inventory=len(Inventory_Data_All()),
                            count_scanner=len(Scanner_Data_All()), count_vulners=0,
-                           items=dashboard_task_last)
+                           items=dashboard_task_last, lst_cve=last_cve)
 
 
 @main.route('/scanner', methods=['GET', 'POST'])
@@ -153,7 +161,7 @@ def scanner():
         scanner_host = request.form.get("scanner_text")
         scanner_service = Scanner(host=scanner_host)
         results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
-        Result_Data(uid=results.id, name='Scanner', time=time())
+        Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
     return render_template('scanner.html',
                            ips=target_mask, items=arr_ip
                            )
@@ -165,9 +173,17 @@ def scanner_info(uuid):
     dct = Scanner_Data_Filter_UUID(uid=uuid)
     for dict_data in dct:
         dct = dict_data
-    mng = find_vulnerability(task=uuid)
-    return render_template('info.html', uid=dct, info_mng=mng[0], cntV=0, cntE=0,
-                           cntD=0, cntP=0, avgS=0)
+        print(dct)
+    result_vuln = find_vulnerability(task=uuid)
+    # print(mng)
+    return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
+                           cntD=0, cntP=0, avgS=result_vuln[3])
+
+
+def get_cve(name_cve):
+    cve_upper = str(name_cve).upper().replace(' ', '')
+    cve_text_p = find_cve(cve_upper)
+    return cve_text_p
 
 
 @main.route('/cve', methods=['GET', 'POST'])
@@ -178,8 +194,34 @@ def cve():
         logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
             return render_template('cve.html', cve_info="")
-        cve_upper = str(cve_form_get).upper().replace(' ', '')
-        cve_text_p = find_cve(cve_upper)
+        cve_text_p = get_cve(cve_form_get)
         return render_template('cve.html', cve_info=cve_text_p)
     else:
         return render_template('cve.html')
+
+
+@main.route('/scheduler', methods=['GET', 'POST'])
+@login_required
+def main_scheduller():
+    if request.method == 'POST':
+        return render_template('scheduler.html')
+    else:
+        return render_template('scheduler.html')
+
+
+@main.route('/notification', methods=['GET', 'POST'])
+@login_required
+def notification():
+    if request.method == 'POST':
+        delete_notification()
+    message = notification_message()
+    return render_template('notification.html', items=message)
+
+
+@main.route('/report', methods=['GET', 'POST'])
+@login_required
+def report():
+    if request.method == 'POST':
+        return render_template('report.html')
+    else:
+        return render_template('report.html')

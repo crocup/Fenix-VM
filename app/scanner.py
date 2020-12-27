@@ -2,7 +2,6 @@ import datetime
 from pprint import pprint
 from uuid import uuid4
 import nmap3
-
 from app import db_vulnerability
 from app.database import Scanner_Data_Record, Vulnerability_Data_Record, Inventory_Data_Filter_IP
 from app.inventory import Inventory
@@ -40,20 +39,28 @@ class Scanner:
             Scanner_Data_Record(inv_host, uuid)
 
             for scanner_vulnerability in result_json['scanner']:
+                # print(scanner_vulnerability)
                 if 'service' in scanner_vulnerability:
                     # print(scanner_vulnerability["service"])
-                    product = scanner_vulnerability["service"]["product"]
-                    version = scanner_vulnerability["service"]["version"]
+                    if 'product' in scanner_vulnerability["service"]:
+                        product = scanner_vulnerability["service"]["product"]
+                    else:
+                        product = None
+                    if 'version' in scanner_vulnerability["service"]:
+                        version = scanner_vulnerability["service"]["version"]
+                    else:
+                        version = None
                     mitre = cve_mitre(product=product, version=version)
                     res = mitre.search()
                     mitre_cve_array = []
-                    for list_cve in res['cve_mitre']:
-                        result = cve.find_cve(list_cve)
-                        mitre_cve_list = {'cve': list_cve,
-                                          'value': result['value'],
-                                          'CVSS Score': result['impact']['baseMetricV2']['cvssV2']['baseScore']
-                                          }
-                        mitre_cve_array.append(mitre_cve_list)
+                    if res is not None:
+                        for list_cve in res['cve_mitre']:
+                            result = cve.find_cve(list_cve)
+                            mitre_cve_list = {'cve': list_cve,
+                                              'value': result['value'],
+                                              'CVSS Score': result['impact']['baseMetricV2']['cvssV2']['baseScore']
+                                              }
+                            mitre_cve_array.append(mitre_cve_list)
 
                     scanner_vulnerability['vulnerability'] = {'cve_mitre': mitre_cve_array}
                     # print(mitre_cve_array)

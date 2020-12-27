@@ -114,7 +114,7 @@
 	<!-- Кнопки -->
 	<ul class="tabs-nav">
         {% for item in uid.scanner %}
-		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.product}})</a></li>
+		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.name}})</a></li>
         {% endfor %}
 	</ul>
 
@@ -125,8 +125,22 @@
 <div class="card">
   <header class="card-header">
     <p class="card-header-title">
-        <a href="#{{ cve['cve'] }}-{{item.port}}" onclick="view('{{ cve['cve'] }}-{{ item['port'] }}'); return false"><strong>{{ cve['cve'] }}</strong></a>
+    <span class="tag"><a href="#{{ cve['cve'] }}-{{item.port}}" onclick="view('{{ cve['cve'] }}-{{ item['port'] }}'); return false"><strong>{{ cve['cve'] }} </strong></a></span>
+        {% if cve['CVSS Score'] > 8 %}
+        <span class="tag is-danger is-light">
+            High
+            {% elif cve['CVSS Score'] < 5 %}
+            <span class="tag is-info is-light">
+                Low
+            {% else %}
+            <span class="tag is-warning is-light">
+                Medium
+                {% endif %}
+<!--            CVSS Score:{{ cve['CVSS Score'] }}-->
+        </span>
+<!--        <span class="tag is-primary"><a href="#{{ cve['cve'] }}-{{item.port}}" onclick="view('{{ cve['cve'] }}-{{ item['port'] }}'); return false"><strong>{{ cve['cve'] }} </strong></a></span>-->
     </p>
+
     <a href="#" class="card-header-icon" aria-label="more options">
     </a>
   </header>

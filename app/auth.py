@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from . import db, logger
+from . import db, logger, db_login
 from flask_login import login_user, logout_user, login_required, current_user
 
 auth = Blueprint('auth', __name__)
@@ -24,6 +26,13 @@ def signup():
 def logout():
     logout_user()
     logger.info("Logout")
+    result_json = {
+        "time": datetime.now(),
+        "task": "logout",
+        "message": f"Logout"
+    }
+    posts = db_login["logins"]
+    posts.insert(result_json)
     return redirect(url_for('auth.login'))
 
 
@@ -45,6 +54,13 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
     logger.info(f"Create new user: {name}")
+    result_json = {
+        "time": datetime.now(),
+        "task": "create",
+        "message": f"Create new user: {name}"
+    }
+    posts = db_login["logins"]
+    posts.insert(result_json)
     return redirect(url_for('auth.login'))
 
 
@@ -66,4 +82,11 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     logger.info(f"Success login: {user.name}")
+    result_json = {
+        "time": datetime.now(),
+        "task": "login",
+        "message": f"Success login: {user.name}"
+    }
+    posts = db_login["logins"]
+    posts.insert(result_json)
     return redirect(url_for('main.dashboard'))

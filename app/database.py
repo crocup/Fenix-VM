@@ -2,7 +2,7 @@ import datetime
 import json
 from pprint import pprint
 
-from app import db, time, db_scanner, db_vulnerability
+from app import db, time, db_scanner, db_vulnerability, db_notification
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
@@ -59,6 +59,13 @@ def Inventory_Data_Record(result_inventory):
     for res in result_inventory:
         ips_find = InventoryPost.query.filter_by(ip=res).first()
         if ips_find is None:
+            # если появился новый ip
+            result_json = {
+                "time": time(),
+                "message": f"New IP: {res}"
+            }
+            posts = db_notification["notifications"]
+            posts.insert(result_json)
             reg = InventoryPost(res, time())
             db.session.add(reg)
         else:
@@ -96,8 +103,8 @@ def Inventory_Data_Delete(ip):
     db.session.commit()
 
 
-def Result_Data(uid, name, time):
-    res_id = ResultPost(uid, name, time)
+def Result_Data(uid, name, host, time):
+    res_id = ResultPost(uid, name, host, time)
     db.session.add(res_id)
     db.session.commit()
 

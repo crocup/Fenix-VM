@@ -24,9 +24,6 @@
 <div class="box">
   <article class="media">
     <div class="media-left">
-      <figure class="image is-64x64">
-        <img src="static/images/man.png" alt="Image">
-      </figure>
     </div>
     <div class="media-content">
       <div class="content">
@@ -51,16 +48,16 @@
     <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
-      <p class="heading">INVENTORY</p>
+      <p class="heading">HOST DISCOVERY</p>
       <p class="title">{{count_inventory}}</p>
     </div>
   </div>
-  <div class="level-item has-text-centered">
-    <div>
-      <p class="heading">SCANNER</p>
-      <p class="title">{{count_scanner}}</p>
-    </div>
-  </div>
+<!--  <div class="level-item has-text-centered">-->
+<!--    <div>-->
+<!--      <p class="heading">SCANNER</p>-->
+<!--      <p class="title">{{count_scanner}}</p>-->
+<!--    </div>-->
+<!--  </div>-->
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Vulnerability</p>
@@ -96,14 +93,15 @@
             <div class="column">
                 <div class="card">
                     <div class="card-content">
-                        <p class="title is-4">List runner task</p>
+                        <p class="title is-4">Last Task</p>
                         <div class="table-container">
         <table id="table_ids" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
-                <th><div style="width: 40px;">Name</div></th>
+                <th>Task name</th>
                 <th>Task uuid</th>
+                <th>Host</th>
                 <th>Date</th>
             </tr>
         </thead>
@@ -113,6 +111,7 @@
                 <td>{{item.uid}}</td>
                 <td>{{item.name}}</td>
                 <td>{{item.uuid}}</td>
+                <td>{{item.host}}</td>
                 <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}
@@ -125,31 +124,23 @@
             <div class="column">
                 <div class="card">
                     <div class="card-content">
-                        <p class="title is-4">New Vulnerability</p>
+                        <p class="title is-4">New CVE</p>
                         <table class="table">
   <thead>
     <tr>
-      <th><abbr title="№">№</abbr></th>
-      <th><abbr title="Name">Name</abbr></th>
-      <th><abbr title="Date">Date</abbr></th>
+      <th><abbr title="CVE">CVE</abbr></th>
+      <th><abbr title="Published Date">Published Date</abbr></th>
+      <th><abbr title="Severity">Severity</abbr></th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-        <td>1</td>
-        <td>CVE-2020-2340</td>
-        <td>23.08.2020 17:18:23</td>
-    </tr>
-    <tr>
-      <td>2</td>
-        <td>CVE-2020-2342</td>
-        <td>26.08.2020 21:45:23</td>
-      </tr>
-    <tr>
-      <td>3</td>
-        <td>CVE-2020-2350</td>
-        <td>29.08.2020 20:26:00</td>
-     </tr>
+    {% for item in lst_cve %}
+            <tr>
+                <td>{{item.cve}}</td>
+                <td>{{item.publishedDate}}</td>
+                <td>{{item.impact.baseMetricV2.severity}}</td>
+            </tr>
+        {% endfor %}
   </tbody>
 </table>
                     </div>

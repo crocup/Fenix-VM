@@ -4,15 +4,15 @@
         "interface": "wlo1"
     },
     "vulners": {
-        "api": ""
+        "api": null
     },
     "cve": {
         "year": 2021
     },
     "scheduler": {
-        "inventory": "1",
-        "scanner": "48",
-        "cve": "24"
+        "inventory": null,
+        "scanner": null,
+        "cve": null
     },
     "mongo": {
         "base": "vulndb",

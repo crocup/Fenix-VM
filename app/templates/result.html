@@ -39,8 +39,9 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th><div style="width: 40px;">Name</div></th>
+                <th>Task name</th>
                 <th>Task uuid</th>
+                <th>Host</th>
                 <th>Date</th>
             </tr>
         </thead>
@@ -50,6 +51,7 @@
                 <td>{{item.uid}}</td>
                 <td>{{item.name}}</td>
                 <td>{{item.uuid}}</td>
+                <td>{{item.host}}</td>
                 <td>{{item.dateofreg}}</td>
             </tr>
         {% endfor %}
