@@ -7,7 +7,6 @@ from app.database import Scanner_Data_Record, Vulnerability_Data_Record, Invento
 from app.inventory import Inventory
 from app.vulnerability import cve
 from app.vulnerability.cve import cve_mitre
-from app.vulnerability.vulners_api import Vulnerability
 
 
 class Scanner:

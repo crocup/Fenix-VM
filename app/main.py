@@ -1,17 +1,14 @@
-from pprint import pprint
-
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import get_config, logger
 from redis import Redis
 from rq import Queue
-import json
 from app.inventory import Inventory
 from app.result import log_file
 from app.vulnerability.cve import *
 from app.scanner import Scanner
 from app.database import *
-from .dashboard import new_vulnerability
+from .dashboard import new_vulnerability, chart_dashboard
 from .notification import notification_message, delete_notification
 
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -131,12 +128,18 @@ def result(uuid):
 @main.route('/dashboard')
 @login_required
 def dashboard():
+    result_dashboard = chart_dashboard()
     dashboard_task = ResultPost.query.all()
-    dashboard_task_last = dashboard_task[len(dashboard_task) - 3:]
-    last_cve = new_vulnerability()
-    return render_template('dashboard.html', name=current_user.name, count_inventory=len(Inventory_Data_All()),
-                           count_scanner=len(Scanner_Data_All()), count_vulners=0,
-                           items=dashboard_task_last, lst_cve=last_cve)
+    data = {
+        "name": current_user.name,
+        "count_inventory": len(result_dashboard[0]),
+        "count_vulners": result_dashboard[1],
+        "port": result_dashboard[2],
+        "service": result_dashboard[3],
+        "last_cve": new_vulnerability(),
+        "last_task": dashboard_task[len(dashboard_task) - 3:]
+    }
+    return render_template('dashboard.html', data=data)
 
 
 @main.route('/scanner', methods=['GET', 'POST'])
@@ -162,9 +165,7 @@ def scanner():
         scanner_service = Scanner(host=scanner_host)
         results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
         Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
-    return render_template('scanner.html',
-                           ips=target_mask, items=arr_ip
-                           )
+    return render_template('scanner.html', ips=target_mask, items=arr_ip)
 
 
 @main.route('/scanner/<uuid>', methods=['GET'])
@@ -175,9 +176,8 @@ def scanner_info(uuid):
         dct = dict_data
         print(dct)
     result_vuln = find_vulnerability(task=uuid)
-    # print(mng)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
-                           cntD=0, cntP=0, avgS=result_vuln[3])
+                           cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
 
 
 def get_cve(name_cve):
