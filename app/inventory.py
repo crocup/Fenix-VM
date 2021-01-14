@@ -1,3 +1,4 @@
+import re
 import nmap3
 from app.database import Inventory_Data_Record
 
@@ -28,10 +29,13 @@ class Inventory(object):
             clients_list = []
             hd_scan = nmap3.NmapHostDiscovery()
             result = hd_scan.nmap_no_portscan(self.target)
-            for res in result['hosts']:
-                addr = res['addr']
-                clients_list.append(addr)
+            for res in result:
+                check_ip = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", res)
+                if check_ip:
+                    ip = check_ip.group()
+                    clients_list.append(ip)
         except Exception as e:
+            print(e)
             clients_list = []
         return clients_list
 

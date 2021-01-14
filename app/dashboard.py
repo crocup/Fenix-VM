@@ -5,8 +5,10 @@ from app.database import Inventory_Data_All
 
 def chart_dashboard():
     """
-
-    :return: top list
+    функция для агрегации данных по построению графиков на вкладке /dashboard
+    Графики: port, service
+    Таблицы: Last Task, Last CVE
+    :return: список данных
     """
     ip_list = Inventory_Data_All()
     top_ports_list = []
@@ -33,10 +35,10 @@ def chart_dashboard():
 
 def top(list_top, val):
     """
-
-    :param list_top:
-    :param val:
-    :return:
+    создание массива данных (пример: [[ssh, 23],[http, 10]])
+    :param list_top: список
+    :param val: значение
+    :return: отсортированный массив данных
     """
     res_sort = []
     for k, g in val:
@@ -48,8 +50,7 @@ def top(list_top, val):
 
 def new_vulnerability():
     """
-
-    :return:
+    функция возвращает список последних издексов CVE из базы данных
+    :return: список последних CVE в базе данных
     """
-    result_cve = db_collection.find().sort("_id", -1).limit(3)
-    return result_cve
+    return db_collection.find().sort("_id", -1).limit(3)

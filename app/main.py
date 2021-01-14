@@ -36,7 +36,7 @@ def about():
 @login_required
 def setting():
     if request.method == 'POST':
-        config_json = get_config()
+        # config_json = get_config()
         ips = request.form.get('text')
         interface = request.form.get('interface')
         api_s = request.form.get('api')
@@ -62,7 +62,6 @@ def setting():
 
 
 def host_discovery():
-    config_json = get_config()
     target_mask = config_json["network"]["ip"]
     inventory_service = Inventory(target=target_mask)
     results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
@@ -74,7 +73,6 @@ def host_discovery():
 def inventory():
     if request.method == 'POST':
         host_discovery()
-        # Result_Data(uid=results_inventory.id, name='Host Discovery', time=time())
         return render_template('inventory.html', items=Inventory_Data_All())
     else:
         return render_template('inventory.html', items=Inventory_Data_All())
@@ -146,7 +144,12 @@ def dashboard():
 @login_required
 def scanner():
     global results
-    config_json = get_config()
+    if request.method == 'POST':
+        scanner_host = request.form.get("scanner_text")
+        scanner_service = Scanner(host=scanner_host)
+        results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
+        Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
+
     target_mask = config_json["network"]["ip"]
     scan = Scanner_Data_All()
     arr_ip = []
@@ -159,12 +162,6 @@ def scanner():
             'uuid': ip[2]
         }
         arr_ip.append(dict_ip)
-
-    if request.method == 'POST':
-        scanner_host = request.form.get("scanner_text")
-        scanner_service = Scanner(host=scanner_host)
-        results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
-        Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
     return render_template('scanner.html', ips=target_mask, items=arr_ip)
 
 
