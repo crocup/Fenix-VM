@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Fenix </title>
+        <title>Fenix Security Scanner </title>
         <link rel="stylesheet" href="../static/css/app.css">
         <link href="https://fonts.googleapis.com/icon?family=Poppins" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
@@ -14,8 +14,9 @@
         {% block usercss %}
 
         {% endblock %}
-
-        <script type="text/javascript" charset="utf8" src="../static/js/jquery-3.5.1.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.js"
+			  integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+			  crossorigin="anonymous"></script>
         <script type="text/javascript" charset="utf8" src="../static/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" charset="utf8" src="../static/js/dataTables.select.min.js"></script>
 
@@ -55,10 +56,12 @@
 
             <li>
                 <a class="" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
-                <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Inventory</a>
+                <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Host Discovery</a>
                 <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</a>
-                <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-table"></i></span> CVE DB</a>
-                 <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-times"></i></span> Notification</a>
+                <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-table"></i></span> Vulnerability Base</a>
+                 <a class="" href="{{ url_for('main.notification') }}"><span class="icon"><i class="fa fa-newspaper-o"></i></span> Notification</a>
+                <a class="" href="{{ url_for('main.main_scheduller') }}"><span class="icon"><i class="fa fa-times-circle"></i></span> Scheduler</a>
+                <a class="" href="{{ url_for('main.report') }}"><span class="icon"><i class="fa fa-list"></i></span> Report</a>
                 <a class="" href="{{ url_for('main.result_task') }}"><span class="icon"><i class="fa fa-tasks"></i></span> History</a>
                 <a class="" href="{{ url_for('main.setting') }}"><span class="icon"><i class="fa fa-certificate"></i></span> Setting</a>
                 <a class="" href="{{ url_for('main.about') }}"><span class="icon"><i class="fa fa-info"></i></span> About</a>

@@ -37,6 +37,9 @@ client_mongo = MongoClient()
 db_vulndb = client_mongo['vulndb']
 db_scanner = client_mongo['scanner']
 db_vulnerability = client_mongo['scanner']
+db_login = client_mongo['login']
+db_notification = client_mongo['notification']
+db_collection = db_vulndb['cve']
 
 from .models import User
 

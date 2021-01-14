@@ -114,47 +114,50 @@
 	<!-- Кнопки -->
 	<ul class="tabs-nav">
         {% for item in uid.scanner %}
-		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.product}})</a></li>
+		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.name}})</a></li>
         {% endfor %}
-<!--        <li><a href="#tab-directory">Directory</a></li>-->
-<!--        <li><a href="#tab-password">Password</a></li>-->
 	</ul>
 
 	<div class="tabs-items">
         {% for item in uid.scanner %}
         <div class="tabs-item" id="tab-{{item.port}}">
-
             {% for cve in item.vulnerability['cve_mitre'] %}
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+    <span class="tag"><a href="#{{ cve['cve'] }}-{{item.port}}" onclick="view('{{ cve['cve'] }}-{{ item['port'] }}'); return false"><strong>{{ cve['cve'] }} </strong></a></span>
+        {% if cve['CVSS Score'] > 8 %}
+        <span class="tag is-danger is-light">
+            High
+            {% elif cve['CVSS Score'] < 5 %}
+            <span class="tag is-info is-light">
+                Low
+            {% else %}
+            <span class="tag is-warning is-light">
+                Medium
+                {% endif %}
+<!--            CVSS Score:{{ cve['CVSS Score'] }}-->
+        </span>
+<!--        <span class="tag is-primary"><a href="#{{ cve['cve'] }}-{{item.port}}" onclick="view('{{ cve['cve'] }}-{{ item['port'] }}'); return false"><strong>{{ cve['cve'] }} </strong></a></span>-->
+    </p>
 
-
-
-            <div class="card">
+    <a href="#" class="card-header-icon" aria-label="more options">
+    </a>
+  </header>
+    <div id="{{ cve['cve'] }}-{{item.port}}" style="display: none;">
   <div class="card-content">
-<p>{{ cve['value'] }}</p>
+    <div class="content">
+      <p>{{ cve['value'] }}</p>
+    </div>
   </div>
   <footer class="card-footer">
-    <p class="card-footer-item">
-      <span>
-        {{ cve['cve'] }}
-      </span>
-    </p>
-    <p class="card-footer-item">
-      <span class="tag is-danger">
-          CVSS Score: {{ cve['CVSS Score'] }}
-      </span>
-    </p>
+    <a href="#" class="card-footer-item">Info</a>
+    <a href="#" class="card-footer-item"><span class="tag is-primary">CVSS Score: {{ cve['CVSS Score'] }}</span></a>
   </footer>
 </div>
-</article>
+    </div>
+
             {% endfor %}
-
-<!--            <article class="message">-->
-<!--  <div class="message-body">1234</div>-->
-<!--</article>-->
-
-<!--            <article class="message">-->
-<!--  <div class="message-body">CVE-2018-0010<span class="tag is-danger">CVSS Score: 9.8</span> </div>-->
-<!--</article>-->
 
         </div>
         {% endfor %}
@@ -162,4 +165,8 @@
 </div>
      </div>
     </div>
+<script>function view(n) {
+    style = document.getElementById(n).style;
+    style.display = (style.display == 'block') ? 'none' : 'block';
+}</script>
 {% endblock %}

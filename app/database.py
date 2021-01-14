@@ -1,22 +1,14 @@
 import datetime
 import json
-from pprint import pprint
-
-from app import db, time, db_scanner, db_vulnerability
+from app import db, time, db_scanner, db_vulnerability, db_notification
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
 def Scanner_Data_Record(host, uuid):
     """
 
-    :param name:
-    :param state:
     :param uuid:
     :param host:
-    :param proto:
-    :param port:
-    :param product:
-    :param version:
     :return:
     """
     some_owner = InventoryPost.query.filter_by(ip=host).first()
@@ -37,7 +29,6 @@ def Scanner_Data_All():
 def Inventory_Data_All():
     inventory_all = []
     for i in InventoryPost.query.all():
-        # print(j, i)
         ip_res = {
             'ip': i.ip,
             'uuid': i.uid,
@@ -59,6 +50,15 @@ def Inventory_Data_Record(result_inventory):
     for res in result_inventory:
         ips_find = InventoryPost.query.filter_by(ip=res).first()
         if ips_find is None:
+            # если появился новый ip
+            result_json = {
+                "time": time(),
+                "message": f"New IP: {res}"
+            }
+            # оповещение (запись в mongo)
+            posts = db_notification["notifications"]
+            posts.insert(result_json)
+            # запись в БД
             reg = InventoryPost(res, time())
             db.session.add(reg)
         else:
@@ -68,6 +68,12 @@ def Inventory_Data_Record(result_inventory):
 
 
 def Inventory_Tag_Record(ip, tag):
+    """
+
+    :param ip:
+    :param tag:
+    :return:
+    """
     ips_find = InventoryPost.query.filter_by(ip=ip).first()
     ips_find.tags = tag
     db.session.add(ips_find)
@@ -96,8 +102,8 @@ def Inventory_Data_Delete(ip):
     db.session.commit()
 
 
-def Result_Data(uid, name, time):
-    res_id = ResultPost(uid, name, time)
+def Result_Data(uid, name, host, time):
+    res_id = ResultPost(uid, name, host, time)
     db.session.add(res_id)
     db.session.commit()
 

@@ -38,11 +38,13 @@ class ResultPost(db.Model):
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uuid = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50))
+    host = db.Column(db.String(50))
     dateofreg = db.Column(db.String(20))
 
-    def __init__(self, uuid, name, dateofreg):
+    def __init__(self, uuid, name, host, dateofreg):
         self.uuid = uuid
         self.name = name
+        self.host = host
         self.dateofreg = dateofreg
 
 
