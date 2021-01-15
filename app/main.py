@@ -61,18 +61,13 @@ def setting():
                            )
 
 
-def host_discovery():
-    target_mask = config_json["network"]["ip"]
-    inventory_service = Inventory(target=target_mask)
-    results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-    return results_inventory
-
-
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
     if request.method == 'POST':
-        host_discovery()
+        target_mask = config_json["network"]["ip"]
+        inventory_service = Inventory(target=target_mask)
+        q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
         return render_template('inventory.html', items=Inventory_Data_All())
     else:
         return render_template('inventory.html', items=Inventory_Data_All())
