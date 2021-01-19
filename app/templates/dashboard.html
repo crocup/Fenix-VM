@@ -118,8 +118,14 @@
                             var myPieChart = new Chart(ctx, {
                                 type: 'pie',
                                 data: {
-                                datasets: [{
-                                    data : [{% for item in data["service"] %}"{{ item[1] }}", {% endfor %}],
+                                    datasets: [{
+                                    data : [
+                                        {% for item in data["service"] %}"{{ item[1] }}", {% endfor %}
+                                        ],
+                                    backgroundColor: [
+                                        {% for item in data["service"] %} "rgba(151,187,205, 0.5)", {% endfor %}
+
+					],
                                 }],
                                 labels : [{% for item in data["service"] %}"{{ item[0] }}", {% endfor %}],
                             },
