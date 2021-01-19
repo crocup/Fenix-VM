@@ -7,11 +7,10 @@
         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.tags', ip=ips.ip) }}"><i class="fa fa-refresh"></i>Refresh</a>
                         <span class="separator"></span>
-                        {% if uid %}
-                    <h1>Status: {{ uid }}</h1>
-                    {% else %}
-                        <h1> </h1>
-                    {% endif %}
+            <form method="POST" action="/inventory/{{ips.ip}}/delete">
+                        <button class="button is-danger" href="{{ url_for('main.delete_host', ip=ips.ip) }}"><i class="fa fa-info"></i>Delete Host</button>
+            </form>
+        <span class="separator"></span>
     </div>
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>

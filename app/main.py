@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from . import get_config, logger
 from redis import Redis
 from rq import Queue
-from app.inventory import Inventory
+from app.inventory import Inventory, delete_ip
 from app.result import log_file
 from app.vulnerability.cve import *
 from app.scanner import Scanner
@@ -36,7 +36,6 @@ def about():
 @login_required
 def setting():
     if request.method == 'POST':
-        # config_json = get_config()
         ips = request.form.get('text')
         interface = request.form.get('interface')
         api_s = request.form.get('api')
@@ -96,6 +95,25 @@ def tags(ip):
         return render_template('tag.html', ips=res_ip, items=inventory_array_ip)
 
 
+@main.route('/inventory/<ip>/delete', methods=["POST"])
+@login_required
+def delete_host(ip):
+    """
+    Удаление IP адреса и всей информации о нем
+    :param ip: ip-адрес
+    :return: None
+    """
+    print(ip)
+    delete_ip(host=ip)  # удаление из sqlite
+    # db_scanner["result"] # host
+    hosts_id = db_vulnerability['result']
+    hosts_id.delete_many({"host": ip})
+    # print(hosts_id.find({"host": ip}))
+    # for p in hosts_id.find({"host": ip}):
+    #     print(p)
+    return redirect(url_for('main.inventory'))
+
+
 @main.route('/result')
 @login_required
 def result_task():
@@ -147,6 +165,7 @@ def scanner():
 
     target_mask = config_json["network"]["ip"]
     scan = Scanner_Data_All()
+    print(scan)
     arr_ip = []
     for ip in scan:
         tag_ip = Inventory_Data_Filter_IP(ip[0])

@@ -41,6 +41,20 @@ def Inventory_Data_All():
     return data
 
 
+def Inventory_Data_Delete(host):
+    """
+    Удаление ip адреса из базы данных sqlite
+    :param host:
+    :return:
+    """
+    try:
+        InventoryPost.query.filter_by(ip=host).delete()
+        db.session.commit()
+        print(f"{host} удален")
+    except Exception as e:
+        print(e)
+
+
 def Inventory_Data_Record(result_inventory):
     """
 
@@ -99,6 +113,8 @@ def Inventory_Data_Delete(ip):
     :return:
     """
     InventoryPost.query.filter_by(ip=ip).delete()
+    ScannerPost.query.filter_by(ip=ip).delete()
+    ResultPost.query.filter_by(host=ip).delete()
     db.session.commit()
 
 
