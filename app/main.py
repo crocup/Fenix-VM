@@ -50,6 +50,7 @@ def setting():
         config_json['scheduler']['cve'] = cve_p
         with open('config.json', 'w') as f:
             json.dump(config_json, f, indent=4)
+
     config_json_setting = get_config()
     return render_template('setting.html', ips=config_json_setting['network']['ip'],
                            api=config_json_setting['vulners']['api'],
@@ -185,7 +186,6 @@ def scanner_info(uuid):
     dct = Scanner_Data_Filter_UUID(uid=uuid)
     for dict_data in dct:
         dct = dict_data
-        print(dct)
     result_vuln = find_vulnerability(task=uuid)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))

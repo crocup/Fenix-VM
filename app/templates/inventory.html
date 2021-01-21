@@ -9,18 +9,19 @@
         } );
 </script>
             <div class="column is-10" id="page-content">
-                    <div class="content-header">
-        <h4 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span> Host Discovery</h4>
-        <span class="separator"></span>
-                        <form method="POST" action="/inventory">
-                        <button class="button is-success" href="{{ url_for('main.inventory') }}"><i class="fa fa-play"></i>Start</button>
-                        </form>
-                        <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.inventory') }}"><i class="fa fa-refresh"></i>Refresh</a>
-                        <span class="separator"></span>
-    </div>
-                <div class="content-body">
 
+                <section class="hero">
+  <div class="content has-text-left">
+    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Host Discovery</strong></h2>
+  </div>
+</section>
+                    <div class="content-header">
+                        <form method="POST" action="/inventory">
+                            <button class="button is-success" href="{{ url_for('main.inventory') }}">New Task</button>
+                        </form>
+    </div>
+
+                <div class="content-body">
                     </div>
         <table id="inventory_id" class="display" style="width:100%">
         <thead>
