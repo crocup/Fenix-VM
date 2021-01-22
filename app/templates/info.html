@@ -36,24 +36,6 @@
       <button class="button is-danger" name="report" href="#">Delete Task</button>
   </div>
 </div>
-
-    <div class="tabs is-toggle is-toggle-rounded">
-    <ul>
-      <li id="all-tab" class="is-active">
-        <a onClick="switchToAll()">
-        <span class="icon is-small"><i class="fa fa-server"></i></span>
-        <span>Open Port</span>
-      </a>
-      </li>
-      <li id="adaptivedesign-tab-vulnerabilities">
-        <a onClick="switchToAdaptiveDesignUpdate()">
-        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
-        <span>Vulnerabilities</span>
-      </a>
-      </li>
-    </ul>
-    <!--/tabs is-centered-->
-  </div>
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
@@ -86,6 +68,44 @@
     </div>
   </div>
 </nav>
+
+    <div class="tabs is-left">
+    <ul>
+      <li id="all-tab" class="is-active">
+        <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-server"></i></span>
+        <span>Open Port</span>
+      </a>
+      </li>
+      <li id="adaptivedesign-tab-vulnerabilities">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Vulnerabilities</span>
+      </a>
+      </li>
+        <li id="exploit">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Exploit</span>
+      </a>
+      </li>
+        <li id="directory">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Directory</span>
+      </a>
+      </li>
+        <li id="pass">
+        <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-calendar"></i></span>
+        <span>Login or Password</span>
+      </a>
+      </li>
+    </ul>
+
+    <!--/tabs is-centered-->
+  </div>
+
     <div class="table-container" id="all-tab-content">
         <table id="info_scanner_id" class="display" style="width:100%">
         <thead>

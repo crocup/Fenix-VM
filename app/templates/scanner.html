@@ -14,12 +14,14 @@
     <input class="input" type="text" name="scanner_text" value='{{ ips }}'>
   </div>
   <div class="control">
-    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}"><i class="fa fa-play"></i>
+    <button class="button is-success" name="one" href="{{ url_for('main.scanner') }}">
       Start
     </button>
   </div>
 </div>
 </form>
+                        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.scanner') }}">Refresh</a>
     </div>
     <table id="scanner_id" class="display" style="width:100%">
         <thead>
