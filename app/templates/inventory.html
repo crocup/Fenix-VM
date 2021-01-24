@@ -17,7 +17,21 @@
 </section>
                     <div class="content-header">
                         <form method="POST" action="/inventory">
-                            <button class="button is-success" href="{{ url_for('main.inventory') }}">New Task</button>
+                            <div class="field has-addons">
+  <div class="control">
+      <div class="select">
+      <select name="comp_select">
+          {% for item in net %}
+          <option>{{item.network}}</option>
+          {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="control">
+    <button class="button is-success" href="{{ url_for('main.inventory') }}">Start</button>
+  </div>
+</div>
+
                         </form>
                         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.inventory') }}">Refresh</a>

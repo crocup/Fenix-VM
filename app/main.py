@@ -71,7 +71,6 @@ def setting_network():
     return redirect(url_for('main.setting'))
 
 
-# Доработать удаление
 @main.route('/setting/network/delete/<_id>', methods=['GET'])
 @login_required
 def setting_network_delete(_id):
@@ -83,13 +82,15 @@ def setting_network_delete(_id):
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
+    setting_data = Storage(db='setting', collection='network')
+    get_mask_ip = setting_data.get()
     if request.method == 'POST':
-        target_mask = config_json["network"]["ip"]
-        inventory_service = Inventory(target=target_mask)
+        select = request.form.get('comp_select')
+        inventory_service = Inventory(target=select)
         q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-        return render_template('inventory.html', items=Inventory_Data_All())
+        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
     else:
-        return render_template('inventory.html', items=Inventory_Data_All())
+        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
