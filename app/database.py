@@ -1,6 +1,6 @@
 import datetime
 import json
-from app import db, time, db_scanner, db_vulnerability, db_notification
+from app import db, time, db_scanner, db_notification
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
@@ -18,7 +18,7 @@ def Scanner_Data_Record(host, uuid):
 
 
 def Scanner_Data_Filter_UUID(uid):
-    return db_vulnerability.result.find({"uuid": uid})
+    return db_scanner.result.find({"uuid": uid})
 
 
 def Scanner_Data_All():
@@ -133,7 +133,7 @@ def Vulnerability_Data_Record(data, name, task, port, port_name):
     :return:
     """
     now = datetime.datetime.now()
-    posts = db_vulnerability['vulnerability']
+    posts = db_scanner['vulnerability']
     sets = {
         "id": str(task),
         "result": data,

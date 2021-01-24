@@ -2,8 +2,8 @@ import datetime
 from pprint import pprint
 from uuid import uuid4
 import nmap3
-from app import db_vulnerability
-from app.database import Scanner_Data_Record, Vulnerability_Data_Record, Inventory_Data_Filter_IP
+from app import db_scanner
+from app.database import Scanner_Data_Record, Inventory_Data_Filter_IP
 from app.inventory import Inventory
 from app.vulnerability import cve
 from app.vulnerability.cve import cve_mitre
@@ -68,7 +68,7 @@ class Scanner:
             result_json['host'] = inv_host
             now = datetime.datetime.now()
             result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
-            posts = db_vulnerability['result']
+            posts = db_scanner['result']
             tag_ip = Inventory_Data_Filter_IP(inv_host)
             result_json['tag'] = tag_ip['tag']
             posts.insert(result_json)

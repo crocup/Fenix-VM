@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import get_config, logger
+from . import logger
 from redis import Redis
 from rq import Queue
 from app.inventory import Inventory, delete_ip
@@ -10,6 +10,7 @@ from app.scanner import Scanner
 from app.database import *
 from .dashboard import new_vulnerability, chart_dashboard
 from .notification import notification_message, delete_notification
+from .storage.database import Storage
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -32,33 +33,54 @@ def about():
     return render_template('about.html')
 
 
-@main.route('/setting', methods=['GET', 'POST'])
+@main.route('/setting', methods=['GET'])
 @login_required
 def setting():
-    if request.method == 'POST':
-        ips = request.form.get('text')
-        interface = request.form.get('interface')
-        api_s = request.form.get('api')
-        inventory_p = request.form.get('inventory')
-        scanner_p = request.form.get('scanner')
-        cve_p = request.form.get('cve')
-        config_json['network']['ip'] = ips
-        config_json['network']['interface'] = interface
-        config_json['vulners']['api'] = api_s
-        config_json['scheduler']['inventory'] = inventory_p
-        config_json['scheduler']['scanner'] = scanner_p
-        config_json['scheduler']['cve'] = cve_p
-        with open('config.json', 'w') as f:
-            json.dump(config_json, f, indent=4)
+    setting_data = Storage(db='setting', collection='network')
+    items_setting = setting_data.get()
+    return render_template('setting.html', settings=items_setting)
 
-    config_json_setting = get_config()
-    return render_template('setting.html', ips=config_json_setting['network']['ip'],
-                           api=config_json_setting['vulners']['api'],
-                           interface=config_json_setting["network"]["interface"],
-                           inventory=config_json_setting['scheduler']['inventory'],
-                           scanner=config_json_setting['scheduler']['scanner'],
-                           cve=config_json_setting['scheduler']['cve']
-                           )
+
+@main.route('/setting/network/add', methods=['POST'])
+@login_required
+def setting_network():
+    if request.method == 'POST':
+        network = request.form.get('network')
+        interface = request.form.get('interface')
+        description = request.form.get('description')
+        private = request.form.get('private')
+        name = {
+            "network": network
+        }
+        data = {
+            "interface": interface,
+            "description": description,
+            "private": private
+        }
+        setting_data = Storage(db='setting', collection='network')
+        setting_data.upsert(name, data)
+    return redirect(url_for('main.setting'))
+
+
+# Доработать удаление
+@main.route('/setting/network/delete/<ip>', methods=['GET'])
+@login_required
+def setting_network_delete(ip):
+    setting_data = Storage(db='setting', collection='network')
+    name = {
+        "network": ip
+    }
+    setting_data.delete(name)
+    return redirect(url_for('main.setting'))
+
+
+@main.route('/setting/notification/add', methods=['POST'])
+@login_required
+def setting_notification():
+    if request.method == 'POST':
+        telegram = request.form.get('telegram')
+        mail = request.form.get('mail')
+    return redirect(url_for('main.setting'))
 
 
 @main.route('/inventory', methods=['GET', 'POST'])
@@ -107,7 +129,7 @@ def delete_host(ip):
     print(ip)
     delete_ip(host=ip)  # удаление из sqlite
     # db_scanner["result"] # host
-    hosts_id = db_vulnerability['result']
+    hosts_id = db_scanner['result']
     hosts_id.delete_many({"host": ip})
     # print(hosts_id.find({"host": ip}))
     # for p in hosts_id.find({"host": ip}):
@@ -166,7 +188,6 @@ def scanner():
 
     target_mask = config_json["network"]["ip"]
     scan = Scanner_Data_All()
-    print(scan)
     arr_ip = []
     for ip in scan:
         tag_ip = Inventory_Data_Filter_IP(ip[0])

@@ -26,112 +26,48 @@
   </ul>
 </div>
 
-<!--    <div class="tabs is-toggle is-toggle-rounded">-->
-<!--    <ul>-->
-<!--      <li id="all-tab" class="is-active">-->
-<!--        <a onClick="switchToAll()">-->
-<!--        <span>Network</span>-->
-<!--      </a>-->
-<!--      </li>-->
-<!--      <li id="adaptivedesign-tab">-->
-<!--        <a onClick="switchToAdaptiveDesign()">-->
-<!--        <span>Notification</span>-->
-<!--      </a>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--  </div>-->
-<!--    <form method="POST" action="/setting">-->
-<!--                    <div class="content-header">-->
-<!--        <h4 class="title is-4"><span class="icon"><i class="fa fa-certificate"></i></span> Setting</h4>-->
-<!--        <span class="separator"></span>-->
-<!--                        <button class="button is-success" href="{{ url_for('main.setting') }}"><i class="fa fa-save"></i>Save</button>-->
-<!--                        <span class="separator"></span>-->
-<!--                        <a class="button is-info" href="{{ url_for('main.setting') }}"><i class="fa fa-refresh"></i>Refresh</a>-->
-<!--                        <span class="separator"></span>-->
-<!--    </div>-->
-
-<!--&lt;!&ndash;  <div class="container">&ndash;&gt;-->
-<!--    <div id="all-tab-content">-->
-<!--            <div class="field">-->
-<!--                <label class="label">NETWORK</label>-->
-<!--                    <div class="control">-->
-<!--                        <input class="input" type="text" name="text" value='{{ ips }}'>-->
-<!--                    </div>-->
-<!--                <p class="help">This is a help text</p>-->
-<!--            </div>-->
-<!--            <div class="field">-->
-<!--                <label class="label">INTERFACE</label>-->
-<!--                    <div class="control">-->
-<!--                        <input class="input" type="text" name="interface" value='{{ interface }}'>-->
-<!--                    </div>-->
-<!--                <p class="help">This is a help text</p>-->
-<!--            </div>-->
-<!--        <div class="field">-->
-<!--                <label class="label">TELEGRAM BOT</label>-->
-<!--                    <div class="control">-->
-<!--                        <input class="input" type="text" name="api" value='sssssssssssssssssssss'>-->
-<!--                    </div>-->
-<!--                <p class="help">This is a help text</p>-->
-<!--            </div>-->
-<!--    </div>-->
-
-<!--&lt;!&ndash;  </div>&ndash;&gt;-->
-<!--        </form>-->
 <div id="all-tab-content">
     <div class="box">
-
+<!---->
+        {% for item in settings %}
     <div class="card">
   <header class="card-header">
     <p class="card-header-title">
-      Network: 192.168.100.0/24
+      Network: {{item.network}}
     </p>
 
   </header>
   <div class="card-content">
     <div class="content">
-      <p>
-      <strong>Status:</strong> Open Network
+        <p>
+      <strong>Interface:</strong> {{item.interface}}
     </p>
-    <strong>Description:</strong> Home
+      <p>
+      <strong>Status:</strong> {{item.private}}
+    </p>
+    <strong>Description:</strong> {{item.description}}
     </div>
   </div>
   <footer class="card-footer">
     <a href="#" class="card-footer-item">Edit</a>
-    <a href="#" class="card-footer-item">Delete</a>
+    <a href="{{ url_for('main.setting_network_delete', ip=item.network) }}" class="card-footer-item">Delete</a>
   </footer>
 </div>
-
-    <div class="card">
-  <header class="card-header">
-    <p class="card-header-title">
-      Network: 192.168.100.0/24
-    </p>
-
-  </header>
-  <div class="card-content">
-    <div class="content">
-      <p>
-      <strong>Status:</strong> Private Network
-    </p>
-    <strong>Description:</strong> DMZ
-    </div>
-  </div>
-  <footer class="card-footer">
-    <a href="#" class="card-footer-item">Edit</a>
-    <a href="#" class="card-footer-item">Delete</a>
-  </footer>
-
-</div>
+        {% endfor %}
+<!---->
         <button class="button is-success modal-button" id="showModal">Add Network</button>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.setting') }}">Refresh</a>
 </div>
 </div>
 
     <div class="is-hidden" id="adaptivedesign-tab-content">
         <div class="box">
+            <form method="POST" action="/setting/notification">
           <div class="field">
                 <label class="label">TELEGRAM BOT</label>
                     <div class="control">
-                        <input class="input" type="text" name="api" value='sssssssssssssssssssss'>
+                        <input class="input" type="text" name="telegram" value='sssssssssssssssssssss'>
                     </div>
                 <p class="help">This is a help text</p>
             </div>
@@ -139,15 +75,16 @@
             <div class="field">
                 <label class="label">Email</label>
                     <div class="control">
-                        <input class="input" type="text" name="api" value='admin@admin.com'>
+                        <input class="input" type="text" name="mail" value='admin@admin.com'>
                     </div>
                 <p class="help">This is a help text</p>
             </div>
-
-            <button class="button is-success" href="{{ url_for('main.setting') }}">Save</button>
+            <button class="button is-success">Save</button>
+            </form>
 </div>
 </div>
 <div class="container" id="app">
+    <form method="POST" action="/setting/network/add">
 <div class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
@@ -160,7 +97,7 @@
             <div class="field">
                 <label class="label">NETWORK</label>
                     <div class="control">
-                        <input class="input" type="text" name="text" value='{{ ips }}'>
+                        <input class="input" type="text" name="network" value='{{ ips }}'>
                     </div>
                 <p class="help">This is a help text</p>
             </div>
@@ -174,12 +111,12 @@
           <div class="field">
                 <label class="label">DESCRIPTION</label>
                     <div class="control">
-                        <input class="input" type="text" name="interface" value='Home'>
+                        <input class="input" type="text" name="description" value='Home'>
                     </div>
                 <p class="help">This is a help text</p>
             </div>
           <label class="checkbox">
-  <input type="checkbox">
+  <input type="checkbox" name="private">
   Private Network
 </label>
     </div>
@@ -190,8 +127,8 @@
     </footer>
   </div>
 </div>
+        </form>
 </div>
-
 </div>
 
 
