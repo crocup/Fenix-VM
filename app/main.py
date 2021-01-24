@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
 from . import logger
@@ -41,7 +42,7 @@ def setting():
     return render_template('setting.html', settings=items_setting)
 
 
-@main.route('/setting/network/add', methods=['POST'])
+@main.route('/setting/network/add', methods=['GET', 'POST'])
 @login_required
 def setting_network():
     if request.method == 'POST':
@@ -49,13 +50,21 @@ def setting_network():
         interface = request.form.get('interface')
         description = request.form.get('description')
         private = request.form.get('private')
+        telegram = request.form.get('telegram')
+        mail = request.form.get('mail')
+        if private is None:
+            private = "Open Network"
+        else:
+            private = "Private Network"
         name = {
             "network": network
         }
         data = {
             "interface": interface,
             "description": description,
-            "private": private
+            "private": private,
+            "telegram": telegram,
+            "mail": mail
         }
         setting_data = Storage(db='setting', collection='network')
         setting_data.upsert(name, data)
@@ -63,23 +72,11 @@ def setting_network():
 
 
 # Доработать удаление
-@main.route('/setting/network/delete/<ip>', methods=['GET'])
+@main.route('/setting/network/delete/<_id>', methods=['GET'])
 @login_required
-def setting_network_delete(ip):
+def setting_network_delete(_id):
     setting_data = Storage(db='setting', collection='network')
-    name = {
-        "network": ip
-    }
-    setting_data.delete(name)
-    return redirect(url_for('main.setting'))
-
-
-@main.route('/setting/notification/add', methods=['POST'])
-@login_required
-def setting_notification():
-    if request.method == 'POST':
-        telegram = request.form.get('telegram')
-        mail = request.form.get('mail')
+    setting_data.delete({'_id': ObjectId(_id)})
     return redirect(url_for('main.setting'))
 
 
