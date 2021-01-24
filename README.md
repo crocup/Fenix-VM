@@ -1,6 +1,7 @@
-## Fenix Security Scanner
-is the open source Vulnerability Management System
+## About
+**Fenix Security Scanner** - is the open source Vulnerability Management System, being developed in the Republic of Belarus
 
-This is a development version, we do not recommend its use in production
+## Warning
+This is a development version, we don't recommend its use in production!
 ![GitHub Logo](img.png)
 

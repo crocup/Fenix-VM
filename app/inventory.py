@@ -1,6 +1,7 @@
 import re
 import nmap3
-from app.database import Inventory_Data_Record
+from app import db_scanner
+from app.database import Inventory_Data_Record, Inventory_Data_Delete
 
 
 def check_host_discovery():
@@ -9,6 +10,14 @@ def check_host_discovery():
     :return:
     """
     pass
+
+
+def delete_ip(host):
+    try:
+        Inventory_Data_Delete(host)
+    except Exception as e:
+        status = "error: {}".format(e)
+        print(status)
 
 
 class Inventory(object):

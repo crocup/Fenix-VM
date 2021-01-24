@@ -1,5 +1,5 @@
 from itertools import groupby
-from app import db_collection, db_vulnerability
+from app import db_collection, db_scanner
 from app.database import Inventory_Data_All
 
 
@@ -15,7 +15,7 @@ def chart_dashboard():
     top_services_list = []
     top_vuln_list = []
     for i in ip_list:
-        result_vulnerability = db_vulnerability.result.find({"host": i["ip"]}).sort("_id", -1).limit(1)
+        result_vulnerability = db_scanner.result.find({"host": i["ip"]}).sort("_id", -1).limit(1)
         for scanner in result_vulnerability:
             for result in scanner["scanner"]:
                 top_ports_list.append(result["port"])

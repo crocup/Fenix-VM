@@ -2,47 +2,38 @@
 
 {% block content %}
 <div class="column is-10" id="page-content">
-    <div class="content-header">
-        <h4 class="title is-4">{{ips.ip}}</h4>
-        <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.tags', ip=ips.ip) }}"><i class="fa fa-refresh"></i>Refresh</a>
-                        <span class="separator"></span>
-                        {% if uid %}
-                    <h1>Status: {{ uid }}</h1>
-                    {% else %}
-                        <h1> </h1>
-                    {% endif %}
-    </div>
-    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
       <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
     <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
     <li class="is-active"><a href="#" aria-current="page">{{ips.ip}}</a></li>
   </ul>
 </nav>
-    <div class="card">
-        <div class="card-content">
-            <div class="field">
-
-                <label class="label">Tag</label>
-                <form method="POST" action="/inventory/{{ips.ip}}">
-                    <div class="field has-addons">
-                    <div class="control">
-                        <input class="input" type="text" name="tag" value='{{ ips.tag }}'>
-                    </div>
-                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips.ip) }}">Save</button>
-                        </div>
-                        </form>
-
-                <p class="help">Please enter a new tag and click to save</p>
-            </div>
+    <section class="hero">
+  <div class="content has-text-left">
+    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips.ip}}</strong></h2>
   </div>
+</section>
+
+    <div class="tabs is-left">
+  <ul>
+    <li class="is-active" id="all-tab">
+      <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-internet-explorer" aria-hidden="true"></i></span>
+        <span>Scanner Task</span>
+      </a>
+    </li>
+    <li id="adaptivedesign-tab">
+      <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-newspaper-o" aria-hidden="true"></i></span>
+        <span>Edit Host</span>
+      </a>
+    </li>
+  </ul>
 </div>
 
-    <div class="card">
-        <div class="card-content">
-            <div class="field">
-                <label class="label">Scanner task</label>
+<div id="all-tab-content">
+    <div class="field">
 <table id="inventory_ip_id" class="display" style="width:100%">
         <thead>
             <tr>
@@ -64,8 +55,37 @@
         </tbody>
     </table>
             </div>
-  </div>
-</div>
+    </div>
+
+<!--    Tag-->
+    <div class="is-hidden" id="adaptivedesign-tab-content">
+<!--        Code-->
+
+    <div class="field">
+
+                <label class="label">Tag</label>
+                <form method="POST" action="/inventory/{{ips.ip}}">
+                    <div class="field has-addons">
+                    <div class="control">
+                        <input class="input" type="text" name="tag" value='{{ ips.tag }}'>
+                    </div>
+                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips.ip) }}">Save</button>
+                        </div>
+                        </form>
+
+                <p class="help">Please enter a new tag and click to save</p>
+            </div>
+        <div class="content-header">
+
+            <form method="POST" action="/inventory/{{ips.ip}}/delete">
+                        <button class="button is-danger" href="{{ url_for('main.delete_host', ip=ips.ip) }}"><i class="fa fa-info"></i>Delete Host</button>
+            </form>
+    </div>
+
+        </div>
+
+            </div>
+
 <script type="text/javascript" class="init">
         $(document).ready(function() {
 	    $('#inventory_ip_id').DataTable( {
@@ -73,5 +93,28 @@
 	        } );
         } );
 </script>
-            </div>
+
+<script>
+    function switchToAll() {
+      removeActive();
+      hideAll();
+      $("#all-tab").addClass("is-active");
+      $("#all-tab-content").removeClass("is-hidden");
+    }
+    function switchToAdaptiveDesign() {
+      removeActive();
+      hideAll();
+      $("#adaptivedesign-tab").addClass("is-active");
+      $("#adaptivedesign-tab-content").removeClass("is-hidden");
+    }
+    function removeActive() {
+      $("li").each(function() {
+        $(this).removeClass("is-active");
+      });
+    }
+    function hideAll(){
+      $("#all-tab-content").addClass("is-hidden");
+      $("#adaptivedesign-tab-content").addClass("is-hidden");
+    }
+  </script>
 {% endblock %}
