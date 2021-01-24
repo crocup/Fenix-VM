@@ -2,36 +2,33 @@
 
 {% block content %}
 <div class="column is-10" id="page-content">
-                    <div class="content-header">
-        <h4 class="title is-4"><span class="icon"><i class="fa fa-info"></i></span> About</h4>
-        <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.about') }}"><i class="fa fa-refresh"></i>Refresh</a>
-                        <span class="separator"></span>
-    </div>
-<div class="tabs is-toggle is-toggle-rounded">
-    <ul>
-      <li id="all-tab" class="is-active">
-        <a onClick="switchToAll()">
-        <span class="icon is-small"><i class="fa fa-info"></i></span>
+    <section class="hero">
+  <div class="content has-text-left">
+    <h2 class="title is-4"><span class="icon"><i class="fa fa-info-circle"></i></span><strong>About</strong></h2>
+  </div>
+</section>
+    <div class="tabs is-left">
+  <ul>
+    <li class="is-active" id="all-tab">
+      <a onClick="switchToAll()">
+        <span class="icon is-small"><i class="fa fa-info" aria-hidden="true"></i></span>
         <span>Info</span>
       </a>
-      </li>
-      <li id="adaptivedesign-tab">
-        <a onClick="switchToAdaptiveDesign()">
-        <span class="icon is-small"><i class="fa fa-book"></i></span>
+    </li>
+    <li id="adaptivedesign-tab">
+      <a onClick="switchToAdaptiveDesign()">
+        <span class="icon is-small"><i class="fa fa-drivers-license" aria-hidden="true"></i></span>
         <span>Licence</span>
       </a>
-      </li>
-        <li id="adaptivedesign-tab-update">
-        <a onClick="switchToAdaptiveDesignUpdate()">
-        <span class="icon is-small"><i class="fa fa-download"></i></span>
+    </li>
+      <li id="adaptivedesign-tab-update">
+      <a onClick="switchToAdaptiveDesignUpdate()">
+        <span class="icon is-small"><i class="fa fa-upload aria-hidden="true"></i></span>
         <span>Update</span>
       </a>
-      </li>
-    </ul>
-    <!--/tabs is-centered-->
-  </div>
-<!--  <div class="container">-->
+    </li>
+  </ul>
+</div>
     <div id="all-tab-content">
         <div class="card">
   <div class="card-content">

@@ -1,15 +1,17 @@
+from bson import ObjectId
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required, current_user
-from . import get_config, logger
+from . import logger
 from redis import Redis
 from rq import Queue
-from app.inventory import Inventory
+from app.inventory import Inventory, delete_ip
 from app.result import log_file
 from app.vulnerability.cve import *
 from app.scanner import Scanner
 from app.database import *
 from .dashboard import new_vulnerability, chart_dashboard
 from .notification import notification_message, delete_notification
+from .storage.database import Storage
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -32,50 +34,63 @@ def about():
     return render_template('about.html')
 
 
-@main.route('/setting', methods=['GET', 'POST'])
+@main.route('/setting', methods=['GET'])
 @login_required
 def setting():
+    setting_data = Storage(db='setting', collection='network')
+    items_setting = setting_data.get()
+    return render_template('setting.html', settings=items_setting)
+
+
+@main.route('/setting/network/add', methods=['GET', 'POST'])
+@login_required
+def setting_network():
     if request.method == 'POST':
-        # config_json = get_config()
-        ips = request.form.get('text')
+        network = request.form.get('network')
         interface = request.form.get('interface')
-        api_s = request.form.get('api')
-        inventory_p = request.form.get('inventory')
-        scanner_p = request.form.get('scanner')
-        cve_p = request.form.get('cve')
-        config_json['network']['ip'] = ips
-        config_json['network']['interface'] = interface
-        config_json['vulners']['api'] = api_s
-        config_json['scheduler']['inventory'] = inventory_p
-        config_json['scheduler']['scanner'] = scanner_p
-        config_json['scheduler']['cve'] = cve_p
-        with open('config.json', 'w') as f:
-            json.dump(config_json, f, indent=4)
-    config_json_setting = get_config()
-    return render_template('setting.html', ips=config_json_setting['network']['ip'],
-                           api=config_json_setting['vulners']['api'],
-                           interface=config_json_setting["network"]["interface"],
-                           inventory=config_json_setting['scheduler']['inventory'],
-                           scanner=config_json_setting['scheduler']['scanner'],
-                           cve=config_json_setting['scheduler']['cve']
-                           )
+        description = request.form.get('description')
+        private = request.form.get('private')
+        telegram = request.form.get('telegram')
+        mail = request.form.get('mail')
+        if private is None:
+            private = "Open Network"
+        else:
+            private = "Private Network"
+        name = {
+            "network": network
+        }
+        data = {
+            "interface": interface,
+            "description": description,
+            "private": private,
+            "telegram": telegram,
+            "mail": mail
+        }
+        setting_data = Storage(db='setting', collection='network')
+        setting_data.upsert(name, data)
+    return redirect(url_for('main.setting'))
 
 
-def host_discovery():
-    target_mask = config_json["network"]["ip"]
-    inventory_service = Inventory(target=target_mask)
-    results_inventory = q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-    return results_inventory
+@main.route('/setting/network/delete/<_id>', methods=['GET'])
+@login_required
+def setting_network_delete(_id):
+    setting_data = Storage(db='setting', collection='network')
+    setting_data.delete({'_id': ObjectId(_id)})
+    return redirect(url_for('main.setting'))
 
 
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
+    setting_data = Storage(db='setting', collection='network')
+    get_mask_ip = setting_data.get()
     if request.method == 'POST':
-        host_discovery()
-        return render_template('inventory.html', items=Inventory_Data_All())
+        select = request.form.get('comp_select')
+        inventory_service = Inventory(target=select)
+        q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
+        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
     else:
-        return render_template('inventory.html', items=Inventory_Data_All())
+        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
@@ -99,6 +114,25 @@ def tags(ip):
         return redirect(url_for('main.inventory'))
     else:
         return render_template('tag.html', ips=res_ip, items=inventory_array_ip)
+
+
+@main.route('/inventory/<ip>/delete', methods=["POST"])
+@login_required
+def delete_host(ip):
+    """
+    Удаление IP адреса и всей информации о нем
+    :param ip: ip-адрес
+    :return: None
+    """
+    print(ip)
+    delete_ip(host=ip)  # удаление из sqlite
+    # db_scanner["result"] # host
+    hosts_id = db_scanner['result']
+    hosts_id.delete_many({"host": ip})
+    # print(hosts_id.find({"host": ip}))
+    # for p in hosts_id.find({"host": ip}):
+    #     print(p)
+    return redirect(url_for('main.inventory'))
 
 
 @main.route('/result')
@@ -171,7 +205,6 @@ def scanner_info(uuid):
     dct = Scanner_Data_Filter_UUID(uid=uuid)
     for dict_data in dct:
         dct = dict_data
-        print(dct)
     result_vuln = find_vulnerability(task=uuid)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))

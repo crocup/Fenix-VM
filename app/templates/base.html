@@ -39,12 +39,9 @@
                     <span class="icon">
                         <i class="fa fa-lg fa-power-off"></i>
                     </span>
+                    <p>Logout</p>
                 </a>
                 {% endif %}
-            </div>
-            <div class="navbar-item has-dropdown">
-                <div class="navbar-dropdown is-right">
-                </div>
             </div>
         </div>
     </div>
@@ -58,9 +55,9 @@
                 <a class="" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
                 <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Host Discovery</a>
                 <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</a>
+                <a class="" href="{{ url_for('main.main_scheduller') }}"><span class="icon"><i class="fa fa-times-circle"></i></span> Task</a>
                 <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-table"></i></span> Vulnerability Base</a>
                  <a class="" href="{{ url_for('main.notification') }}"><span class="icon"><i class="fa fa-newspaper-o"></i></span> Notification</a>
-                <a class="" href="{{ url_for('main.main_scheduller') }}"><span class="icon"><i class="fa fa-times-circle"></i></span> Scheduler</a>
                 <a class="" href="{{ url_for('main.report') }}"><span class="icon"><i class="fa fa-list"></i></span> Report</a>
                 <a class="" href="{{ url_for('main.result_task') }}"><span class="icon"><i class="fa fa-tasks"></i></span> History</a>
                 <a class="" href="{{ url_for('main.setting') }}"><span class="icon"><i class="fa fa-certificate"></i></span> Setting</a>

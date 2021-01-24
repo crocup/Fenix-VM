@@ -1,6 +1,6 @@
 import datetime
 import json
-from app import db, time, db_scanner, db_vulnerability, db_notification
+from app import db, time, db_scanner, db_notification
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
@@ -18,7 +18,7 @@ def Scanner_Data_Record(host, uuid):
 
 
 def Scanner_Data_Filter_UUID(uid):
-    return db_vulnerability.result.find({"uuid": uid})
+    return db_scanner.result.find({"uuid": uid})
 
 
 def Scanner_Data_All():
@@ -39,6 +39,20 @@ def Inventory_Data_All():
     inventory_json = json.dumps(inventory_all, indent=4)
     data = json.loads(inventory_json)
     return data
+
+
+def Inventory_Data_Delete(host):
+    """
+    Удаление ip адреса из базы данных sqlite
+    :param host:
+    :return:
+    """
+    try:
+        InventoryPost.query.filter_by(ip=host).delete()
+        db.session.commit()
+        print(f"{host} удален")
+    except Exception as e:
+        print(e)
 
 
 def Inventory_Data_Record(result_inventory):
@@ -99,6 +113,8 @@ def Inventory_Data_Delete(ip):
     :return:
     """
     InventoryPost.query.filter_by(ip=ip).delete()
+    ScannerPost.query.filter_by(ip=ip).delete()
+    ResultPost.query.filter_by(host=ip).delete()
     db.session.commit()
 
 
@@ -117,7 +133,7 @@ def Vulnerability_Data_Record(data, name, task, port, port_name):
     :return:
     """
     now = datetime.datetime.now()
-    posts = db_vulnerability['vulnerability']
+    posts = db_scanner['vulnerability']
     sets = {
         "id": str(task),
         "result": data,
