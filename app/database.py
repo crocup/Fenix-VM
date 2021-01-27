@@ -1,6 +1,6 @@
 import datetime
 import json
-from app import db, time, db_scanner, db_notification
+from app import db, time, db_scanner
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
@@ -49,32 +49,6 @@ def Inventory_Data_Delete(host):
         print(f"{host} удален")
     except Exception as e:
         print(e)
-
-
-def Inventory_Data_Record(result_inventory):
-    """
-
-    :param result_inventory:
-    :return:
-    """
-    for res in result_inventory:
-        ips_find = InventoryPost.query.filter_by(ip=res).first()
-        if ips_find is None:
-            # если появился новый ip
-            result_json = {
-                "time": time(),
-                "message": f"New IP: {res}"
-            }
-            # оповещение (запись в mongo)
-            posts = db_notification["notifications"]
-            posts.insert(result_json)
-            # запись в БД
-            reg = InventoryPost(res, time())
-            db.session.add(reg)
-        else:
-            ips_find.dateofreg = time()
-            db.session.add(ips_find)
-    db.session.commit()
 
 
 def Inventory_Tag_Record(ip, tag):

@@ -4,11 +4,11 @@ from flask_login import login_required, current_user
 from . import logger
 from redis import Redis
 from rq import Queue
-from app.scanner.inventory import Inventory, delete_ip
+from app.scanner.host_discovery import Inventory, delete_ip
 from app.result import log_file
 from app.database import *
 from .dashboard import new_vulnerability, chart_dashboard, find_vulnerability, config_json
-from .notification import notification_message, delete_notification
+from .notification import notification_message
 from .scanner.scanner import Scanner
 from .storage.database import Storage
 
@@ -83,13 +83,14 @@ def setting_network_delete(_id):
 def inventory():
     setting_data = Storage(db='setting', collection='network')
     get_mask_ip = setting_data.get()
+    host_discovery_data = Storage(db='host_discovery', collection='result')
     if request.method == 'POST':
         select = request.form.get('comp_select')
         inventory_service = Inventory(target=select)
-        q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
+        q.enqueue_call(inventory_service.result_host_discovery, result_ttl=500)
+        return render_template('inventory.html', items=host_discovery_data.get(), net=get_mask_ip)
     else:
-        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
+        return render_template('inventory.html', items=host_discovery_data.get(), net=get_mask_ip)
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
@@ -242,8 +243,8 @@ def main_scheduller():
 @main.route('/notification', methods=['GET', 'POST'])
 @login_required
 def notification():
-    if request.method == 'POST':
-        delete_notification()
+    # if request.method == 'POST':
+    #     delete_notification()
     message = notification_message()
     return render_template('notification.html', items=message)
 

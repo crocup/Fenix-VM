@@ -1,15 +1,8 @@
 import re
 import nmap3
-from app import db_scanner
-from app.database import Inventory_Data_Record, Inventory_Data_Delete
-
-
-def check_host_discovery():
-    """
-    проверка на наличие новых ip в системе
-    :return:
-    """
-    pass
+from app import time
+from app.database import Inventory_Data_Delete
+from app.storage.database import Storage
 
 
 def delete_ip(host):
@@ -48,14 +41,23 @@ class Inventory(object):
             clients_list = []
         return clients_list
 
-    def result_scan(self):
+    def result_host_discovery(self):
         """
 
         :return:
         """
         try:
             result = list(self.scan_arp())
-            Inventory_Data_Record(result)
+            # запись результата в базу данных
+            host_discovery_data = Storage(db='host_discovery', collection='result')
+            for host_discovery in result:
+                name = {"ip": host_discovery, "tag": "None"}
+                data = {"time": time()}
+                upserted = host_discovery_data.upsert(name, data)
+                # оповещение (запись в mongo)
+                if upserted['n'] == 1:
+                    notifications_data = Storage(db='notification', collection='notifications')
+                    notifications_data.insert({"time": time(), "message": f"New IP: {host_discovery}"})
             return "success"
         except Exception as e:
             status = "error: {}".format(e)

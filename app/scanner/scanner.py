@@ -3,7 +3,7 @@ from pprint import pprint
 from uuid import uuid4
 import nmap3
 from app.database import Scanner_Data_Record, Inventory_Data_Filter_IP
-from app.scanner.inventory import Inventory
+from app.scanner.host_discovery import Inventory
 from app.storage.database import Storage
 from app.vulnerability.cve import CVE_MITRE
 
@@ -28,7 +28,7 @@ class Scanner:
         nm = nmap3.Nmap()
         inventory_service = Inventory(target=self.host)
         result_inventory = inventory_service.scan_arp()
-        inventory_service.result_scan()
+        inventory_service.result_host_discovery()
 
         for inv_host in result_inventory:
             result_json = dict()
