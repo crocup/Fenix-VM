@@ -17,10 +17,6 @@ def Scanner_Data_Record(host, uuid):
     db.session.commit()
 
 
-def Scanner_Data_Filter_UUID(uid):
-    return db_scanner.result.find({"uuid": uid})
-
-
 def Scanner_Data_All():
     result = db.session.query(ScannerPost.ip, ScannerPost.dateofreg, ScannerPost.uuid).group_by(ScannerPost.uuid).all()
     return result

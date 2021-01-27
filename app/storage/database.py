@@ -6,14 +6,13 @@ class Storage(object):
         self.db = client_mongo[db]
         self.collection = collection
 
-    def update(self, name: dict = None, data: dict = None):
+    def insert(self, data: dict = None):
         """
 
-        :param name:
         :param data:
         :return:
         """
-        return self.db[self.collection].update(name, {"$set": data})
+        return self.db[self.collection].insert_one(data)
 
     def upsert(self, name: dict = None, data: dict = None):
         """
@@ -35,8 +34,8 @@ class Storage(object):
     def get(self):
         return self.db[self.collection].find()
 
-    def get_id(self):
-        pass
+    def get_one(self, data):
+        return self.db[self.collection].find(data)
 
     def delete_all(self):
         pass

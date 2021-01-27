@@ -4,13 +4,12 @@ from flask_login import login_required, current_user
 from . import logger
 from redis import Redis
 from rq import Queue
-from app.inventory import Inventory, delete_ip
+from app.scanner.inventory import Inventory, delete_ip
 from app.result import log_file
-from app.vulnerability.cve import *
-from app.scanner import Scanner
 from app.database import *
-from .dashboard import new_vulnerability, chart_dashboard
+from .dashboard import new_vulnerability, chart_dashboard, find_vulnerability, config_json
 from .notification import notification_message, delete_notification
+from .scanner.scanner import Scanner
 from .storage.database import Storage
 
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -124,7 +123,6 @@ def delete_host(ip):
     :param ip: ip-адрес
     :return: None
     """
-    print(ip)
     delete_ip(host=ip)  # удаление из sqlite
     # db_scanner["result"] # host
     hosts_id = db_scanner['result']
@@ -186,6 +184,7 @@ def scanner():
 
     target_mask = config_json["network"]["ip"]
     scan = Scanner_Data_All()
+    # print(scan)
     arr_ip = []
     for ip in scan:
         tag_ip = Inventory_Data_Filter_IP(ip[0])
@@ -201,9 +200,10 @@ def scanner():
 
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
-def scanner_info(uuid):
-    dct = Scanner_Data_Filter_UUID(uid=uuid)
-    for dict_data in dct:
+def scanner_info(uuid: str):
+    dct = dict()
+    scanner_data = Storage(db='scanner', collection='result')
+    for dict_data in scanner_data.get_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
