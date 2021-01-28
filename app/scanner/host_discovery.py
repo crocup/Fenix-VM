@@ -51,7 +51,7 @@ class Inventory(object):
             # запись результата в базу данных
             host_discovery_data = Storage(db='host_discovery', collection='result')
             for host_discovery in result:
-                name = {"ip": host_discovery, "tag": "None"}
+                name = {"ip": host_discovery}
                 data = {"time": time()}
                 upserted = host_discovery_data.upsert(name, data)
                 # оповещение (запись в mongo)

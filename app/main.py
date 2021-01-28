@@ -109,8 +109,10 @@ def tags(ip):
             }
             inventory_array_ip.append(dict_inventory_ip)
     if request.method == 'POST':
+        # создание тега
         tag_get = request.form.get("tag")
-        Inventory_Tag_Record(ip=res_ip['ip'], tag=tag_get)
+        host_discovery_tag = Storage(db='host_discovery', collection='tags')
+        host_discovery_tag.upsert({"ip": res_ip['ip']}, {"tag": tag_get})
         return redirect(url_for('main.inventory'))
     else:
         return render_template('tag.html', ips=res_ip, items=inventory_array_ip)

@@ -51,17 +51,17 @@ def Inventory_Data_Delete(host):
         print(e)
 
 
-def Inventory_Tag_Record(ip, tag):
-    """
-
-    :param ip:
-    :param tag:
-    :return:
-    """
-    ips_find = InventoryPost.query.filter_by(ip=ip).first()
-    ips_find.tags = tag
-    db.session.add(ips_find)
-    db.session.commit()
+# def Inventory_Tag_Record(ip, tag):
+#     """
+#
+#     :param ip:
+#     :param tag:
+#     :return:
+#     """
+#     ips_find = InventoryPost.query.filter_by(ip=ip).first()
+#     ips_find.tags = tag
+#     db.session.add(ips_find)
+#     db.session.commit()
 
 
 def Inventory_Data_Filter_IP(ip):
