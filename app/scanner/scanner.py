@@ -2,7 +2,7 @@ import datetime
 from pprint import pprint
 from uuid import uuid4
 import nmap3
-from app.database import Scanner_Data_Record, Inventory_Data_Filter_IP
+from app.database import Scanner_Data_Record
 from app.scanner.host_discovery import Inventory
 from app.storage.database import Storage
 from app.vulnerability.cve import CVE_MITRE
@@ -39,7 +39,8 @@ class Scanner:
             now = datetime.datetime.now()
             result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
 
-            tag_ip = Inventory_Data_Filter_IP(inv_host)
+            host_discovery_tag = Storage(db='host_discovery', collection='tags')
+            tag_ip = host_discovery_tag.get_one({"ip": inv_host})
             result_json['tag'] = tag_ip['tag']
 
             result = nm.nmap_version_detection(inv_host)

@@ -36,7 +36,7 @@
 {% for item in items %}
             <tr>
                 <td><a href="{{ url_for('main.scanner_info', uuid=item.uuid) }}">{{item.uuid}}</a></td>
-                <td>{{item.ip}}</td>
+                <td>{{item.host}}</td>
                 <td><span class="tag is-warning">{{item.tag}}</span></td>
                 <td>{{item.date}}</td>
             </tr>

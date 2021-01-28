@@ -96,26 +96,21 @@ def inventory():
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
 @login_required
 def tags(ip):
-    res_ip = Inventory_Data_Filter_IP(ip)
-    inventory_array_ip = []
-    for ips in Scanner_Data_All():
-        tag_ip = Inventory_Data_Filter_IP(ips[0])
-        if ips[0] == ip:
-            dict_inventory_ip = {
-                'ip': ips[0],
-                'tag': tag_ip['tag'],
-                'date': ips[1],
-                'uuid': ips[2]
-            }
-            inventory_array_ip.append(dict_inventory_ip)
+    """
+
+    :param ip:
+    :return:
+    """
+    host_discovery_ip = Storage(db='scanner', collection='result')
+    data_all = host_discovery_ip.get_one({"host": ip})
     if request.method == 'POST':
         # создание тега
         tag_get = request.form.get("tag")
         host_discovery_tag = Storage(db='host_discovery', collection='tags')
-        host_discovery_tag.upsert({"ip": res_ip['ip']}, {"tag": tag_get})
+        host_discovery_tag.upsert({"ip": ip}, {"tag": tag_get})
         return redirect(url_for('main.inventory'))
     else:
-        return render_template('tag.html', ips=res_ip, items=inventory_array_ip)
+        return render_template('tag.html', ips=ip, items=data_all)
 
 
 @main.route('/inventory/<ip>/delete', methods=["POST"])
@@ -178,27 +173,20 @@ def dashboard():
 @main.route('/scanner', methods=['GET', 'POST'])
 @login_required
 def scanner():
-    global results
+    """
+
+    :return:
+    """
+    target_mask = config_json["network"]["ip"]
+    host_discovery_ip = Storage(db='scanner', collection='result')
+    data_all = host_discovery_ip.get()
+
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         scanner_service = Scanner(host=scanner_host)
         results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
         Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
-
-    target_mask = config_json["network"]["ip"]
-    scan = Scanner_Data_All()
-    # print(scan)
-    arr_ip = []
-    for ip in scan:
-        tag_ip = Inventory_Data_Filter_IP(ip[0])
-        dict_ip = {
-            'ip': ip[0],
-            'tag': tag_ip['tag'],
-            'date': ip[1],
-            'uuid': ip[2]
-        }
-        arr_ip.append(dict_ip)
-    return render_template('scanner.html', ips=target_mask, items=arr_ip)
+    return render_template('scanner.html', ips=target_mask, items=data_all)
 
 
 @main.route('/scanner/<uuid>', methods=['GET'])

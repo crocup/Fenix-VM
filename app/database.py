@@ -17,11 +17,6 @@ def Scanner_Data_Record(host, uuid):
     db.session.commit()
 
 
-def Scanner_Data_All():
-    result = db.session.query(ScannerPost.ip, ScannerPost.dateofreg, ScannerPost.uuid).group_by(ScannerPost.uuid).all()
-    return result
-
-
 def Inventory_Data_All():
     inventory_all = []
     for i in InventoryPost.query.all():
@@ -49,43 +44,6 @@ def Inventory_Data_Delete(host):
         print(f"{host} удален")
     except Exception as e:
         print(e)
-
-
-# def Inventory_Tag_Record(ip, tag):
-#     """
-#
-#     :param ip:
-#     :param tag:
-#     :return:
-#     """
-#     ips_find = InventoryPost.query.filter_by(ip=ip).first()
-#     ips_find.tags = tag
-#     db.session.add(ips_find)
-#     db.session.commit()
-
-
-def Inventory_Data_Filter_IP(ip):
-    dictionary = {}
-    r = InventoryPost.query.filter(InventoryPost.ip == str(ip))
-    for i in r:
-        dictionary = {
-            'ip': i.ip,
-            'tag': i.tags,
-            'dateofreg': i.dateofreg,
-        }
-    return dictionary
-
-
-def Inventory_Data_Delete(ip):
-    """
-
-    :param ip:
-    :return:
-    """
-    InventoryPost.query.filter_by(ip=ip).delete()
-    ScannerPost.query.filter_by(ip=ip).delete()
-    ResultPost.query.filter_by(host=ip).delete()
-    db.session.commit()
 
 
 def Result_Data(uid, name, host, time):
