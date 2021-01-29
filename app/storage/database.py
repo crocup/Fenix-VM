@@ -14,6 +14,15 @@ class Storage(object):
         """
         return self.db[self.collection].insert_one(data)
 
+    def update(self, name: dict = None, data: dict = None):
+        """
+
+        :param name:
+        :param data:
+        :return:
+        """
+        return self.db[self.collection].update_one(name, {"$set": data})
+
     def upsert(self, name: dict = None, data: dict = None):
         """
 

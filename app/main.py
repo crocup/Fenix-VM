@@ -82,16 +82,20 @@ def setting_network_delete(_id):
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
+    """
+
+    :return:
+    """
     setting_data = Storage(db='setting', collection='network')
     get_mask_ip = setting_data.get()
     host_discovery_data = Storage(db='host_discovery', collection='result')
+    item = host_discovery_data.get()
     if request.method == 'POST':
         select = request.form.get('comp_select')
-        # inventory_service = Inventory(target=select)
         q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
-        return render_template('inventory.html', items=host_discovery_data.get(), net=get_mask_ip)
+        return render_template('inventory.html', items=item, net=get_mask_ip)
     else:
-        return render_template('inventory.html', items=host_discovery_data.get(), net=get_mask_ip)
+        return render_template('inventory.html', items=item, net=get_mask_ip)
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
@@ -102,13 +106,11 @@ def tags(ip):
     :param ip:
     :return:
     """
-    host_discovery_ip = Storage(db='scanner', collection='result')
+    host_discovery_ip = Storage(db='host_discovery', collection='result')
     data_all = host_discovery_ip.get_one({"host": ip})
     if request.method == 'POST':
-        # создание тега
         tag_get = request.form.get("tag")
-        host_discovery_tag = Storage(db='host_discovery', collection='tags')
-        host_discovery_tag.upsert({"ip": ip}, {"tag": tag_get})
+        host_discovery_ip.update({"ip": ip}, {"tag": tag_get})
         return redirect(url_for('main.inventory'))
     else:
         return render_template('tag.html', ips=ip, items=data_all)

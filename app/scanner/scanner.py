@@ -36,9 +36,12 @@ class Scanner:
             now = datetime.datetime.now()
             result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
 
-            host_discovery_tag = Storage(db='host_discovery', collection='tags')
+            host_discovery_tag = Storage(db='host_discovery', collection='result')
             tag_ip = host_discovery_tag.get_one({"ip": inv_host})
-            result_json['tag'] = tag_ip['tag']
+            if 'tag' in tag_ip:
+                result_json['tag'] = tag_ip['tag']
+            else:
+                result_json['tag'] = None
 
             result = nm.nmap_version_detection(inv_host)
             Scanner_Data_Record(inv_host, uuid)
