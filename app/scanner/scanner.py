@@ -1,9 +1,8 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-import nmap3
 from app.database import Scanner_Data_Record
-from app.scanner.host_discovery import Inventory
+from app.scanner.host_discovery import *
 from app.storage.database import Storage
 from app.vulnerability.cve import CVE_MITRE
 
@@ -26,9 +25,7 @@ class Scanner:
         :return:
         """
         nm = nmap3.Nmap()
-        inventory_service = Inventory(target=self.host)
-        result_inventory = inventory_service.scan_arp()
-        inventory_service.result_host_discovery()
+        result_inventory = scan_arp(target=self.host)
 
         for inv_host in result_inventory:
             result_json = dict()
