@@ -107,11 +107,12 @@ def tags(ip):
     :return:
     """
     # исправить ошибку с тегами
-    host_discovery_ip = Storage(db='host_discovery', collection='result')
+    host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.get_one({"host": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
-        host_discovery_ip.update({"ip": ip}, {"tag": tag_get})
+        host_discovery_tag = Storage(db='host_discovery', collection='result')
+        host_discovery_tag.update({"ip": ip}, {"tag": tag_get})
         return redirect(url_for('main.inventory'))
     else:
         return render_template('tag.html', ips=ip, items=data_all)
