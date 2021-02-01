@@ -20,13 +20,13 @@ def chart_dashboard():
             for result in scanner["open_port"]:
                 top_ports_list.append(result["port"])
                 top_services_list.append(result["name"])
-            for vuln in scanner["open_port"]:
-                for vuln_cve in vuln["vulnerability"]["cve_mitre"]:
-                    top_vuln_list.append(vuln_cve["cve"])
+            # for vuln in scanner["open_port"]:
+            #     for vuln_cve in vuln["vulnerability"]["cve_mitre"]:
+            #         top_vuln_list.append(vuln_cve["cve"])
     r_port = groupby(sorted(top_ports_list))
     r_service = groupby(sorted(top_services_list))
-    count_vuln = len(set(list(top_vuln_list)))
-
+    # count_vuln = len(set(list(top_vuln_list)))
+    count_vuln=0
     top_ports = top(top_ports_list, r_port)
     top_services = top(top_services_list, r_service)
 

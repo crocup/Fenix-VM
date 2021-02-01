@@ -55,6 +55,7 @@ class Scanner:
                 prt['name'] = None
                 prt['product'] = None
                 prt['version'] = None
+                prt['vulnerability'] = {'cve_mitre': []}
                 if 'service' in i:
                     if 'name' in i['service']:
                         prt['name'] = i['service']['name']
@@ -66,7 +67,6 @@ class Scanner:
                 if prt['product'] is not None and prt['version'] is not None:
                     result_cve_mitre = CVE_MITRE(product=prt['product'], version=prt['version'])
                     prt['vulnerability'] = {'cve_mitre': result_cve_mitre.result_data()}
-
                 open_ports.append(prt)
             result_json['open_port'] = open_ports
             # запись в базу данных
