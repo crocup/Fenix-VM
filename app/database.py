@@ -1,6 +1,6 @@
 import datetime
 import json
-from app import db, time, db_scanner, db_notification
+from app import db, time, db_scanner
 from app.models import InventoryPost, ScannerPost, ResultPost
 
 
@@ -15,15 +15,6 @@ def Scanner_Data_Record(host, uuid):
     scanford = ScannerPost(dateofreg=time(), owner=some_owner, ip=host, uuid=uuid)
     db.session.add(scanford)
     db.session.commit()
-
-
-def Scanner_Data_Filter_UUID(uid):
-    return db_scanner.result.find({"uuid": uid})
-
-
-def Scanner_Data_All():
-    result = db.session.query(ScannerPost.ip, ScannerPost.dateofreg, ScannerPost.uuid).group_by(ScannerPost.uuid).all()
-    return result
 
 
 def Inventory_Data_All():
@@ -53,69 +44,6 @@ def Inventory_Data_Delete(host):
         print(f"{host} удален")
     except Exception as e:
         print(e)
-
-
-def Inventory_Data_Record(result_inventory):
-    """
-
-    :param result_inventory:
-    :return:
-    """
-    for res in result_inventory:
-        ips_find = InventoryPost.query.filter_by(ip=res).first()
-        if ips_find is None:
-            # если появился новый ip
-            result_json = {
-                "time": time(),
-                "message": f"New IP: {res}"
-            }
-            # оповещение (запись в mongo)
-            posts = db_notification["notifications"]
-            posts.insert(result_json)
-            # запись в БД
-            reg = InventoryPost(res, time())
-            db.session.add(reg)
-        else:
-            ips_find.dateofreg = time()
-            db.session.add(ips_find)
-    db.session.commit()
-
-
-def Inventory_Tag_Record(ip, tag):
-    """
-
-    :param ip:
-    :param tag:
-    :return:
-    """
-    ips_find = InventoryPost.query.filter_by(ip=ip).first()
-    ips_find.tags = tag
-    db.session.add(ips_find)
-    db.session.commit()
-
-
-def Inventory_Data_Filter_IP(ip):
-    dictionary = {}
-    r = InventoryPost.query.filter(InventoryPost.ip == str(ip))
-    for i in r:
-        dictionary = {
-            'ip': i.ip,
-            'tag': i.tags,
-            'dateofreg': i.dateofreg,
-        }
-    return dictionary
-
-
-def Inventory_Data_Delete(ip):
-    """
-
-    :param ip:
-    :return:
-    """
-    InventoryPost.query.filter_by(ip=ip).delete()
-    ScannerPost.query.filter_by(ip=ip).delete()
-    ResultPost.query.filter_by(host=ip).delete()
-    db.session.commit()
 
 
 def Result_Data(uid, name, host, time):

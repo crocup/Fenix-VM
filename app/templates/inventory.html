@@ -42,7 +42,7 @@
         <table id="inventory_id" class="display" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
+<!--                <th>#</th>-->
                 <th><div style="width: 40px;">IP</div></th>
                 <th>Tags</th>
                 <th>Update Date</th>
@@ -51,10 +51,10 @@
         <tbody>
         {% for item in items %}
             <tr>
-                <td>{{item.uuid}}</td>
+<!--                <td>{{item.uuid}}</td>-->
                 <td><a href="{{ url_for('main.tags', ip=item.ip) }}">{{item.ip}}</a></td>
                 <td><span class="tag is-warning">{{item.tag}}</span></td>
-                <td>{{item.date}}</td>
+                <td>{{item.time}}</td>
             </tr>
         {% endfor %}
         </tbody>

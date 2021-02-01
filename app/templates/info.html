@@ -119,13 +119,13 @@
             </tr>
         </thead>
         <tbody>
-        {% for item in uid.scanner %}
+        {% for item in uid.open_port %}
             <tr>
                 <th>{{item.port}}</th>
                 <th>{{item.protocol}}</th>
-                <th>{{item.service.product}}</th>
-                <th>{{item.service.name}}</th>
-                <th>{{item.service.version}}</th>
+                <th>{{item.name}}</th>
+                <th>{{item.product}}</th>
+                <th>{{item.version}}</th>
                 <th>{{item.state}}</th>
             </tr>
         {% endfor %}
@@ -136,13 +136,13 @@
         <div id="tabs" >
 	<!-- Кнопки -->
 	<ul class="tabs-nav">
-        {% for item in uid.scanner %}
-		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.service.name}})</a></li>
+        {% for item in uid.open_port %}
+		<li><a href="#tab-{{item.port}}">{{item.port}} ({{item.name}})</a></li>
         {% endfor %}
 	</ul>
 
 	<div class="tabs-items">
-        {% for item in uid.scanner %}
+        {% for item in uid.open_port %}
         <div class="tabs-item" id="tab-{{item.port}}">
             {% for cve in item.vulnerability['cve_mitre'] %}
 <div class="card">
