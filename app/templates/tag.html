@@ -6,12 +6,12 @@
   <ul>
       <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
     <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
-    <li class="is-active"><a href="#" aria-current="page">{{ips.ip}}</a></li>
+    <li class="is-active"><a href="#" aria-current="page">{{ips}}</a></li>
   </ul>
 </nav>
     <section class="hero">
   <div class="content has-text-left">
-    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips.ip}}</strong></h2>
+    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips}}</strong></h2>
   </div>
 </section>
 
@@ -37,9 +37,8 @@
 <table id="inventory_ip_id" class="display" style="width:100%">
         <thead>
             <tr>
-                <th>UUID</th>
-                <th><div style="width: 40px;">IP</div></th>
-                <th>Tags</th>
+                <th>uuid</th>
+                <th><div style="width: 40px;">Host</div></th>
                 <th>Update Date</th>
             </tr>
         </thead>
@@ -47,8 +46,7 @@
 {% for item in items %}
             <tr>
                 <td><a href="{{ url_for('main.scanner_info', uuid=item.uuid) }}">{{item.uuid}}</a></td>
-                <td>{{item.ip}}</td>
-                <td><span class="tag is-warning">{{item.tag}}</span></td>
+                <td>{{item.host}}</td>
                 <td>{{item.date}}</td>
             </tr>
 {% endfor %}
@@ -64,12 +62,12 @@
     <div class="field">
 
                 <label class="label">Tag</label>
-                <form method="POST" action="/inventory/{{ips.ip}}">
+                <form method="POST" action="/inventory/{{ips}}">
                     <div class="field has-addons">
                     <div class="control">
-                        <input class="input" type="text" name="tag" value='{{ ips.tag }}'>
+                        <input class="input" type="text" name="tag" value='Enter new tag'>
                     </div>
-                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips.ip) }}">Save</button>
+                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips) }}">Save</button>
                         </div>
                         </form>
 
@@ -77,8 +75,8 @@
             </div>
         <div class="content-header">
 
-            <form method="POST" action="/inventory/{{ips.ip}}/delete">
-                        <button class="button is-danger" href="{{ url_for('main.delete_host', ip=ips.ip) }}"><i class="fa fa-info"></i>Delete Host</button>
+            <form method="POST" action="/inventory/{{ips}}/delete">
+                        <button class="button is-danger" href="{{ url_for('main.delete_host', ip=ips) }}"><i class="fa fa-info"></i>Delete Host</button>
             </form>
     </div>
 

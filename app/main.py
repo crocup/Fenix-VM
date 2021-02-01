@@ -4,14 +4,14 @@ from flask_login import login_required, current_user
 from . import logger
 from redis import Redis
 from rq import Queue
-from app.inventory import Inventory, delete_ip
+from app.scanner.host_discovery import *
 from app.result import log_file
-from app.vulnerability.cve import *
-from app.scanner import Scanner
 from app.database import *
-from .dashboard import new_vulnerability, chart_dashboard
-from .notification import notification_message, delete_notification
+from .dashboard import new_vulnerability, chart_dashboard, find_vulnerability, config_json
+from .notification import notification_message
+from .scanner.scanner import Scanner
 from .storage.database import Storage
+from .task import host_discovery_task, scan_task
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -82,38 +82,40 @@ def setting_network_delete(_id):
 @main.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
+    """
+
+    :return:
+    """
     setting_data = Storage(db='setting', collection='network')
     get_mask_ip = setting_data.get()
+    host_discovery_data = Storage(db='host_discovery', collection='result')
+    item = host_discovery_data.get()
     if request.method == 'POST':
         select = request.form.get('comp_select')
-        inventory_service = Inventory(target=select)
-        q.enqueue_call(inventory_service.result_scan, result_ttl=86400)
-        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
+        q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
+        return render_template('inventory.html', items=item, net=get_mask_ip)
     else:
-        return render_template('inventory.html', items=Inventory_Data_All(), net=get_mask_ip)
+        return render_template('inventory.html', items=item, net=get_mask_ip)
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
 @login_required
 def tags(ip):
-    res_ip = Inventory_Data_Filter_IP(ip)
-    inventory_array_ip = []
-    for ips in Scanner_Data_All():
-        tag_ip = Inventory_Data_Filter_IP(ips[0])
-        if ips[0] == ip:
-            dict_inventory_ip = {
-                'ip': ips[0],
-                'tag': tag_ip['tag'],
-                'date': ips[1],
-                'uuid': ips[2]
-            }
-            inventory_array_ip.append(dict_inventory_ip)
+    """
+
+    :param ip:
+    :return:
+    """
+    # исправить ошибку с тегами
+    host_discovery_ip = Storage(db='scanner', collection='result')
+    data_all = host_discovery_ip.get_one({"host": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
-        Inventory_Tag_Record(ip=res_ip['ip'], tag=tag_get)
+        host_discovery_tag = Storage(db='host_discovery', collection='result')
+        host_discovery_tag.update({"ip": ip}, {"tag": tag_get})
         return redirect(url_for('main.inventory'))
     else:
-        return render_template('tag.html', ips=res_ip, items=inventory_array_ip)
+        return render_template('tag.html', ips=ip, items=data_all)
 
 
 @main.route('/inventory/<ip>/delete', methods=["POST"])
@@ -124,14 +126,9 @@ def delete_host(ip):
     :param ip: ip-адрес
     :return: None
     """
-    print(ip)
     delete_ip(host=ip)  # удаление из sqlite
-    # db_scanner["result"] # host
     hosts_id = db_scanner['result']
     hosts_id.delete_many({"host": ip})
-    # print(hosts_id.find({"host": ip}))
-    # for p in hosts_id.find({"host": ip}):
-    #     print(p)
     return redirect(url_for('main.inventory'))
 
 
@@ -177,33 +174,27 @@ def dashboard():
 @main.route('/scanner', methods=['GET', 'POST'])
 @login_required
 def scanner():
-    global results
+    """
+
+    :return:
+    """
+    target_mask = config_json["network"]["ip"]
+    host_discovery_ip = Storage(db='scanner', collection='result')
+    data_all = host_discovery_ip.get()
+
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
-        scanner_service = Scanner(host=scanner_host)
-        results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
+        results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
         Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
-
-    target_mask = config_json["network"]["ip"]
-    scan = Scanner_Data_All()
-    arr_ip = []
-    for ip in scan:
-        tag_ip = Inventory_Data_Filter_IP(ip[0])
-        dict_ip = {
-            'ip': ip[0],
-            'tag': tag_ip['tag'],
-            'date': ip[1],
-            'uuid': ip[2]
-        }
-        arr_ip.append(dict_ip)
-    return render_template('scanner.html', ips=target_mask, items=arr_ip)
+    return render_template('scanner.html', ips=target_mask, items=data_all)
 
 
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
-def scanner_info(uuid):
-    dct = Scanner_Data_Filter_UUID(uid=uuid)
-    for dict_data in dct:
+def scanner_info(uuid: str):
+    dct = dict()
+    scanner_data = Storage(db='scanner', collection='result')
+    for dict_data in scanner_data.get_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
@@ -242,8 +233,8 @@ def main_scheduller():
 @main.route('/notification', methods=['GET', 'POST'])
 @login_required
 def notification():
-    if request.method == 'POST':
-        delete_notification()
+    # if request.method == 'POST':
+    #     delete_notification()
     message = notification_message()
     return render_template('notification.html', items=message)
 
