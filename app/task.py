@@ -1,11 +1,21 @@
 from app import time
+from app.scanner.scanner import Scanner
 from app.storage.database import Storage
 from app.scanner.host_discovery import *
 from flask import jsonify
 
 
-def scan_task():
-    pass
+def scan_task(network_mask):
+    """
+
+    :param network_mask:
+    :return:
+    """
+    scanner = Scanner(network_mask)
+    result_inventory = scan_arp(target=network_mask)
+    for host in result_inventory:
+        scanner.scanner_task(host)
+    return "success"
 
 
 def host_discovery_task(host):

@@ -11,7 +11,7 @@ from .dashboard import new_vulnerability, chart_dashboard, find_vulnerability, c
 from .notification import notification_message
 from .scanner.scanner import Scanner
 from .storage.database import Storage
-from .task import host_discovery_task
+from .task import host_discovery_task, scan_task
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -184,8 +184,7 @@ def scanner():
 
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
-        scanner_service = Scanner(host=scanner_host)
-        results = q.enqueue_call(scanner_service.scan_service_version, result_ttl=500)
+        results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
         Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
     return render_template('scanner.html', ips=target_mask, items=data_all)
 
