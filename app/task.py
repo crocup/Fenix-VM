@@ -19,11 +19,14 @@ def host_discovery_task(host):
         # запись результата в базу данных
         host_discovery_data = Storage(db='host_discovery', collection='result')
         for host_discovery in result:
-            upserted = host_discovery_data.upsert({"ip": host_discovery}, {"time": time()})
-            # оповещение (запись в mongo)
-            if upserted['n'] == 1:
+            data_ip = host_discovery_data.get_one({"ip": host_discovery})
+            if data_ip.count() == 0:
+                host_discovery_data.insert({"ip": host_discovery, "tag": None, "time": time()})
+                # оповещение (запись в mongo)
                 notifications_data = Storage(db='notification', collection='notifications')
                 notifications_data.insert({"time": time(), "message": f"New IP: {host_discovery}"})
+            else:
+                host_discovery_data.upsert({"ip": host_discovery}, {"time": time()})
         return jsonify("success")
     except Exception as e:
         status = "error: {}".format(e)

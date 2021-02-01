@@ -106,6 +106,7 @@ def tags(ip):
     :param ip:
     :return:
     """
+    # исправить ошибку с тегами
     host_discovery_ip = Storage(db='host_discovery', collection='result')
     data_all = host_discovery_ip.get_one({"host": ip})
     if request.method == 'POST':
@@ -125,12 +126,8 @@ def delete_host(ip):
     :return: None
     """
     delete_ip(host=ip)  # удаление из sqlite
-    # db_scanner["result"] # host
     hosts_id = db_scanner['result']
     hosts_id.delete_many({"host": ip})
-    # print(hosts_id.find({"host": ip}))
-    # for p in hosts_id.find({"host": ip}):
-    #     print(p)
     return redirect(url_for('main.inventory'))
 
 
