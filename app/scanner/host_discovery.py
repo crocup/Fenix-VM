@@ -1,13 +1,13 @@
 import re
 import nmap3
-from app.database import Inventory_Data_Delete
+# from app.database import Inventory_Data_Delete
 
 
-def delete_ip(host):
-    try:
-        Inventory_Data_Delete(host)
-    except Exception as e:
-        print(f"error: {e}")
+# def delete_ip(host):
+#     try:
+#         Inventory_Data_Delete(host)
+#     except Exception as e:
+#         print(f"error: {e}")
 
 
 def scan_arp(target):

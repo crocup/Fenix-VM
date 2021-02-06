@@ -7,7 +7,7 @@ from rq import Queue
 from app.scanner.host_discovery import *
 from app.result import log_file
 from app.database import *
-from .dashboard import new_vulnerability, chart_dashboard, find_vulnerability, config_json
+from .dashboard import find_vulnerability, result_knowledge_base
 from .notification import notification_message
 from .scanner.scanner import Scanner
 from .storage.database import Storage
@@ -126,7 +126,7 @@ def delete_host(ip):
     :param ip: ip-адрес
     :return: None
     """
-    delete_ip(host=ip)  # удаление из sqlite
+    # delete_ip(host=ip)  # удаление из sqlite
     hosts_id = db_scanner['result']
     hosts_id.delete_many({"host": ip})
     return redirect(url_for('main.inventory'))
@@ -135,8 +135,14 @@ def delete_host(ip):
 @main.route('/result')
 @login_required
 def result_task():
+    """
+
+    :return:
+    """
+    task_all = Storage(db='scanner', collection='task')
+    item = task_all.get()
     return render_template('result.html',
-                           items=ResultPost.query.all(),
+                           items=item,
                            logs=log_file('logs/logging.log')
                            )
 
@@ -157,18 +163,18 @@ def result(uuid):
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    result_dashboard = chart_dashboard()
-    dashboard_task = ResultPost.query.all()
-    data = {
-        "name": current_user.name,
-        "count_inventory": len(result_dashboard[0]),
-        "count_vulners": result_dashboard[1],
-        "port": result_dashboard[2],
-        "service": result_dashboard[3],
-        "last_cve": new_vulnerability(),
-        "last_task": dashboard_task[len(dashboard_task) - 3:]
-    }
-    return render_template('dashboard.html', data=data)
+    # result_dashboard = chart_dashboard()
+    # dashboard_task = ResultPost.query.all()
+    # data = {
+    #     "name": current_user.name,
+    #     "count_inventory": len(result_dashboard[0]),
+    #     "count_vulners": result_dashboard[1],
+    #     "port": result_dashboard[2],
+    #     "service": result_dashboard[3],
+    #     "last_cve": new_vulnerability(),
+    #     "last_task": dashboard_task[len(dashboard_task) - 3:]
+    # }
+    return render_template('dashboard.html', data="")
 
 
 @main.route('/scanner', methods=['GET', 'POST'])
@@ -178,15 +184,22 @@ def scanner():
 
     :return:
     """
-    target_mask = config_json["network"]["ip"]
     host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.get()
 
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
-        Result_Data(uid=results.id, name='Scanner', host=scanner_host, time=time())
-    return render_template('scanner.html', ips=target_mask, items=data_all)
+        # запись в БД task
+        task_ip = Storage(db='scanner', collection='task')
+        data = {
+            "uuid": results.id,
+            "name": "Scanner",
+            "host": scanner_host,
+            "time": time()
+        }
+        task_ip.insert(data=data)
+    return render_template('scanner.html', ips='', items=data_all)
 
 
 @main.route('/scanner/<uuid>', methods=['GET'])
@@ -201,12 +214,6 @@ def scanner_info(uuid: str):
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
 
 
-def get_cve(name_cve):
-    cve_upper = str(name_cve).upper().replace(' ', '')
-    cve_text_p = find_cve(cve_upper)
-    return cve_text_p
-
-
 @main.route('/cve', methods=['GET', 'POST'])
 @login_required
 def cve():
@@ -215,8 +222,9 @@ def cve():
         logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
             return render_template('cve.html', cve_info="")
-        cve_text_p = get_cve(cve_form_get)
-        return render_template('cve.html', cve_info=cve_text_p)
+        cve_upper = str(cve_form_get).upper().replace(' ', '')
+        data = result_knowledge_base(cve_upper)
+        return render_template('cve.html', cve_info=data)
     else:
         return render_template('cve.html')
 

@@ -36,9 +36,7 @@
         <table id="table_id" class="display" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Task name</th>
-                <th>Task uuid</th>
                 <th>Host</th>
                 <th>Date</th>
             </tr>
@@ -46,11 +44,9 @@
         <tbody>
         {% for item in items %}
             <tr>
-                <td>{{item.uid}}</td>
                 <td>{{item.name}}</td>
-                <td>{{item.uuid}}</td>
                 <td>{{item.host}}</td>
-                <td>{{item.dateofreg}}</td>
+                <td>{{item.time}}</td>
             </tr>
         {% endfor %}
         </tbody>

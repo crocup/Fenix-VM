@@ -12,12 +12,6 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script type="text/javascript" charset="utf8" src="../static/js/Chart.min.js"></script>
 <div class="column is-10 " id="page-content">
-<!--    <div class="content-header  ">-->
-<!--    <h4 class="title is-4"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</h4>-->
-<!--        <span class="separator"></span>-->
-<!--    <a class="button is-info " href="{{ url_for('main.dashboard') }}"><i class="fa fa-refresh"></i>Refresh</a>-->
-<!--    <span class="separator"></span>-->
-<!--        </div>-->
 
 <div class="box">
   <article class="media">
@@ -47,13 +41,26 @@
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">HOST DISCOVERY</p>
-      <p class="title">{{data["count_inventory"]}}</p>
+      <p class="title">0</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Vulnerability</p>
-      <p class="title">{{data["count_vulners"]}}</p>
+        <p class="title">0</p>
+<!--      <p class="title">{{data["count_vulners"]}}</p>-->
+    </div>
+  </div>
+        <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Exploit</p>
+      <p class="title">0</p>
+    </div>
+  </div>
+        <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Average Score</p>
+      <p class="title">0</p>
     </div>
   </div>
 </nav>
@@ -169,11 +176,11 @@
             <div class="column">
                 <div class="card">
                     <div class="card-content">
-                        <p class="title is-4">New CVE</p>
+                        <p class="title is-4">Knowledge Base</p>
                         <table class="table">
   <thead>
     <tr>
-      <th><abbr title="CVE">CVE</abbr></th>
+      <th><abbr title="CVE">Name</abbr></th>
       <th><abbr title="Published Date">Published Date</abbr></th>
       <th><abbr title="Severity">Severity</abbr></th>
     </tr>

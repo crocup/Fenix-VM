@@ -34,10 +34,8 @@ with open("logging.json", 'r') as logging_configuration_file:
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
 client_mongo = MongoClient()
-db_vulndb = client_mongo['vulndb']
 db_scanner = client_mongo['scanner']
 db_login = client_mongo['login']
-db_collection = db_vulndb['cve']
 
 from .models import User
 
@@ -54,25 +52,12 @@ def time():
     return date_time
 
 
-def get_config():
-    with open('config.json', 'r') as f:
-        config_json = json.load(f)
-    return config_json
-
-
 # blueprint for auth routes in our app
 from .auth import auth as auth_blueprint
-
 app.register_blueprint(auth_blueprint)
 
-# blueprint for non-auth parts of app
 from .main import main as main_blueprint
-
 app.register_blueprint(main_blueprint)
-
-# from .api import api as api_blueprint
-#
-# app.register_blueprint(api_blueprint)
 
 from app import models
 from app import main
