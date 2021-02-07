@@ -1,8 +1,26 @@
-import schedule
-import time
-from app.main import inventory
+from app.main import q
+from app.storage.database import Storage
+from app.task import host_discovery_task, scan_task, scan_db_task
 
-schedule.every(1).minutes.do(inventory)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+setting_data = Storage(db='setting', collection='network')
+
+
+def scheduler_host_discovery():
+    """
+
+    :return:
+    """
+    items = setting_data.get()
+    for net in items:
+        q.enqueue_call(host_discovery_task, args=(net["network"],), result_ttl=500)
+
+
+def scheduler_scanner():
+    """
+
+    :return:
+    """
+    items = setting_data.get()
+    for net in items:
+        results = q.enqueue_call(scan_task, args=(net["network"],), result_ttl=500)
+        scan_db_task(result=results.id, host=net["network"])

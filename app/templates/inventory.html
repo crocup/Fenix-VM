@@ -9,13 +9,9 @@
         } );
 </script>
             <div class="column is-10" id="page-content">
-
-                <section class="hero">
-  <div class="content has-text-left">
-    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Host Discovery</strong></h2>
-  </div>
-</section>
                     <div class="content-header">
+                        <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Host Discovery</strong></h2>
+                        <span class="separator"></span>
                         <form method="POST" action="/inventory">
                             <div class="field has-addons">
   <div class="control">
@@ -31,18 +27,15 @@
     <button class="button is-success" href="{{ url_for('main.inventory') }}">Start</button>
   </div>
 </div>
-
                         </form>
                         <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.inventory') }}">Refresh</a>
     </div>
-
                 <div class="content-body">
                     </div>
         <table id="inventory_id" class="display" style="width:100%">
         <thead>
             <tr>
-<!--                <th>#</th>-->
                 <th><div style="width: 40px;">IP</div></th>
                 <th>Tags</th>
                 <th>Update Date</th>
@@ -51,7 +44,6 @@
         <tbody>
         {% for item in items %}
             <tr>
-<!--                <td>{{item.uuid}}</td>-->
                 <td><a href="{{ url_for('main.tags', ip=item.ip) }}">{{item.ip}}</a></td>
                 <td><span class="tag is-warning">{{item.tag}}</span></td>
                 <td>{{item.time}}</td>

@@ -3,15 +3,16 @@
 {% block content %}
 
 <div class="column is-10" id="page-content">
-    <section class="hero">
-  <div class="content has-text-left">
-    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Setting</strong></h2>
-  </div>
-</section>
+    <div class="content-header">
+        <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Setting</strong></h2>
+        <span class="separator"></span>
+    <button class="button is-success modal-button" id="showModal">Add Network</button>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.setting') }}">Refresh</a>
+        </div>
 
 <div id="all-tab-content">
     <div class="box">
-<!---->
         {% for item in settings %}
     <div class="card">
   <header class="card-header">
@@ -36,9 +37,7 @@
 </div>
         {% endfor %}
 <!---->
-        <button class="button is-success modal-button" id="showModal">Add Network</button>
-        <span class="separator"></span>
-                        <a class="button is-info" href="{{ url_for('main.setting') }}">Refresh</a>
+
 </div>
 </div>
 <div class="container" id="app">
@@ -103,22 +102,5 @@
 </div>
 </div>
 </div>
-
-<script>
-$("#showModal").click(function() {
-  $(".modal").addClass("is-active");
-});
-
-$(".modal-close").click(function() {
-   $(".modal").removeClass("is-active");
-});
-
-$("#closebtn").click(function() {
-   $(".modal").removeClass("is-active");
-});
-
-$("#closetop").click(function() {
-   $(".modal").removeClass("is-active");
-});
-</script>
+<script type="text/javascript" charset="utf8" src="../static/js/modal.js"></script>
 {% endblock %}
