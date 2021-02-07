@@ -1,6 +1,7 @@
 alabaster==0.7.12
 alembic==1.5.2
 api==0.0.7
+APScheduler==3.7.0
 argon2-cffi==20.1.0
 asgiref==3.3.1
 async-generator==1.10
@@ -109,6 +110,7 @@ testpath==0.4.4
 tornado==6.1
 traitlets==5.0.5
 typing-extensions==3.7.4.3
+tzlocal==2.1
 urllib3==1.26.3
 vulners==1.5.9
 wcwidth==0.2.5

@@ -1,7 +1,7 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-from app.database import Scanner_Data_Record
+# from app.database import Scanner_Data_Record
 from app.scanner.host_discovery import *
 from app.storage.database import Storage
 from app.vulnerability.cve import CVE_MITRE
@@ -69,7 +69,7 @@ class Scanner:
             result_json['tag'] = tags['tag']
 
         result = self.scan_service_version(host)
-        Scanner_Data_Record(host, uuid)
+        # Scanner_Data_Record(host, uuid)
 
         scann_port = result[host]['ports']
         for i in scann_port:
@@ -97,4 +97,3 @@ class Scanner:
         # запись в базу данных
         scanner_data = Storage(db='scanner', collection='result')
         scanner_data.insert(data=result_json)
-

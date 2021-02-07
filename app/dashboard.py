@@ -1,36 +1,12 @@
-from itertools import groupby
-from app import db_collection, db_scanner, get_config
-from app.database import Inventory_Data_All
+from app import db_scanner
 
 
-def chart_dashboard():
-    """
-    функция для агрегации данных по построению графиков на вкладке /dashboard
-    Графики: port, service
-    Таблицы: Last Task, Last CVE
-    :return: список данных
-    """
-    ip_list = Inventory_Data_All()
-    top_ports_list = []
-    top_services_list = []
-    top_vuln_list = []
-    for i in ip_list:
-        result_vulnerability = db_scanner.result.find({"host": i["ip"]}).sort("_id", -1).limit(1)
-        for scanner in result_vulnerability:
-            for result in scanner["open_port"]:
-                top_ports_list.append(result["port"])
-                top_services_list.append(result["name"])
-            # for vuln in scanner["open_port"]:
-            #     for vuln_cve in vuln["vulnerability"]["cve_mitre"]:
-            #         top_vuln_list.append(vuln_cve["cve"])
-    r_port = groupby(sorted(top_ports_list))
-    r_service = groupby(sorted(top_services_list))
-    # count_vuln = len(set(list(top_vuln_list)))
-    count_vuln=0
-    top_ports = top(top_ports_list, r_port)
-    top_services = top(top_services_list, r_service)
+def dashboard_open_port():
+    pass
 
-    return ip_list, count_vuln, top_ports, top_services
+
+def dashboard_service():
+    pass
 
 
 def top(list_top, val):
@@ -48,20 +24,7 @@ def top(list_top, val):
     return res_result
 
 
-def new_vulnerability():
-    """
-    функция возвращает список последних издексов CVE из базы данных
-    :return: список последних CVE в базе данных
-    """
-    return db_collection.find().sort("_id", -1).limit(3)
-
-# client = MongoClient()
-config_json = get_config()
 collection_info = db_scanner['vulnerability']
-
-
-def find_cve(cve):
-    return db_collection.find_one({"cve": cve})
 
 
 def find_vulnerability(task):
@@ -73,12 +36,12 @@ def find_vulnerability(task):
     avg_cvss = 0.0
     result_avg_cvss = 0.0
     for vulnerability in result_vulnerability:
-    #     for count_vuln in vulnerability:
-    #         count_vulnerability = count_vulnerability + len(count_vuln['vulnerability']['cve_mitre'])
-    #         for cvss in count_vuln['vulnerability']['cve_mitre']:
-    #             # print(cvss['CVSS Score'])
-    #             result_avg_cvss = float(result_avg_cvss) + float(cvss['CVSS Score'])
-        print(vulnerability)
+        #     for count_vuln in vulnerability:
+        #         count_vulnerability = count_vulnerability + len(count_vuln['vulnerability']['cve_mitre'])
+        #         for cvss in count_vuln['vulnerability']['cve_mitre']:
+        #             # print(cvss['CVSS Score'])
+        #             result_avg_cvss = float(result_avg_cvss) + float(cvss['CVSS Score'])
+        #     print(vulnerability)
         list_mng.append(vulnerability)
     # # print(count_vulnerability)
     # if count_vulnerability > 0:
@@ -90,7 +53,4 @@ def find_vulnerability(task):
 
 def count_vulnerabity(ip):
     result_vulnerability = collection_info.find(ip)
-    # count = 0
-    # for i in result_vulnerability:
-    #     count = count + 1
     return result_vulnerability
