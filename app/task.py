@@ -5,7 +5,7 @@ from app.scanner.host_discovery import *
 from flask import jsonify
 
 
-def scan_task(network_mask):
+def scan_task(network_mask: str) -> str:
     """
 
     :param network_mask:
@@ -16,6 +16,24 @@ def scan_task(network_mask):
     for host in result_inventory:
         scanner.scanner_task(host)
     return "success"
+
+
+def scan_db_task(result, host):
+    """
+
+    :param result:
+    :param host:
+    :return:
+    """
+    # запись в БД task
+    task_ip = Storage(db='scanner', collection='task')
+    data = {
+        "uuid": result,
+        "name": "Scanner",
+        "host": host,
+        "time": time()
+    }
+    task_ip.insert(data=data)
 
 
 def host_discovery_task(host):

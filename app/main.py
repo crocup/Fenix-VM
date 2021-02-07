@@ -1,17 +1,14 @@
 from bson import ObjectId
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
-from flask_login import login_required, current_user
-from . import logger
+from flask_login import login_required
+from . import logger, time
 from redis import Redis
 from rq import Queue
-from app.scanner.host_discovery import *
 from app.result import log_file
-from app.database import *
-from .dashboard import find_vulnerability, result_knowledge_base
+from .dashboard import find_vulnerability
 from .notification import notification_message
-from .scanner.scanner import Scanner
 from .storage.database import Storage
-from .task import host_discovery_task, scan_task
+from .task import host_discovery_task, scan_task, scan_db_task
 
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
@@ -127,8 +124,8 @@ def delete_host(ip):
     :return: None
     """
     # delete_ip(host=ip)  # удаление из sqlite
-    hosts_id = db_scanner['result']
-    hosts_id.delete_many({"host": ip})
+    # hosts_id = db_scanner['result']
+    # hosts_id.delete_many({"host": ip})
     return redirect(url_for('main.inventory'))
 
 
@@ -191,14 +188,7 @@ def scanner():
         scanner_host = request.form.get("scanner_text")
         results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
         # запись в БД task
-        task_ip = Storage(db='scanner', collection='task')
-        data = {
-            "uuid": results.id,
-            "name": "Scanner",
-            "host": scanner_host,
-            "time": time()
-        }
-        task_ip.insert(data=data)
+        scan_db_task(result=results.id, host=scanner_host)
     return render_template('scanner.html', ips='', items=data_all)
 
 
@@ -223,7 +213,8 @@ def cve():
         if len(cve_form_get) == 0:
             return render_template('cve.html', cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')
-        data = result_knowledge_base(cve_upper)
+        knowledge_base = Storage(db='vulndb', collection='cve')
+        data = knowledge_base.get_one(data={"cve": cve_upper})
         return render_template('cve.html', cve_info=data)
     else:
         return render_template('cve.html')

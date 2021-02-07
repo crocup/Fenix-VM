@@ -2,13 +2,9 @@
 
 {% block content %}
 <div class="column is-10" id="page-content">
-    <section class="hero">
-  <div class="content has-text-left">
-    <h2 class="title is-4"><span class="icon"><i class="fa fa-table"></i></span><strong>Knowledge Base</strong></h2>
-  </div>
-</section>
                     <div class="content-header">
-
+<h2 class="title is-4"><span class="icon"><i class="fa fa-table"></i></span><strong>Knowledge Base</strong></h2>
+                        <span class="separator"></span>
                         <form method="POST" action="/cve">
     <div class="field has-addons">
   <div class="control">
@@ -21,7 +17,8 @@
   </div>
 </div>
 </form>
-
+<span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.cve') }}">Refresh</a>
     </div>
     <div class="content-body">
 
