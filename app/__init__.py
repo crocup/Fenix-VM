@@ -11,10 +11,10 @@ import sentry_sdk
 from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 from apscheduler.schedulers.background import BackgroundScheduler
-
+from .config import SENTRY_DSN
 
 sentry_sdk.init(
-    dsn="https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896",
+    dsn=SENTRY_DSN,
     integrations=[FlaskIntegration()]
 )
 

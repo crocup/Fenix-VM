@@ -1,8 +1,7 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-# from app.database import Scanner_Data_Record
-from app.scanner.host_discovery import *
+from app.service.inventory.api import *
 from app.storage.database import Storage
 from app.vulnerability.cve import CVE_MITRE
 
