@@ -11,14 +11,14 @@ from flask import jsonify, request, abort
 app = flask.Flask(__name__)
 
 
-@app.route('/api/v1/host_discovery/scan', methods=['POST'])
-def scan_arp():
+@app.route('/api/v1/host_discovery/get', methods=['POST'])
+def host_discovery_arp():
     """
     Обнаружение хостов в сети
     :return: массив данных в json
     """
     try:
-        if not request.json:
+        if not request.json or not 'host' in request.json:
             abort(400)
         data = request.json
         clients_list = []
@@ -29,7 +29,8 @@ def scan_arp():
             if check_ip:
                 ip = check_ip.group()
                 clients_list.append(ip)
-    except Exception:
+    except Exception as e:
+        print(e)
         clients_list = []
     return jsonify({"data": clients_list})
 
