@@ -1,9 +1,19 @@
-from app import client_mongo
+import json
+from pymongo import MongoClient
+from bson import ObjectId
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
 
 class Storage(object):
     def __init__(self, db: str = None, collection: str = None):
-        self.db = client_mongo[db]
+        self.client_mongo = MongoClient()
+        self.db = self.client_mongo[db]
         self.collection = collection
 
     def insert(self, data: dict = None):
@@ -30,7 +40,7 @@ class Storage(object):
         :param data:
         :return:
         """
-        return self.db[self.collection].update(name, {"$set": data}, upsert=True)
+        return self.db[self.collection].update_one(name, {"$set": data}, upsert=True)
 
     def delete(self, name: dict = None):
         """
@@ -40,11 +50,20 @@ class Storage(object):
         """
         return self.db[self.collection].delete_one(name)
 
-    def get(self):
+    def find_data_all(self):
         return self.db[self.collection].find()
 
-    def get_one(self, data):
+    def find_one(self, data: dict) -> str:
+        result = ""
+        for item in self.db[self.collection].find(data):
+            result = item
+        return JSONEncoder().encode(result)
+
+    def data_one(self, data: dict):
         return self.db[self.collection].find(data)
 
     def delete_all(self):
         pass
+
+    def close_connection(self):
+        return self.client_mongo.close()

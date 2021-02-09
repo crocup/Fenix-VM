@@ -1,13 +1,13 @@
 from bson import ObjectId
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required
-from . import logger, time
+from . import logger
 from redis import Redis
 from rq import Queue
 from app.result import log_file
 from .dashboard import find_vulnerability
 from .notification import notification_message
-from .storage.database import Storage
+from app.service.database.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task
 
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -35,7 +35,7 @@ def about():
 @login_required
 def setting():
     setting_data = Storage(db='setting', collection='network')
-    items_setting = setting_data.get()
+    items_setting = setting_data.find_data_all()
     return render_template('setting.html', settings=items_setting)
 
 
@@ -84,9 +84,9 @@ def inventory():
     :return:
     """
     setting_data = Storage(db='setting', collection='network')
-    get_mask_ip = setting_data.get()
+    get_mask_ip = setting_data.find_data_all()
     host_discovery_data = Storage(db='host_discovery', collection='result')
-    item = host_discovery_data.get()
+    item = host_discovery_data.find_data_all()
     if request.method == 'POST':
         select = request.form.get('comp_select')
         q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
@@ -105,7 +105,7 @@ def tags(ip):
     """
     # исправить ошибку с тегами
     host_discovery_ip = Storage(db='scanner', collection='result')
-    data_all = host_discovery_ip.get_one({"host": ip})
+    data_all = host_discovery_ip.data_one({"host": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
         host_discovery_tag = Storage(db='host_discovery', collection='result')
@@ -137,7 +137,7 @@ def result_task():
     :return:
     """
     task_all = Storage(db='scanner', collection='task')
-    item = task_all.get()
+    item = task_all.find_data_all()
     return render_template('result.html',
                            items=item,
                            logs=log_file('logs/logging.log')
@@ -182,7 +182,7 @@ def scanner():
     :return:
     """
     host_discovery_ip = Storage(db='scanner', collection='result')
-    data_all = host_discovery_ip.get()
+    data_all = host_discovery_ip.find_data_all()
 
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
@@ -197,7 +197,7 @@ def scanner():
 def scanner_info(uuid: str):
     dct = dict()
     scanner_data = Storage(db='scanner', collection='result')
-    for dict_data in scanner_data.get_one(data={"uuid": uuid}):
+    for dict_data in scanner_data.data_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
@@ -214,7 +214,7 @@ def cve():
             return render_template('cve.html', cve_info="")
         cve_upper = str(cve_form_get).upper().replace(' ', '')
         knowledge_base = Storage(db='vulndb', collection='cve')
-        data = knowledge_base.get_one(data={"cve": cve_upper})
+        data = knowledge_base.data_one(data={"cve": cve_upper})
         return render_template('cve.html', cve_info=data)
     else:
         return render_template('cve.html')

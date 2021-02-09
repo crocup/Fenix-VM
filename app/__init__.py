@@ -12,9 +12,8 @@ from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
 sentry_sdk.init(
-    dsn="https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896",
+    dsn='https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896',
     integrations=[FlaskIntegration()]
 )
 
@@ -31,11 +30,12 @@ FlaskUUID(app)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
+
 with open("logging.json", 'r') as logging_configuration_file:
     config_dict = json.load(logging_configuration_file)
-
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
+
 client_mongo = MongoClient()
 db_scanner = client_mongo['scanner']
 db_login = client_mongo['login']
