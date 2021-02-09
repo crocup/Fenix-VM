@@ -1,8 +1,7 @@
 from app import time
-from app.scanner.scanner import Scanner
-from app.storage.database import Storage
-from app.scanner.host_discovery import *
-from flask import jsonify
+from app.config import *
+from app.service.scanner.scanner import Scanner
+import requests
 
 
 def scan_task(network_mask: str) -> str:
@@ -12,8 +11,9 @@ def scan_task(network_mask: str) -> str:
     :return:
     """
     scanner = Scanner(network_mask)
-    result_inventory = scan_arp(target=network_mask)
-    for host in result_inventory:
+    result_inventory = requests.post(HOST_DISCOVERY, json={"host": network_mask})
+    data = result_inventory.json()
+    for host in data["data"]:
         scanner.scanner_task(host)
     return "success"
 
@@ -26,36 +26,39 @@ def scan_db_task(result, host):
     :return:
     """
     # запись в БД task
-    task_ip = Storage(db='scanner', collection='task')
     data = {
         "uuid": result,
         "name": "Scanner",
         "host": host,
         "time": time()
     }
-    task_ip.insert(data=data)
+    requests.post(INSERT_DATABASE, json={"data": data,
+                                         "base": "scanner", "collection": "task"})
 
 
-def host_discovery_task(host):
+def host_discovery_task(host: str):
     """
 
     :param host:
     :return:
     """
     try:
-        result = list(scan_arp(target=host))
+        result = requests.post(HOST_DISCOVERY, json={"host": host})
+        data = result.json()
         # запись результата в базу данных
-        host_discovery_data = Storage(db='host_discovery', collection='result')
-        for host_discovery in result:
-            data_ip = host_discovery_data.get_one({"ip": host_discovery})
-            if data_ip.count() == 0:
-                host_discovery_data.insert({"ip": host_discovery, "tag": None, "time": time()})
-                # оповещение (запись в mongo)
-                notifications_data = Storage(db='notification', collection='notifications')
-                notifications_data.insert({"time": time(), "message": f"New IP: {host_discovery}"})
+        for host_discovery in data["data"]:
+            data_ip = requests.post(GET_ONE_DATABASE, json={"data": {"ip": host_discovery},
+                                                            "base": "host_discovery", "collection": "result"})
+            data_ip = data_ip.json()
+            if len(data_ip['data']) == 0:
+                requests.post(INSERT_DATABASE, json={"data": {"ip": host_discovery, "tag": None, "time": time()},
+                                                     "base": "host_discovery", "collection": "result"})
+                # оповещение
+                requests.post(INSERT_DATABASE, json={"data": {"time": time(), "message": f"New IP: {host_discovery}"},
+                                                     "base": "notification", "collection": "notifications"})
             else:
-                host_discovery_data.upsert({"ip": host_discovery}, {"time": time()})
-        return jsonify("success")
+                requests.post(UPSERT_DATABASE, json={"data": {"name": {"ip": host_discovery}, "set": {"time": time()}},
+                                                     "base": "host_discovery", "collection": "result"})
+        return "success"
     except Exception as e:
-        status = "error: {}".format(e)
-        return status
+        return "error"

@@ -1,9 +1,8 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-# from app.database import Scanner_Data_Record
-from app.scanner.host_discovery import *
-from app.storage.database import Storage
+from app.service.inventory.api import *
+from app.service.database.database import Storage
 from app.vulnerability.cve import CVE_MITRE
 
 
@@ -64,7 +63,7 @@ class Scanner:
         result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
 
         host_discovery_tag = Storage(db='host_discovery', collection='result')
-        tag_ip = host_discovery_tag.get_one({"ip": host})
+        tag_ip = host_discovery_tag.data_one({"ip": host})
         for tags in tag_ip:
             result_json['tag'] = tags['tag']
 
