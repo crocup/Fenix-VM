@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 
+{% block userscript %}
+<script type="text/javascript" charset="utf8" src="../static/js/tab.js"></script>
+{% endblock %}
+
 {% block content %}
 
 <div class="column is-10" id="page-content">
     <div class="content-header">
         <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Setting</strong></h2>
         <span class="separator"></span>
-    <button class="button is-success modal-button" id="showModal">Add Network</button>
-        <span class="separator"></span>
                         <a class="button is-info" href="{{ url_for('main.setting') }}">Refresh</a>
         </div>
+<div id="tabs">
+        <div class="tabs is-left">
+  <ul class="tabs-nav">
+      <li><a href="#tab-network"><span class="icon is-small"><i class="fa fa-internet-explorer" aria-hidden="true"></i></span>Network</a></li>
+      <li><a href="#tab-notification"><span class="icon is-small"><i class="fa fa-phone" aria-hidden="true"></i></span>Notification</a></li>
+  </ul>
+</div>
 
-<div id="all-tab-content">
+    <div class="tabs-items">
+<div class="tabs-item" id="tab-network">
+			<div class="content-header">
+    <a class="button is-success modal-button" href="{{ url_for('main.setting_network') }}">Add Network</a>
+        </div>
     <div class="box">
         {% for item in settings %}
     <div class="card">
@@ -26,22 +39,47 @@
         <p><strong>Interface:</strong> {{item.interface}} </p>
       <p><strong>Status:</strong> {{item.private}} </p>
     <p><strong>Description:</strong> {{item.description}} </p>
-        <p><strong>Telegram:</strong> {{item.telegram}} </p>
-        <p><strong>E-mail:</strong> {{item.mail}} </p>
     </div>
   </div>
   <footer class="card-footer">
-<!--    <a href="#" class="card-footer-item">Edit</a>-->
-    <a href="{{ url_for('main.setting_network_delete', _id=item._id) }}" class="card-footer-item">Delete</a>
+    <a href="{{ url_for('main.setting_network_delete', _id=item._id, col='network') }}" class="card-footer-item">Delete</a>
   </footer>
 </div>
         {% endfor %}
-<!---->
+</div>
 
+		</div>
+		<div class="tabs-item" id="tab-notification">
+			<div class="content-header">
+    <a class="button is-success modal-button" href="{{ url_for('main.setting_notification') }}">Add Notification</a>
+            </div>
+           <div class="box">
+               {% for item in notification %}
+    <div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Notification
+    </p>
+
+  </header>
+  <div class="card-content">
+    <div class="content">
+        <p><strong>Telegram:</strong> {{item.telegram}} </p>
+        <p><strong>E-mail:</strong> {{item.email}} </p>
+    </div>
+  </div>
+  <footer class="card-footer">
+      <a href="{{ url_for('main.setting_network_delete', _id=item._id, col='notification') }}" class="card-footer-item">Delete</a>
+  </footer>
 </div>
+               {% endfor %}
 </div>
+        </div>
+		</div>
+
+
 <div class="container" id="app">
-    <form method="POST" action="/setting/network/add">
+    <form method="POST" action="/setting/network">
 <div class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">

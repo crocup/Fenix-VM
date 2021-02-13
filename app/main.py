@@ -36,10 +36,13 @@ def about():
 def setting():
     setting_data = Storage(db='setting', collection='network')
     items_setting = setting_data.find_data_all()
-    return render_template('setting.html', settings=items_setting)
+
+    setting_data = Storage(db='setting', collection='notification')
+    items_notification = setting_data.find_data_all()
+    return render_template('setting.html', settings=items_setting, notification=items_notification)
 
 
-@main.route('/setting/network/add', methods=['GET', 'POST'])
+@main.route('/setting/network', methods=['GET', 'POST'])
 @login_required
 def setting_network():
     if request.method == 'POST':
@@ -65,13 +68,32 @@ def setting_network():
         }
         setting_data = Storage(db='setting', collection='network')
         setting_data.upsert(name, data)
-    return redirect(url_for('main.setting'))
+        return redirect(url_for('main.setting'))
+    else:
+        return render_template('network.html')
 
 
-@main.route('/setting/network/delete/<_id>', methods=['GET'])
+@main.route('/setting/notification', methods=['GET', 'POST'])
 @login_required
-def setting_network_delete(_id):
-    setting_data = Storage(db='setting', collection='network')
+def setting_notification():
+    if request.method == 'POST':
+        telegram = request.form.get('telegram')
+        email = request.form.get('email')
+        setting_data = Storage(db='setting', collection='notification')
+        data = {
+            "telegram": telegram,
+            "email": email,
+        }
+        setting_data.insert(data)
+        return redirect(url_for('main.setting'))
+    else:
+        return render_template('network_notification.html')
+
+
+@main.route('/setting/<col>/delete/<_id>', methods=['GET'])
+@login_required
+def setting_network_delete(_id, col):
+    setting_data = Storage(db='setting', collection=col)
     setting_data.delete({'_id': ObjectId(_id)})
     return redirect(url_for('main.setting'))
 
@@ -183,7 +205,6 @@ def scanner():
     """
     host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.find_data_all()
-
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
