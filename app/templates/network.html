@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-10" id="page-content">
+    <div class="content-header">
+        <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>Setting Network</strong></h2>
+        <span class="separator"></span>
+                        <a class="button is-info" href="{{ url_for('main.setting_network') }}">Refresh</a>
+        </div>
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+      <li><a href="{{ url_for('main.setting') }}">< Back to Setting</a></li>
+  </ul>
+</nav>
+<form method="POST" action="/setting/network">
+    <section class="modal-card-body">
+      <div class="content">
+            <div class="field">
+                <label class="label">NETWORK</label>
+                    <div class="control">
+                        <input class="input" type="text" name="network" value='{{ ips }}'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+            <div class="field">
+                <label class="label">INTERFACE</label>
+                    <div class="control">
+                        <input class="input" type="text" name="interface" value='{{ interface }}'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+          <div class="field">
+                <label class="label">DESCRIPTION</label>
+                    <div class="control">
+                        <input class="input" type="text" name="description" value='Home'>
+                    </div>
+                <p class="help">This is a help text</p>
+            </div>
+          <label class="checkbox">
+  <input type="checkbox" name="private">
+  Private Network
+</label>
+    </div>
+        <button class="button is-success">Save</button>
+    </section>
+        </form>
+    </div>
+{% endblock %}

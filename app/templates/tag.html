@@ -1,39 +1,29 @@
 {% extends "base.html" %}
-
+{% block userscript %}
+<script type="text/javascript" charset="utf8" src="../static/js/tab.js"></script>
+{% endblock %}
 {% block content %}
 <div class="column is-10" id="page-content">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
+<div class="content-header">
+        <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips}}</strong></h2>
+        <span class="separator"></span>
+    <a class="button is-info" href="{{ url_for('main.tags', ip=ips) }}">Refresh</a>
+        </div>
+    <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
-      <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-    <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
-    <li class="is-active"><a href="#" aria-current="page">{{ips}}</a></li>
+    <li><a href="{{ url_for('main.inventory') }}">< Back to Host Discovery</a></li>
   </ul>
 </nav>
-    <section class="hero">
-  <div class="content has-text-left">
-    <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips}}</strong></h2>
-  </div>
-</section>
-
+    <div id="tabs">
     <div class="tabs is-left">
-  <ul>
-    <li class="is-active" id="all-tab">
-      <a onClick="switchToAll()">
-        <span class="icon is-small"><i class="fa fa-internet-explorer" aria-hidden="true"></i></span>
-        <span>Scanner Task</span>
-      </a>
-    </li>
-    <li id="adaptivedesign-tab">
-      <a onClick="switchToAdaptiveDesign()">
-        <span class="icon is-small"><i class="fa fa-newspaper-o" aria-hidden="true"></i></span>
-        <span>Edit Host</span>
-      </a>
-    </li>
+  <ul class="tabs-nav">
+      <li><a href="#tab-scanner-task"><span class="icon is-small"><i class="fa fa-file-text" aria-hidden="true"></i></span>Scanner Task</a></li>
+      <li><a href="#tab-edit-host"><span class="icon is-small"><i class="fa fa-edit" aria-hidden="true"></i></span>Edit Host</a></li>
   </ul>
 </div>
-
-<div id="all-tab-content">
-    <div class="field">
+<div class="tabs-items">
+		<div class="tabs-item" id="tab-scanner-task">
+			<div class="field">
 <table id="inventory_ip_id" class="display" style="width:100%">
         <thead>
             <tr>
@@ -53,35 +43,31 @@
         </tbody>
     </table>
             </div>
-    </div>
-
-<!--    Tag-->
-    <div class="is-hidden" id="adaptivedesign-tab-content">
-<!--        Code-->
-
-    <div class="field">
-
-                <label class="label">Tag</label>
-                <form method="POST" action="/inventory/{{ips}}">
-                    <div class="field has-addons">
+		</div>
+		<div class="tabs-item" id="tab-edit-host">
+			 <div class="field">
+                 <form method="POST" action="/inventory/{{ips}}">
+    <section class="modal-card-body">
+      <div class="content">
+            <div class="field">
+                <label class="label">NAME</label>
                     <div class="control">
                         <input class="input" type="text" name="tag" value='Enter new tag'>
                     </div>
-                        <button class="button is-success" href="{{ url_for('main.tags', ip=ips) }}">Save</button>
-                        </div>
-                        </form>
-
-                <p class="help">Please enter a new tag and click to save</p>
+                <p class="help">This is a help text</p>
             </div>
-        <div class="content-header">
-
-            <form method="POST" action="/inventory/{{ips}}/delete">
-                        <button class="button is-danger" href="{{ url_for('main.delete_host', ip=ips) }}"><i class="fa fa-info"></i>Delete Host</button>
-            </form>
+          <label class="checkbox">
+  <input type="checkbox" name="private">
+  Important Host
+</label>
     </div>
-
-        </div>
-
+        <button class="button is-success" href="{{ url_for('main.tags', ip=ips) }}">Save</button>
+    </section>
+        </form>
+            </div>
+		</div>
+	</div>
+  </div>
             </div>
 <script type="text/javascript" class="init">
         $(document).ready(function() {
@@ -90,28 +76,4 @@
 	        } );
         } );
 </script>
-
-<script>
-    function switchToAll() {
-      removeActive();
-      hideAll();
-      $("#all-tab").addClass("is-active");
-      $("#all-tab-content").removeClass("is-hidden");
-    }
-    function switchToAdaptiveDesign() {
-      removeActive();
-      hideAll();
-      $("#adaptivedesign-tab").addClass("is-active");
-      $("#adaptivedesign-tab-content").removeClass("is-hidden");
-    }
-    function removeActive() {
-      $("li").each(function() {
-        $(this).removeClass("is-active");
-      });
-    }
-    function hideAll(){
-      $("#all-tab-content").addClass("is-hidden");
-      $("#adaptivedesign-tab-content").addClass("is-hidden");
-    }
-  </script>
 {% endblock %}
