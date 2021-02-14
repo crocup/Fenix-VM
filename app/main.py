@@ -78,10 +78,12 @@ def setting_network():
 def setting_notification():
     if request.method == 'POST':
         telegram = request.form.get('telegram')
+        chat_id = request.form.get('chat_id')
         email = request.form.get('email')
         setting_data = Storage(db='setting', collection='notification')
         data = {
-            "telegram": telegram,
+            "telegram_bot_api": telegram,
+            "telegram_chat_id": chat_id,
             "email": email,
         }
         setting_data.insert(data)
