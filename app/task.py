@@ -1,5 +1,6 @@
 from app import time
 from app.config import *
+from app.notification import telegram_message
 from app.service.scanner.scanner import Scanner
 import requests
 
@@ -54,8 +55,11 @@ def host_discovery_task(host: str):
                 requests.post(INSERT_DATABASE, json={"data": {"ip": host_discovery, "tag": None, "time": time()},
                                                      "base": "host_discovery", "collection": "result"})
                 # оповещение
-                requests.post(INSERT_DATABASE, json={"data": {"time": time(), "message": f"New IP: {host_discovery}"},
+                message = f"New IP: {host_discovery}"
+                requests.post(INSERT_DATABASE, json={"data": {"time": time(), "message": message},
                                                      "base": "notification", "collection": "notifications"})
+                # оповещение в телеграм
+                telegram_message(message)
             else:
                 requests.post(UPSERT_DATABASE, json={"data": {"name": {"ip": host_discovery}, "set": {"time": time()}},
                                                      "base": "host_discovery", "collection": "result"})

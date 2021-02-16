@@ -64,7 +64,8 @@
   </header>
   <div class="card-content">
     <div class="content">
-        <p><strong>Telegram:</strong> {{item.telegram}} </p>
+        <p><strong>Telegram: Bot API :</strong> {{item.telegram_bot_api}} </p>
+        <p><strong>Telegram: Chat ID :</strong> {{item.telegram_chat_id}} </p>
         <p><strong>E-mail:</strong> {{item.email}} </p>
     </div>
   </div>
@@ -77,67 +78,6 @@
         </div>
 		</div>
 
-
-<div class="container" id="app">
-    <form method="POST" action="/setting/network">
-<div class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Network Setting</p>
-      <button class="delete" id="closetop" aria-label="close"></button>
-    </header>
-    <section class="modal-card-body">
-      <div class="content">
-            <div class="field">
-                <label class="label">NETWORK</label>
-                    <div class="control">
-                        <input class="input" type="text" name="network" value='{{ ips }}'>
-                    </div>
-                <p class="help">This is a help text</p>
-            </div>
-            <div class="field">
-                <label class="label">INTERFACE</label>
-                    <div class="control">
-                        <input class="input" type="text" name="interface" value='{{ interface }}'>
-                    </div>
-                <p class="help">This is a help text</p>
-            </div>
-          <div class="field">
-                <label class="label">DESCRIPTION</label>
-                    <div class="control">
-                        <input class="input" type="text" name="description" value='Home'>
-                    </div>
-                <p class="help">This is a help text</p>
-            </div>
-          <div class="field">
-                <label class="label">Telegram Bot</label>
-                    <div class="control">
-                        <input class="input" type="text" name="telegram" value='{{ ips }}'>
-                    </div>
-                <p class="help">This is a help text</p>
-            </div>
-            <div class="field">
-                <label class="label">Email</label>
-                    <div class="control">
-                        <input class="input" type="text" name="mail" value='{{ interface }}'>
-                    </div>
-                <p class="help">This is a help text</p>
-            </div>
-          <label class="checkbox">
-  <input type="checkbox" name="private">
-  Private Network
-</label>
-    </div>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button is-success">Save</button>
-      <button class="button" id="closebtn">Cancel</button>
-    </footer>
-  </div>
-</div>
-        </form>
-</div>
 </div>
 </div>
 <script type="text/javascript" charset="utf8" src="../static/js/modal.js"></script>
