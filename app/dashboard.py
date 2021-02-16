@@ -24,7 +24,7 @@ def top(list_top, val):
     return res_result
 
 
-collection_info = db_scanner['vulnerability']
+collection_info = db_scanner['plugins']
 
 
 def find_vulnerability(task):
@@ -36,12 +36,12 @@ def find_vulnerability(task):
     avg_cvss = 0.0
     result_avg_cvss = 0.0
     for vulnerability in result_vulnerability:
-        #     for count_vuln in vulnerability:
-        #         count_vulnerability = count_vulnerability + len(count_vuln['vulnerability']['cve_mitre'])
-        #         for cvss in count_vuln['vulnerability']['cve_mitre']:
+        #     for count_vuln in plugins:
+        #         count_vulnerability = count_vulnerability + len(count_vuln['plugins']['cve_mitre'])
+        #         for cvss in count_vuln['plugins']['cve_mitre']:
         #             # print(cvss['CVSS Score'])
         #             result_avg_cvss = float(result_avg_cvss) + float(cvss['CVSS Score'])
-        #     print(vulnerability)
+        #     print(plugins)
         list_mng.append(vulnerability)
     # # print(count_vulnerability)
     # if count_vulnerability > 0:

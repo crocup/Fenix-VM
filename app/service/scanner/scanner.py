@@ -1,9 +1,26 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
+from app.plugins.webbuster import DirectoryBuster
 from app.service.inventory.api import *
 from app.service.database.database import Storage
-from app.vulnerability.cve import CVE_MITRE
+from app.plugins.cve import CVE_MITRE
+
+
+def scanner_uuid(host):
+    result_json = dict()
+    uuid = str(uuid4())
+    result_json['host'] = host
+    result_json['uuid'] = uuid
+    now = datetime.datetime.now()
+    result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
+    host_discovery_tag = Storage(db='host_discovery', collection='result')
+    tag_ip = host_discovery_tag.data_one({"ip": host})
+    for tags in tag_ip:
+        result_json['tag'] = tags['tag']
+    scanner_data = Storage(db='scanner', collection='result')
+    scanner_data.insert(data=result_json)
+    return uuid
 
 
 class Scanner:
@@ -55,21 +72,8 @@ class Scanner:
         """
         result_json = dict()
         open_ports = []
-        uuid = str(uuid4())
-        result_json['uuid'] = uuid
-        result_json['host'] = host
-
-        now = datetime.datetime.now()
-        result_json['date'] = now.strftime("%d-%m-%Y %H:%M")
-
-        host_discovery_tag = Storage(db='host_discovery', collection='result')
-        tag_ip = host_discovery_tag.data_one({"ip": host})
-        for tags in tag_ip:
-            result_json['tag'] = tags['tag']
-
+        uuid = scanner_uuid(host=host)
         result = self.scan_service_version(host)
-        # Scanner_Data_Record(host, uuid)
-
         scann_port = result[host]['ports']
         for i in scann_port:
             prt = dict()
@@ -79,7 +83,7 @@ class Scanner:
             prt['name'] = None
             prt['product'] = None
             prt['version'] = None
-            prt['vulnerability'] = {'cve_mitre': []}
+            prt['plugins'] = {'cve_mitre': []}
             if 'service' in i:
                 if 'name' in i['service']:
                     prt['name'] = i['service']['name']
@@ -87,12 +91,16 @@ class Scanner:
                         prt['product'] = i['service']['product']
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
-            # vulnerability cve mitre
+            # plugins cve mitre
             if prt['product'] is not None and prt['version'] is not None:
                 result_cve_mitre = CVE_MITRE(product=prt['product'], version=prt['version'])
-                prt['vulnerability'] = {'cve_mitre': result_cve_mitre.result_data()}
+                prt['plugins'] = {'cve_mitre': result_cve_mitre.result_data()}
+            # dirb
+            if prt['name'] == 'http' or prt['name'] == 'https':
+                data = DirectoryBuster(service=prt['name'], host=host, port=prt['port'])
+                prt['plugins']['dirb'] = data['data']
             open_ports.append(prt)
         result_json['open_port'] = open_ports
         # запись в базу данных
         scanner_data = Storage(db='scanner', collection='result')
-        scanner_data.insert(data=result_json)
+        scanner_data.upsert(name={"uuid": uuid}, data=result_json)

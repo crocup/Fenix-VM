@@ -5,17 +5,20 @@
 
 <div class="column is-10" id="page-content">
     <section class="hero">
-  <div class="content has-text-left">
+  <div class="content-header">
     <h2 class="title is-4"><span class="icon"><i class="fa fa-newspaper-o"></i></span><strong>Notification</strong></h2>
+      <span class="separator"></span>
+      <a class="button is-info" href="{{ url_for('main.notification') }}">Refresh</a>
   </div>
 </section>
 
 {% for item in items %}
-<div class="notification">
-    <button class="delete is-small"></button>
-      <p><strong>Message:</strong> {{item['message']}}</p>
+    <article class="message is-dark">
+  <div class="message-body">
+  <p><strong>Message:</strong> {{item['message']}}</p>
       <p><strong>Time:</strong> {{item['time']}}</p>
   </div>
+</article>
 
 {% endfor %}
 </div>
