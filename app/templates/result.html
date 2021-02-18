@@ -27,6 +27,7 @@
         <thead>
             <tr>
                 <th>Task name</th>
+                <th>UUID</th>
                 <th>Host</th>
                 <th>Status</th>
                 <th>Date</th>
@@ -36,6 +37,7 @@
         {% for item in items %}
             <tr>
                 <td>{{item.name}}</td>
+                <td>{{item.uuid}}</td>
                 <td>{{item.host}}</td>
                 <td>Unknown</td>
                 <td>{{item.time}}</td>
@@ -56,7 +58,7 @@
 <script type="text/javascript" class="init">
         $(document).ready(function() {
 	    $('#table_id').DataTable( {
-		"order": [[ 3, "desc" ]]
+		"order": [[ 4, "desc" ]]
 	        } );
         } );
 </script>
