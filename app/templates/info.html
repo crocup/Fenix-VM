@@ -108,7 +108,13 @@
 </div>
 		</div>
         <div class="tabs-item" id="info">
-			<strong>Текст вкладки №5</strong>
+			<div class="card">
+  <div class="card-content">
+    <div class="content">
+    Info
+    </div>
+  </div>
+</div>
 		</div>
 		<div class="tabs-item" id="vulnerabilities">
 			<strong>Текст вкладки №2</strong>
@@ -117,37 +123,6 @@
 			<strong>Текст вкладки №3</strong>
 		</div>
 	</div>
-
-<!--    <div class="table-container" id="all-tab-content">-->
-<!--        <table id="info_scanner_id" class="display" style="width:100%">-->
-<!--        <thead>-->
-<!--            <tr>-->
-<!--                <th>Port</th>-->
-<!--                <th><div style="width: 40px;">Protocol</div></th>-->
-<!--                <th>Name</th>-->
-<!--                <th>Service name</th>-->
-<!--                <th>Service version</th>-->
-<!--                <th>State</th>-->
-<!--            </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        {% for item in uid.open_port %}-->
-<!--            <tr>-->
-<!--                <th>{{item.port}}</th>-->
-<!--                <th>{{item.protocol}}</th>-->
-<!--                <th>{{item.name}}</th>-->
-<!--                <th>{{item.product}}</th>-->
-<!--                <th>{{item.version}}</th>-->
-<!--                <th>{{item.state}}</th>-->
-<!--            </tr>-->
-<!--        {% endfor %}-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
      </div>
     </div>
-<script>function view(n) {
-    style = document.getElementById(n).style;
-    style.display = (style.display === 'block') ? 'none' : 'block';
-}</script>
 {% endblock %}

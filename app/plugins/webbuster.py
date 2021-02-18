@@ -26,7 +26,7 @@ def DirectoryBuster(service: str, host: str, port: int) -> Dict:
         line_dir = line.rstrip()
         result = re.search(br'CODE', line_dir)
         if result is not None:
-            list_dir.append(str(line_dir).encode('UTF-8'))
+            list_dir.append(str(line_dir).decode('UTF-8'))
     data = {
         "data": list_dir
     }

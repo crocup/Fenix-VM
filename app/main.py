@@ -127,16 +127,22 @@ def tags(ip):
     :param ip:
     :return:
     """
-    # исправить ошибку с тегами
     host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.data_one({"host": ip})
+    host_discovery_tag = Storage(db='host_discovery', collection='result')
+    data_tag = host_discovery_tag.data_one({"ip": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
+        important = request.form.get('important')
+        if important:
+            important = True
+        else:
+            important = False
         host_discovery_tag = Storage(db='host_discovery', collection='result')
-        host_discovery_tag.update({"ip": ip}, {"tag": tag_get})
+        host_discovery_tag.update({"ip": ip}, {"tag": tag_get, "important": important})
         return redirect(url_for('main.inventory'))
     else:
-        return render_template('tag.html', ips=ip, items=data_all)
+        return render_template('tag.html', ips=ip, items=data_all, tag_items=data_tag)
 
 
 @main.route('/inventory/<ip>/delete', methods=["POST"])
