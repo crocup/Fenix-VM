@@ -24,11 +24,11 @@
 <div class="tabs-items">
 		<div class="tabs-item" id="tab-scanner-task">
 			<div class="field">
-<table id="inventory_ip_id" class="display" style="width:100%">
+<table id="inventory_ip_ids" class="display" style="width:100%">
         <thead>
             <tr>
-                <th>uuid</th>
-                <th><div style="width: 40px;">Host</div></th>
+                <th>UUID</th>
+                <th>Host</th>
                 <th>Update Date</th>
             </tr>
         </thead>
@@ -49,17 +49,23 @@
                  <form method="POST" action="/inventory/{{ips}}">
     <section class="modal-card-body">
       <div class="content">
+          {% for item in tag_items %}
             <div class="field">
                 <label class="label">NAME</label>
                     <div class="control">
-                        <input class="input" type="text" name="tag" value='Enter new tag'>
+                        <input class="input" type="text" name="tag" value='{{item.tag}}'>
                     </div>
                 <p class="help">This is a help text</p>
             </div>
           <label class="checkbox">
-  <input type="checkbox" name="private">
+              {% if item.important %}
+  <input type="checkbox" name="important" checked>
+              {% else %}
+              <input type="checkbox" name="important">
+              {% endif %}
   Important Host
 </label>
+          {% endfor %}
     </div>
         <button class="button is-success" href="{{ url_for('main.tags', ip=ips) }}">Save</button>
     </section>
@@ -71,7 +77,7 @@
             </div>
 <script type="text/javascript" class="init">
         $(document).ready(function() {
-	    $('#inventory_ip_id').DataTable( {
+	    $('#inventory_ip_ids').DataTable( {
 		"order": [[ 2, "desc" ]]
 	        } );
         } );

@@ -38,7 +38,15 @@
         {% for item in items %}
             <tr>
                 <td><a href="{{ url_for('main.tags', ip=item.ip) }}">{{item.ip}}</a></td>
-                <td><span class="tag is-warning">{{item.tag}}</span></td>
+                {% if item.important %}
+                <td><div class="tags has-addons">
+                        <span class="tag is-light">{{item.tag}}</span>
+                        <span class="tag is-danger">Important Host</span>
+                </div></td>
+
+                {% else %}
+                <td><span class="tag is-light">{{item.tag}}</span></td>
+                {% endif %}
                 <td>{{item.time}}</td>
             </tr>
         {% endfor %}
