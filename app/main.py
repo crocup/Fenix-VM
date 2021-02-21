@@ -5,7 +5,7 @@ from . import logger
 from redis import Redis
 from rq import Queue
 from app.result import log_file
-from .dashboard import find_vulnerability
+from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
 from app.service.database.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task
@@ -190,18 +190,12 @@ def result(uuid):
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    # result_dashboard = chart_dashboard()
-    # dashboard_task = ResultPost.query.all()
-    # data = {
-    #     "name": current_user.name,
-    #     "count_inventory": len(result_dashboard[0]),
-    #     "count_vulners": result_dashboard[1],
-    #     "port": result_dashboard[2],
-    #     "service": result_dashboard[3],
-    #     "last_cve": new_vulnerability(),
-    #     "last_task": dashboard_task[len(dashboard_task) - 3:]
-    # }
-    return render_template('dashboard.html', data="")
+    """
+
+    :return:
+    """
+    vie_data = dashboard_data()
+    return render_template('dashboard.html', data=vie_data)
 
 
 @main.route('/scanner', methods=['GET', 'POST'])

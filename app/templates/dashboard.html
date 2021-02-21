@@ -8,9 +8,10 @@
 	        } );
         } );
 </script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script type="text/javascript" charset="utf8" src="../static/js/Chart.min.js"></script>
+        {% block userscript %}
+<script type="text/javascript" charset="utf8" src="../static/js/Chart.min.js"></script>
+        {% endblock %}
+
 <div class="column is-10 " id="page-content">
 
 <div class="content-body">
@@ -18,26 +19,31 @@
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">HOST DISCOVERY</p>
-      <p class="title">0</p>
+      <p class="title">{{data["count_host"]}}</p>
+    </div>
+  </div>
+        <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">IMPORTANT HOST</p>
+      <p class="title">{{data["count_important_host"]}}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Vulnerability</p>
-        <p class="title">0</p>
-<!--      <p class="title">{{data["count_vulners"]}}</p>-->
+        <p class="title">{{data["count_vulnerability"]}}</p>
     </div>
   </div>
         <div class="level-item has-text-centered">
     <div>
       <p class="heading">Exploit</p>
-      <p class="title">0</p>
+      <p class="title">{{data["exploit"]}}</p>
     </div>
   </div>
         <div class="level-item has-text-centered">
     <div>
       <p class="heading">Average Score</p>
-      <p class="title">0</p>
+      <p class="title">{{data["score"]}}</p>
     </div>
   </div>
 </nav>
@@ -47,48 +53,8 @@
                 <div class="card">
                     <div class="card-content">
                        <p class="title is-4">Open Port</p>
-                        <canvas id="chart" style="width:100%"></canvas>
-                        <script>
-                            var ctx = document.getElementById('chart');
-                            var myChart = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels : [
-                                        {% for item in data["port"] %}
-                                                "{{ item[0] }}",
-                                        {% endfor %}
-	                                ],
-                                    datasets: [{
-                                            label: '%',
-                                            data : [
-                                            {% for item in data["port"] %}
-                                                    "{{ item[1] }}",
-                                            {% endfor %}
-	                                ],
-                                    backgroundColor: [
-                                        {% for item in data["port"] %}
-                                       'rgba(151,187,205, 0.2)',
-                                      {% endfor %}
-                                    ],
-                                    borderColor: [
-                                        {% for item in data["port"] %}
-                                       'rgba(151,187,205, 1)',
-                                      {% endfor %}
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-                        </script>
+                        <canvas id="myChart" style="width:100%"></canvas>
+
                     </div>
                 </div>
             </div>
@@ -96,25 +62,15 @@
                 <div class="card">
                     <div class="card-content">
                         <p class="title is-4">Service</p>
-                        <canvas id="chart-area" style="width:100%"></canvas>
-                            <script>
-                            var ctx = document.getElementById('chart-area');
-                            var myPieChart = new Chart(ctx, {
-                                type: 'pie',
-                                data: {
-                                    datasets: [{
-                                    data : [
-                                        {% for item in data["service"] %}"{{ item[1] }}", {% endfor %}
-                                        ],
-                                    backgroundColor: [
-                                        {% for item in data["service"] %} "rgba(151,187,205, 0.5)", {% endfor %}
-
-					],
-                                }],
-                                labels : [{% for item in data["service"] %}"{{ item[0] }}", {% endfor %}],
-                            },
-                            });
-                            </script>
+                        <canvas id="myChart2" style="width:100%"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">Vulnerability</p>
+                        <canvas id="myChart3" style="width:100%"></canvas>
                     </div>
                 </div>
             </div>
@@ -124,54 +80,16 @@
             <div class="column">
                 <div class="card">
                     <div class="card-content">
-                        <p class="title is-4">Last Task</p>
-                        <div class="table-container">
-        <table id="table_ids" class="table" style="width:100%">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Task name</th>
-                <th>Host</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for item in data["last_task"] %}
-            <tr>
-                <td>{{item.uid}}</td>
-                <td>{{item.name}}</td>
-                <td>{{item.host}}</td>
-                <td>{{item.dateofreg}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+                        <p class="title is-4">Vulnerable Host</p>
+                        <canvas id="myChart4" style="width:100%"></canvas>
                     </div>
                 </div>
             </div>
             <div class="column">
                 <div class="card">
                     <div class="card-content">
-                        <p class="title is-4">Knowledge Base</p>
-                        <table class="table">
-  <thead>
-    <tr>
-      <th><abbr title="CVE">Name</abbr></th>
-      <th><abbr title="Published Date">Published Date</abbr></th>
-      <th><abbr title="Severity">Severity</abbr></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in data["last_cve"] %}
-            <tr>
-                <td>{{item.cve}}</td>
-                <td>{{item.publishedDate}}</td>
-                <td>{{item.impact.baseMetricV2.severity}}</td>
-            </tr>
-        {% endfor %}
-  </tbody>
-</table>
+                        <p class="title is-4">Task</p>
+                        <canvas id="myChart5" style="width:100%"></canvas>
                     </div>
                 </div>
             </div>
@@ -180,4 +98,173 @@
 
 </div>
 </body>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['22', '80', '443', '8080', '3456'],
+        datasets: [{
+            label: 'Port',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+
+var ctx = document.getElementById('myChart2').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['SSH', 'HTTP', 'Telnet', 'SMB', 'HTTPS'],
+        datasets: [{
+            label: 'Port',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+				responsive: true
+			}
+});
+
+var ctx = document.getElementById('myChart3').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: ['CVE-2019-1438', 'CVE-2018-0014', 'CVE-2018-0124', 'CVE-2019-0023', 'CVE-2020-1342'],
+        datasets: [{
+            label: 'Port',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+var ctx = document.getElementById('myChart4').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: ['192.168.100.1', '192.168.100.84', '192.168.1.134', '192.168.100.3', '192.168.100.89'],
+        datasets: [{
+            label: 'Average Score',
+            data: [8.5, 9.2, 7.6, 6.7, 8],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+
+var ctx = document.getElementById('myChart5').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['20.02.2021', '19.02.2021', '18.02.2021', '17.02.2021', '16.02.2021'],
+        datasets: [{
+            label: 'Count Task',
+            data: [9, 10, 8,12, 8],
+            fill :false,
+            borderWidth: 1,
+            borderColor :'rgb(75, 192, 192)'
+        }]
+    },
+    options: {
+    tooltips: {
+      enabled: true,
+      mode: 'single',
+      callbacks: {
+        label: function(tooltipItems, data) {
+                 return tooltipItems.yLabel + ' task';
+               }
+      }
+    },
+  }
+});
+
+</script>
+
 {% endblock %}

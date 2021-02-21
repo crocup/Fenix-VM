@@ -96,9 +96,9 @@ class Scanner:
                 result_cve_mitre = CVE_MITRE(product=prt['product'], version=prt['version'])
                 prt['plugins'] = {'cve_mitre': result_cve_mitre.result_data()}
             # dirb
-            if prt['name'] == 'http' or prt['name'] == 'https':
-                data = DirectoryBuster(service=prt['name'], host=host, port=prt['port'])
-                prt['plugins']['dirb'] = data['data']
+            # if prt['name'] == 'http' or prt['name'] == 'https':
+            #     data = DirectoryBuster(service=prt['name'], host=host, port=prt['port'])
+            #     prt['plugins']['dirb'] = data['data']
             open_ports.append(prt)
         result_json['open_port'] = open_ports
         # запись в базу данных

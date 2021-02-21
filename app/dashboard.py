@@ -1,12 +1,29 @@
+import requests
 from app import db_scanner
+from app.config import GET_ALL_DATABASE
 
 
-def dashboard_open_port():
-    pass
+def dashboard_data():
+    """
 
-
-def dashboard_service():
-    pass
+    :return:
+    """
+    # count host
+    data_all_host = requests.post(GET_ALL_DATABASE, json={"base": "host_discovery", "collection": "result"})
+    count = data_all_host.json()
+    # host discovery
+    data = {
+        "count_host": count["count"],
+        "count_important_host": 2,
+        "count_vulnerability": 43,
+        "exploit": 2,
+        "score": 4.7,
+        "ports": [],
+        "service": [],
+        "task": [],
+        "KB": []
+    }
+    return data
 
 
 def top(list_top, val):
