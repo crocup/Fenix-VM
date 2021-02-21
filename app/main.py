@@ -10,6 +10,7 @@ from .notification import notification_message
 from app.service.database.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task
 
+
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
 
