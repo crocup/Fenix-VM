@@ -51,8 +51,9 @@ def host_discovery_task(host: str):
             data_ip = requests.post(GET_ONE_DATABASE, json={"data": {"ip": host_discovery},
                                                             "base": "host_discovery", "collection": "result"})
             data_ip = data_ip.json()
+            print(data_ip)
             if len(data_ip['data']) == 0:
-                requests.post(INSERT_DATABASE, json={"data": {"ip": host_discovery, "tag": None, "time": time()},
+                requests.post(INSERT_DATABASE, json={"data": {"ip": host_discovery, "tag": "None", "time": time()},
                                                      "base": "host_discovery", "collection": "result"})
                 # оповещение
                 message = f"New IP: {host_discovery}"
@@ -65,4 +66,5 @@ def host_discovery_task(host: str):
                                                      "base": "host_discovery", "collection": "result"})
         return "success"
     except Exception as e:
+        print(e)
         return "error"
