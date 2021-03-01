@@ -1,8 +1,7 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-from app.plugins.webbuster import DirectoryBuster
-from app.service.inventory.api import *
+from nmap3 import nmap3
 from app.service.database.database import Storage
 from app.plugins.cve import CVE_MITRE
 

@@ -19,7 +19,7 @@ def scan_task(network_mask: str) -> str:
     return "success"
 
 
-def scan_db_task(result, host):
+def scan_db_task(result: str, host: str):
     """
 
     :param result:
@@ -33,38 +33,19 @@ def scan_db_task(result, host):
         "host": host,
         "time": time()
     }
-    requests.post(INSERT_DATABASE, json={"data": data,
-                                         "base": "scanner", "collection": "task"})
+    requests.post(API_DATABASE + '/insert', json={"data": data,
+                                                  "base": "scanner", "collection": "task"})
 
 
 def host_discovery_task(host: str):
     """
-
+    Запуск задачи по обнаружению хостов в сети
+    Используется микросервис
     :param host:
     :return:
     """
     try:
         result = requests.post(HOST_DISCOVERY, json={"host": host})
-        data = result.json()
-        # запись результата в базу данных
-        for host_discovery in data["data"]:
-            data_ip = requests.post(GET_ONE_DATABASE, json={"data": {"ip": host_discovery},
-                                                            "base": "host_discovery", "collection": "result"})
-            data_ip = data_ip.json()
-            print(data_ip)
-            if len(data_ip['data']) == 0:
-                requests.post(INSERT_DATABASE, json={"data": {"ip": host_discovery, "tag": "None", "time": time()},
-                                                     "base": "host_discovery", "collection": "result"})
-                # оповещение
-                message = f"New IP: {host_discovery}"
-                requests.post(INSERT_DATABASE, json={"data": {"time": time(), "message": message},
-                                                     "base": "notification", "collection": "notifications"})
-                # оповещение в телеграм
-                telegram_message(message)
-            else:
-                requests.post(UPSERT_DATABASE, json={"data": {"name": {"ip": host_discovery}, "set": {"time": time()}},
-                                                     "base": "host_discovery", "collection": "result"})
-        return "success"
+        print(result.json())
     except Exception as e:
         print(e)
-        return "error"

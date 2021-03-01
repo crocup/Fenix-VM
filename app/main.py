@@ -1,3 +1,8 @@
+"""
+Flask
+API приложения Fenix Security Scanner
+Dmitry Livanov, 2021
+"""
 from bson import ObjectId
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
 from flask_login import login_required
@@ -10,7 +15,7 @@ from .notification import notification_message
 from app.service.database.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task
 
-
+# Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
 main = Blueprint('main', __name__)
 
@@ -18,26 +23,42 @@ main = Blueprint('main', __name__)
 @main.app_errorhandler(404)
 @login_required
 def handle404(e):
+    """
+    Реализация отображения страницы при получении ошибки 404
+    """
     return render_template('404.html')
 
 
 @main.route('/')
 def index():
+    """
+    Отображение главной страницы
+    Происходит переадресация на страницу входа
+    """
     return redirect(url_for('auth.login'))
 
 
 @main.route('/about')
 @login_required
 def about():
+    """
+    Отображение общей информации о ПО
+    Название, версия, лицензия, наличие обновлений
+    """
     return render_template('about.html')
 
 
 @main.route('/setting', methods=['GET'])
 @login_required
 def setting():
-    setting_data = Storage(db='setting', collection='network')
-    items_setting = setting_data.find_data_all()
-
+    """
+    Реализация страницы настойки
+    setting_networks, setting_data: Подключения для работы с базой данных.
+    items_setting, items_notification: Получение всех данных из соответствующий коллекций
+    return: Отображение страницы настройки
+    """
+    setting_networks = Storage(db='setting', collection='network')
+    items_setting = setting_networks.find_data_all()
     setting_data = Storage(db='setting', collection='notification')
     items_notification = setting_data.find_data_all()
     return render_template('setting.html', settings=items_setting, notification=items_notification)
@@ -46,6 +67,11 @@ def setting():
 @main.route('/setting/network', methods=['GET', 'POST'])
 @login_required
 def setting_network():
+    """
+    Добавление настроек сети. Метод добавления POST
+    Сохранение данных осуществляется в БД Mongo
+    Метод GET для отображения страницы настроек сети
+    """
     if request.method == 'POST':
         network = request.form.get('network')
         interface = request.form.get('interface')
@@ -77,6 +103,15 @@ def setting_network():
 @main.route('/setting/notification', methods=['GET', 'POST'])
 @login_required
 def setting_notification():
+    """
+    Добавление настроек для оповещения. Метод добавления POST
+    Сохранение данных осуществляется в БД Mongo
+    Метод GET для отображения страницы оповещения
+    Поддерживается возможность оповещения по email  и в telegram канал, при помощи бота
+    telegram: bot api
+    chat_id: id канала в Telegram
+    email: email пользователя
+    """
     if request.method == 'POST':
         telegram = request.form.get('telegram')
         chat_id = request.form.get('chat_id')
@@ -96,6 +131,11 @@ def setting_notification():
 @main.route('/setting/<col>/delete/<_id>', methods=['GET'])
 @login_required
 def setting_network_delete(_id, col):
+    """
+    удаление сведений из БД
+    col: название колекции в БД
+    _id: Идентификатор в БД
+    """
     setting_data = Storage(db='setting', collection=col)
     setting_data.delete({'_id': ObjectId(_id)})
     return redirect(url_for('main.setting'))
@@ -105,8 +145,11 @@ def setting_network_delete(_id, col):
 @login_required
 def inventory():
     """
-
-    :return:
+    Реализация страницы Host Discovery
+    Отображение в таблице всех обнаруженных хостов в сети
+    setting_data: Подключение к БД
+    get_mask_ip: Получение всех сохраненных хостов в сети
+    .... дописать
     """
     setting_data = Storage(db='setting', collection='network')
     get_mask_ip = setting_data.find_data_all()
@@ -114,7 +157,8 @@ def inventory():
     item = host_discovery_data.find_data_all()
     if request.method == 'POST':
         select = request.form.get('comp_select')
-        q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
+        host_discovery_task(host=select)
+        # q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
         return render_template('inventory.html', items=item, net=get_mask_ip)
     else:
         return render_template('inventory.html', items=item, net=get_mask_ip)
@@ -124,9 +168,10 @@ def inventory():
 @login_required
 def tags(ip):
     """
-
-    :param ip:
-    :return:
+    Отображение всех задач по сканированию, связанных с IP-адресом
+    Возможность назначить тег для IP адреса, а также отметить как важный хост
+    :param ip: ip-адрес хоста
+    :return: переадресания лиюо отображение страницы
     """
     host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.data_one({"host": ip})
@@ -151,8 +196,8 @@ def tags(ip):
 def delete_host(ip):
     """
     Удаление IP адреса и всей информации о нем
-    :param ip: ip-адрес
-    :return: None
+    :param ip: ip-адрес хоста
+    :return: Переадресация на страницу Host Discovery
     """
     # delete_ip(host=ip)  # удаление из sqlite
     # hosts_id = db_scanner['result']
@@ -164,20 +209,25 @@ def delete_host(ip):
 @login_required
 def result_task():
     """
-
-    :return:
+    История всех запущенных задач по сканированию,
+    а также логов приложения
+    :return: Отображение страницы с историей
     """
     task_all = Storage(db='scanner', collection='task')
     item = task_all.find_data_all()
     return render_template('result.html',
                            items=item,
-                           logs=log_file('logs/logging.log')
+                           logs=log_file('app/logs/logging.log')
                            )
 
 
 @main.route('/result/<uuid>')
 @login_required
 def result(uuid):
+    """
+    Статус задачи, запущенной с помощью брокера сообщений RQ Worker
+    Важно: В записях установлено время жизни (TTL), не больше 1 дня
+    """
     try:
         job = q.fetch_job(uuid)
         if job.is_finished:
@@ -192,8 +242,10 @@ def result(uuid):
 @login_required
 def dashboard():
     """
-
-    :return:
+    Главная страница приложения
+    Содержатся графики и сведения о количестве уязвимстей, эксплойтов,
+    обнаруженных хостов
+    vie_data: Dict всех параметров для отображения графиков
     """
     vie_data = dashboard_data()
     return render_template('dashboard.html', data=vie_data)
@@ -203,15 +255,21 @@ def dashboard():
 @login_required
 def scanner():
     """
-
-    :return:
+    Информация о задачах по сканированию.
+    Информация содержится в таблице и включает в себя:
+    Название задачи, хост и время запуска
+    Метод POST: для запуска задачи по сканированию
+    host_discovery_ip: Подключение к БД
+    data_all: Список всех записей
+    results: id задачи в RQ Worker
+    scan_db_task: Запись в БД (нужно исправить)
+    :return: Отображение страницы /scanner
     """
     host_discovery_ip = Storage(db='scanner', collection='result')
     data_all = host_discovery_ip.find_data_all()
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
-        # запись в БД task
         scan_db_task(result=results.id, host=scanner_host)
     return render_template('scanner.html', ips='', items=data_all)
 
@@ -219,6 +277,11 @@ def scanner():
 @main.route('/scanner/<uuid>', methods=['GET'])
 @login_required
 def scanner_info(uuid: str):
+    """
+    Информация о задаче
+    result_vuln: Поиск уязвимостей в соответствии с задачей(нужно исправить)
+    Раздел следует доработать
+    """
     dct = dict()
     scanner_data = Storage(db='scanner', collection='result')
     for dict_data in scanner_data.data_one(data={"uuid": uuid}):
@@ -231,6 +294,11 @@ def scanner_info(uuid: str):
 @main.route('/cve', methods=['GET', 'POST'])
 @login_required
 def cve():
+    """
+    База знаний
+    На текущий момент содержится база знаний уязвимостей CVE из БД Mitre
+    В методе POST передается идентификатор CVE (например: СVE-2019-0012)
+    """
     if request.method == 'POST':
         cve_form_get = request.form.get('cve_text')
         logger.info(f"Found CVE: {cve_form_get}")
@@ -247,6 +315,9 @@ def cve():
 @main.route('/scheduler', methods=['GET', 'POST'])
 @login_required
 def main_scheduller():
+    """
+
+    """
     if request.method == 'POST':
         return render_template('scheduler.html')
     else:
@@ -256,8 +327,14 @@ def main_scheduller():
 @main.route('/notification', methods=['GET', 'POST'])
 @login_required
 def notification():
-    # if request.method == 'POST':
-    #     delete_notification()
+    """
+    Отображение последних 10 оповещений:
+        - Новые ip адреса
+        - Новые открытые порты
+        - Изменения по сравнению с последним сканированием
+        - Новые уязвимости
+    message: 10 последних данных из БД
+    """
     message = notification_message()
     return render_template('notification.html', items=message)
 
@@ -265,6 +342,10 @@ def notification():
 @main.route('/report', methods=['GET', 'POST'])
 @login_required
 def report():
+    """
+    Отчеты в формате PDF
+    Еще не реализовано....
+    """
     if request.method == 'POST':
         return render_template('report.html')
     else:

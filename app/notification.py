@@ -1,11 +1,15 @@
+"""
+Оповещение в приложении
+Dmitry Livanov, 2021
+"""
 import requests
 from app.service.database.database import Storage
 
 
 def notification_message():
     """
-
-    :return:
+    Вывод последних 10 записей из БД
+    :return: *Storage -> Cursor Database
     """
     notifications_data = Storage(db='notification', collection='notifications')
     return notifications_data.find_data_all().sort("_id", -1).limit(10)
@@ -13,9 +17,9 @@ def notification_message():
 
 def telegram_message(message):
     """
-
-    :param message:
-    :return:
+    Отправка сообщения в telegram
+    :param message: Сообщение (информация об оповещении)
+    :return: None
     """
     try:
         notifications_data = Storage(db='setting', collection='notification')
@@ -32,4 +36,8 @@ def telegram_message(message):
 
 
 def email_message():
+    """
+    Оправка сообщения на email
+    ... доработка
+    """
     notifications_data = Storage(db='setting', collection='notification')

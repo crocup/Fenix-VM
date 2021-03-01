@@ -31,8 +31,8 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
 
-with open("logging.json", 'r') as logging_configuration_file:
-    config_dict = json.load(logging_configuration_file)
+with open('app/logging.json', 'r') as config_file:
+    config_dict = json.load(config_file)
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
 
