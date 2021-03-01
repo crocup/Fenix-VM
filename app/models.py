@@ -1,3 +1,8 @@
+"""
+Модель базы данных SQLite
+Сохранение информации о пользователях
+Dmitry Livanov, 2021
+"""
 from flask_login import UserMixin
 from . import db
 
