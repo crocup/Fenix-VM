@@ -1,17 +1,22 @@
+"""
+Данные для отображения графиков
+Dmitry Livanov, 2021
+"""
+from typing import Dict
 import requests
 from app import db_scanner
 from app.config import GET_ALL_DATABASE
 
 
-def dashboard_data():
+def dashboard_data() -> Dict:
     """
+    Данные для построения графиков на странице /dashboard
+    data_all_host: Количество обнаруженных хостов
 
-    :return:
+    :return: data(Dict)
     """
-    # count host
     data_all_host = requests.post(GET_ALL_DATABASE, json={"base": "host_discovery", "collection": "result"})
     count = data_all_host.json()
-    # host discovery
     data = {
         "count_host": count["count"],
         "count_important_host": 2,

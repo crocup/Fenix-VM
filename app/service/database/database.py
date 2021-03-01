@@ -1,3 +1,7 @@
+"""
+Клас для работы с базой данных Mongo
+Dmitry Livanov, 2021
+"""
 import json
 from pymongo import MongoClient
 from bson import ObjectId
