@@ -158,8 +158,7 @@ def inventory():
     if request.method == 'POST':
         select = request.form.get('comp_select')
         host_discovery_task(host=select)
-        # q.enqueue_call(host_discovery_task, args=(select,), result_ttl=500)
-        return render_template('inventory.html', items=item, net=get_mask_ip)
+        return redirect(url_for('main.inventory'))
     else:
         return render_template('inventory.html', items=item, net=get_mask_ip)
 

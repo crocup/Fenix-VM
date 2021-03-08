@@ -91,6 +91,7 @@ class Scanner:
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
             # plugins cve mitre
+            print(f'product={prt["product"]} version={prt["version"]}')
             if prt['product'] is not None and prt['version'] is not None:
                 result_cve_mitre = CVE_MITRE(product=prt['product'], version=prt['version'])
                 prt['plugins'] = {'cve_mitre': result_cve_mitre.result_data()}
