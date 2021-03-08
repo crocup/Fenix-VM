@@ -1,6 +1,6 @@
+from time import sleep
 from app import time
 from app.config import *
-from app.notification import telegram_message
 from app.service.scanner.scanner import Scanner
 import requests
 
@@ -12,9 +12,15 @@ def scan_task(network_mask: str) -> str:
     :return:
     """
     scanner = Scanner(network_mask)
-    result_inventory = requests.post(HOST_DISCOVERY, json={"host": network_mask})
-    data = result_inventory.json()
-    for host in data["data"]:
+    task_id = requests.post(f"{HOST_DISCOVERY}/get", json={"host": network_mask})
+    task = task_id.json()
+    while True:
+        sleep(3)
+        result_discovery = requests.get(f"{HOST_DISCOVERY}/results/{task['job']}")
+        if result_discovery.status_code == 200:
+            break
+    ret = eval(result_discovery.content.decode())
+    for host in ret['result']:
         scanner.scanner_task(host)
     return "success"
 
@@ -45,7 +51,7 @@ def host_discovery_task(host: str):
     :return:
     """
     try:
-        result = requests.post(HOST_DISCOVERY, json={"host": host})
+        result = requests.post(f"{HOST_DISCOVERY}/get", json={"host": host})
         print(result.json())
     except Exception as e:
         print(e)
