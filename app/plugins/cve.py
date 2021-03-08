@@ -38,15 +38,13 @@ class CVE_MITRE:
 
         :return:
         """
-        try:
-            product = str(self.product).split()
-            line = product[0] + "+" + self.version
-            line = line.replace(' ', '+')
-            url = self.base_url + line
-            dict_list = parse_html(link=url, product=product[0])
-            return json.loads(json.dumps({'cve_mitre': dict_list}))
-        except Exception as e:
-            print(e)
+        product = str(self.product).split()
+        line = product[0] + "+" + self.version
+        line = line.replace(' ', '+')
+        url = self.base_url + line
+        dict_list = parse_html(link=url, product=product[0])
+        print(dict_list)
+        return json.loads(json.dumps({'cve_mitre': dict_list}))
 
     def result_data(self) -> List:
         """
@@ -54,6 +52,7 @@ class CVE_MITRE:
         :return:
         """
         res = self.search()
+        print(res)
         mitre_cve_array = []
         if res is not None:
             for list_cve in res['cve_mitre']:
@@ -69,4 +68,5 @@ class CVE_MITRE:
                                   'CVSS Score': cvss_score
                                   }
                 mitre_cve_array.append(mitre_cve_list)
+        print(mitre_cve_array)
         return mitre_cve_array
