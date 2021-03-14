@@ -2,6 +2,7 @@ import datetime
 from pprint import pprint
 from uuid import uuid4
 from nmap3 import nmap3
+from app.plugins.vulnerability import result_code, VulnDB, CveMitre
 from app.service.database.database import Storage
 from app.plugins.cve import CVE_MITRE
 
@@ -82,6 +83,9 @@ class Scanner:
             prt['name'] = None
             prt['product'] = None
             prt['version'] = None
+            if 'cpe' in i:
+                for cpe_data in i['cpe']:
+                    prt['cpe'] = cpe_data['cpe']
             prt['plugins'] = {'cve_mitre': []}
             if 'service' in i:
                 if 'name' in i['service']:
@@ -90,17 +94,13 @@ class Scanner:
                         prt['product'] = i['service']['product']
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
-            # plugins cve mitre
-            print(f'product={prt["product"]} version={prt["version"]}')
             if prt['product'] is not None and prt['version'] is not None:
-                result_cve_mitre = CVE_MITRE(product=prt['product'], version=prt['version'])
-                prt['plugins'] = {'cve_mitre': result_cve_mitre.result_data()}
-            # dirb
-            # if prt['name'] == 'http' or prt['name'] == 'https':
-            #     data = DirectoryBuster(service=prt['name'], host=host, port=prt['port'])
-            #     prt['plugins']['dirb'] = data['data']
+                pass
+                result_cvemitre = result_code(CveMitre(), product=prt['product'], version=prt['version'])
+                prt['plugins'] = {'cve_mitre': result_cvemitre['data']}
             open_ports.append(prt)
         result_json['open_port'] = open_ports
+        pprint(result_json)
         # запись в базу данных
         scanner_data = Storage(db='scanner', collection='result')
         scanner_data.upsert(name={"uuid": uuid}, data=result_json)
