@@ -4,7 +4,6 @@ from uuid import uuid4
 from nmap3 import nmap3
 from app.plugins.vulnerability import result_code, VulnDB, CveMitre
 from app.service.database.database import Storage
-from app.plugins.cve import CVE_MITRE
 
 
 def scanner_uuid(host):

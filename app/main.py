@@ -273,7 +273,7 @@ def scanner():
     return render_template('scanner.html', ips='', items=data_all)
 
 
-@main.route('/scanner/<uuid>', methods=['GET'])
+@main.route('/scanner/<uuid>', methods=['GET', 'POST'])
 @login_required
 def scanner_info(uuid: str):
     """
@@ -281,11 +281,15 @@ def scanner_info(uuid: str):
     result_vuln: Поиск уязвимостей в соответствии с задачей(нужно исправить)
     Раздел следует доработать
     """
+    if request.method == 'POST':
+        print(f"delete {uuid}")
+        return redirect(url_for('main.scanner'))
     dct = dict()
     scanner_data = Storage(db='scanner', collection='result')
     for dict_data in scanner_data.data_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
+
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
 
@@ -349,3 +353,14 @@ def report():
         return render_template('report.html')
     else:
         return render_template('report.html')
+
+
+@main.route('/report/<uuid>', methods=['POST'])
+@login_required
+def report_task(uuid):
+    """
+    Отчеты в формате PDF
+    Еще не реализовано....
+    """
+    print(f"create report {uuid}")
+    return render_template('report.html')
