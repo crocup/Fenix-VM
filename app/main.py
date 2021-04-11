@@ -13,7 +13,7 @@ from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
 from app.service.database.database import Storage
-from .task import host_discovery_task, scan_task, scan_db_task
+from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
 
 # Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -198,9 +198,8 @@ def delete_host(ip):
     :param ip: ip-адрес хоста
     :return: Переадресация на страницу Host Discovery
     """
-    # delete_ip(host=ip)  # удаление из sqlite
-    # hosts_id = db_scanner['result']
-    # hosts_id.delete_many({"host": ip})
+    print(ip)
+    delete_data_host_discovery(host=ip)
     return redirect(url_for('main.inventory'))
 
 
@@ -327,7 +326,7 @@ def main_scheduller():
         return render_template('scheduler.html')
 
 
-@main.route('/notification', methods=['GET', 'POST'])
+@main.route('/notification', methods=['GET'])
 @login_required
 def notification():
     """

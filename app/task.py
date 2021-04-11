@@ -7,7 +7,7 @@ import requests
 
 def scan_task(network_mask: str) -> str:
     """
-
+    Запуск задачи сканирвоания
     :param network_mask:
     :return:
     """
@@ -27,12 +27,11 @@ def scan_task(network_mask: str) -> str:
 
 def scan_db_task(result: str, host: str):
     """
-
+    Запись в БД
     :param result:
     :param host:
     :return:
     """
-    # запись в БД task
     data = {
         "uuid": result,
         "name": "Scanner",
@@ -51,7 +50,21 @@ def host_discovery_task(host: str):
     :return:
     """
     try:
-        result = requests.post(f"{HOST_DISCOVERY}/get", json={"host": host})
-        print(result.json())
+        requests.post(f"{HOST_DISCOVERY}/get", json={"host": host})
+    except Exception as e:
+        print(e)
+
+
+def delete_data_host_discovery(host: str):
+    """
+
+    """
+    try:
+        requests.post(f"{DATABASE}/delete", json={"data": {"ip": host},
+                                                  "base": "host_discovery", "collection": "result"})
+        requests.post(f"{DATABASE}/delete", json={"data": {"host": host},
+                                                  "base": "scanner", "collection": "result"})
+        requests.post(f"{DATABASE}/delete", json={"data": {"host": host},
+                                                  "base": "scanner", "collection": "task"})
     except Exception as e:
         print(e)
