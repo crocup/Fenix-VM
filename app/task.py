@@ -68,3 +68,11 @@ def delete_data_host_discovery(host: str):
                                                   "base": "scanner", "collection": "task"})
     except Exception as e:
         print(e)
+
+
+def delete_data_scanner(uuid: str):
+    try:
+        requests.post(f"{DATABASE}/delete", json={"data": {"uuid": uuid},
+                                                  "base": "scanner", "collection": "result"})
+    except Exception as e:
+        print(e)

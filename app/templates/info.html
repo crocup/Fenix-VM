@@ -114,7 +114,20 @@
 </div>
 		</div>
 		<div class="tabs-item" id="vulnerabilities">
-			<strong>Текст вкладки №2</strong>
+            {% for item in uid.open_port %}
+                {% if item.plugins.cve_mitre %}
+                    {% for cve_data in item.plugins.cve_mitre %}
+                        <article class="message is-dark">
+                            <div class="message-body">
+                                <p><strong>Service Name: </strong>{{ item.product }}</p>
+                                <p><strong>Version: </strong>{{ item.version }}</p>
+                                <p><strong>Port: </strong>{{ item.port }}</p>
+                                <p><strong>Vulnerability: </strong>{{ cve_data }}</p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
 		</div>
 		<div class="tabs-item" id="exploit">
 			<strong>Текст вкладки №3</strong>
@@ -126,7 +139,7 @@
         function delete_data() {
             $.ajax({
                 type: "POST",
-                url: "/scanner/{{uid.uuid}}",
+                url: "/scanner/{{uid.uuid}}/delete",
                 success: function(){
                 window.location.href = "/inventory/{{uid.host}}";
                 },

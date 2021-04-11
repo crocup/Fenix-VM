@@ -13,7 +13,7 @@ from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
 from app.service.database.database import Storage
-from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
+from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery, delete_data_scanner
 
 # Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -198,7 +198,6 @@ def delete_host(ip):
     :param ip: ip-адрес хоста
     :return: Переадресация на страницу Host Discovery
     """
-    print(ip)
     delete_data_host_discovery(host=ip)
     return redirect(url_for('main.inventory'))
 
@@ -280,17 +279,20 @@ def scanner_info(uuid: str):
     result_vuln: Поиск уязвимостей в соответствии с задачей(нужно исправить)
     Раздел следует доработать
     """
-    if request.method == 'POST':
-        print(f"delete {uuid}")
-        return redirect(url_for('main.scanner'))
     dct = dict()
     scanner_data = Storage(db='scanner', collection='result')
     for dict_data in scanner_data.data_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
-
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
+
+
+@main.route('/scanner/<uuid>/delete', methods=['POST'])
+@login_required
+def scanner_data_delete(uuid: str):
+    delete_data_scanner(uuid=uuid)
+    return redirect(url_for('main.scanner'))
 
 
 @main.route('/cve', methods=['GET', 'POST'])
