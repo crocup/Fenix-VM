@@ -12,8 +12,9 @@ from rq import Queue
 from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
-from app.service.database.database import Storage
-from .task import host_discovery_task, scan_task, scan_db_task
+from .plugins.info import *
+from .plugins.report import result_report, PDF_Report
+from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
 
 # Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -198,9 +199,7 @@ def delete_host(ip):
     :param ip: ip-адрес хоста
     :return: Переадресация на страницу Host Discovery
     """
-    # delete_ip(host=ip)  # удаление из sqlite
-    # hosts_id = db_scanner['result']
-    # hosts_id.delete_many({"host": ip})
+    delete_data_host_discovery(host=ip)
     return redirect(url_for('main.inventory'))
 
 
@@ -281,17 +280,20 @@ def scanner_info(uuid: str):
     result_vuln: Поиск уязвимостей в соответствии с задачей(нужно исправить)
     Раздел следует доработать
     """
-    if request.method == 'POST':
-        print(f"delete {uuid}")
-        return redirect(url_for('main.scanner'))
     dct = dict()
     scanner_data = Storage(db='scanner', collection='result')
     for dict_data in scanner_data.data_one(data={"uuid": uuid}):
         dct = dict_data
     result_vuln = find_vulnerability(task=uuid)
-
     return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
                            cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
+
+
+@main.route('/scanner/<uuid>/delete', methods=['POST'])
+@login_required
+def scanner_data_delete(uuid: str):
+    delete_task(uuid=uuid)
+    return redirect(url_for('main.scanner'))
 
 
 @main.route('/cve', methods=['GET', 'POST'])
@@ -315,6 +317,15 @@ def cve():
         return render_template('cve.html')
 
 
+@main.route('/vulnerability/<vuln>', methods=['GET', 'POST'])
+@login_required
+def vulnerability_data(vuln):
+    """
+
+    """
+    return render_template('cve.html', cve_info=vulnerability_info(vuln))
+
+
 @main.route('/scheduler', methods=['GET', 'POST'])
 @login_required
 def main_scheduller():
@@ -327,7 +338,7 @@ def main_scheduller():
         return render_template('scheduler.html')
 
 
-@main.route('/notification', methods=['GET', 'POST'])
+@main.route('/notification', methods=['GET'])
 @login_required
 def notification():
     """
@@ -362,5 +373,5 @@ def report_task(uuid):
     Отчеты в формате PDF
     Еще не реализовано....
     """
-    print(f"create report {uuid}")
+    result_report(PDF_Report(), uuid)
     return render_template('report.html')
