@@ -12,8 +12,9 @@ from rq import Queue
 from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
-from app.service.database.database import Storage
-from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery, delete_data_scanner
+from .plugins.info import *
+from .plugins.report import result_report, PDF_Report
+from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
 
 # Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -291,7 +292,7 @@ def scanner_info(uuid: str):
 @main.route('/scanner/<uuid>/delete', methods=['POST'])
 @login_required
 def scanner_data_delete(uuid: str):
-    delete_data_scanner(uuid=uuid)
+    delete_task(uuid=uuid)
     return redirect(url_for('main.scanner'))
 
 
@@ -314,6 +315,15 @@ def cve():
         return render_template('cve.html', cve_info=data)
     else:
         return render_template('cve.html')
+
+
+@main.route('/vulnerability/<vuln>', methods=['GET', 'POST'])
+@login_required
+def vulnerability_data(vuln):
+    """
+
+    """
+    return render_template('cve.html', cve_info=vulnerability_info(vuln))
 
 
 @main.route('/scheduler', methods=['GET', 'POST'])
@@ -363,5 +373,5 @@ def report_task(uuid):
     Отчеты в формате PDF
     Еще не реализовано....
     """
-    print(f"create report {uuid}")
+    result_report(PDF_Report(), uuid)
     return render_template('report.html')

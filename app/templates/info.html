@@ -36,19 +36,19 @@
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL VULNERABILITY</p>
+      <p class="heading">VULNERABILITY</p>
       <p class="title">{{cntV}}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL EXPLOIT</p>
+      <p class="heading">EXPLOIT</p>
       <p class="title">{{cntE}}</p>
     </div>
   </div>
     <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL DIRECTORY</p>
+      <p class="heading">DIRECTORY</p>
       <p class="title">{{cntD}}</p>
     </div>
   </div>
@@ -71,7 +71,8 @@
         <li><a href="#open-port"><span class="icon is-small"><i class="fa fa-server"></i></span>Open Port</a></li>
 		<li><a href="#vulnerabilities"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Vulnerabilities</a></li>
             <li><a href="#exploit"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Exploit</a></li>
-            <li><a href="#info"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Info</a></li>
+            <li><a href="#info"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Directory</a></li>
+            <li><a href="#loginpass"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Login or Password</a></li>
 	</ul>
   </div>
     <!-- Контент -->
@@ -113,6 +114,15 @@
   </div>
 </div>
 		</div>
+    <div class="tabs-item" id="loginpass">
+			<div class="card">
+  <div class="card-content">
+    <div class="content">
+    <strong>Password</strong>
+    </div>
+  </div>
+</div>
+		</div>
 		<div class="tabs-item" id="vulnerabilities">
             {% for item in uid.open_port %}
                 {% if item.plugins.cve_mitre %}
@@ -122,7 +132,7 @@
                                 <p><strong>Service Name: </strong>{{ item.product }}</p>
                                 <p><strong>Version: </strong>{{ item.version }}</p>
                                 <p><strong>Port: </strong>{{ item.port }}</p>
-                                <p><strong>Vulnerability: </strong>{{ cve_data }}</p>
+                                <p><strong>Vulnerability: </strong><a href="{{ url_for('main.vulnerability_data', vuln=cve_data) }}">{{ cve_data }}</a></p>
                             </div>
                         </article>
                     {% endfor %}
