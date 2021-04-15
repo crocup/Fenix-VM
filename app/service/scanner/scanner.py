@@ -4,7 +4,6 @@ from uuid import uuid4
 from nmap3 import nmap3
 from app.plugins.vulnerability import result_code, VulnDB, CveMitre
 from app.service.database.database import Storage
-from app.plugins.cve import CVE_MITRE
 
 
 def scanner_uuid(host):
@@ -95,12 +94,10 @@ class Scanner:
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
             if prt['product'] is not None and prt['version'] is not None:
-                pass
                 result_cvemitre = result_code(CveMitre(), product=prt['product'], version=prt['version'])
                 prt['plugins'] = {'cve_mitre': result_cvemitre['data']}
             open_ports.append(prt)
         result_json['open_port'] = open_ports
-        pprint(result_json)
         # запись в базу данных
         scanner_data = Storage(db='scanner', collection='result')
         scanner_data.upsert(name={"uuid": uuid}, data=result_json)

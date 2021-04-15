@@ -8,9 +8,9 @@
         <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips}}</strong></h2>
         <span class="separator"></span>
     <a class="button is-info" href="{{ url_for('main.tags', ip=ips) }}">Refresh</a>
-        </div>
     <span class="separator"></span>
-
+      <button class="button is-danger" name="report" onclick="delete_host();">Delete Host</button>
+        </div>
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
     <li><a href="{{ url_for('main.inventory') }}">< Back to Host Discovery</a></li>
@@ -84,4 +84,18 @@
 	        } );
         } );
 </script>
+    <script>
+        function delete_host() {
+            $.ajax({
+                type: "POST",
+                url: "/inventory/{{ips}}/delete",
+                success: function(){
+                window.location.href = "/inventory";
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
 {% endblock %}

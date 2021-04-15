@@ -2,11 +2,23 @@
 
 {% block content %}
 <div class="column is-10" id="page-content">
-    <section class="hero">
-  <div class="content has-text-left">
+<section class="hero">
+  <div class="content-header">
     <h2 class="title is-4"><span class="icon"><i class="fa fa-file-pdf-o"></i></span><strong>Report</strong></h2>
+      <span class="separator"></span>
+      <a class="button is-info" href="{{ url_for('main.report') }}">Refresh</a>
   </div>
 </section>
+
+   <article class="message is-dark">
+  <div class="message-body">
+  <p><strong>Name:</strong> 1</p>
+      <p><strong>Time:</strong> 2</p>
+      <button class="button is-info" name="report" onclick="create_report();">Open Report</button>
+      <span class="separator"></span>
+      <button class="button is-danger" name="report" onclick="delete_data();">Delete Report</button>
+  </div>
+</article>
 
 </div>
 <!--  <div class="container">-->

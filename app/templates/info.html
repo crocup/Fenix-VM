@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block userscript %}
-<!--<link rel="stylesheet" type="text/css" href="../static/css/tab.css">-->
-
 <script type="text/javascript" charset="utf8" src="../static/js/tab_info.js"></script>
 <script type="text/javascript" charset="utf8" src="../static/js/table.js"></script>
 <script type="text/javascript" charset="utf8" src="../static/js/tab.js"></script>
@@ -10,7 +8,6 @@
 
 {% block content %}
 
-<!--<link rel="stylesheet" type="text/css" href="../static/css/list.css">-->
 <div class="column is-10" id="page-content">
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
@@ -31,27 +28,27 @@
     <div class="content">
       <time datetime="2016-1-1">{{uid.date}}</time>
     </div>
-      <button class="button is-info" name="report" href="#">Create Report</button>
+      <button class="button is-info" name="report" onclick="create_report();">Create Report</button>
       <span class="separator"></span>
-      <button class="button is-danger" name="report" href="#">Delete Task</button>
+      <button class="button is-danger" name="report" onclick="delete_data();">Delete Task</button>
   </div>
 </div>
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL VULNERABILITY</p>
+      <p class="heading">VULNERABILITY</p>
       <p class="title">{{cntV}}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL EXPLOIT</p>
+      <p class="heading">EXPLOIT</p>
       <p class="title">{{cntE}}</p>
     </div>
   </div>
     <div class="level-item has-text-centered">
     <div>
-      <p class="heading">TOTAL DIRECTORY</p>
+      <p class="heading">DIRECTORY</p>
       <p class="title">{{cntD}}</p>
     </div>
   </div>
@@ -72,9 +69,10 @@
     <div class="tabs is-left">
         <ul class="tabs-nav">
         <li><a href="#open-port"><span class="icon is-small"><i class="fa fa-server"></i></span>Open Port</a></li>
-            <li><a href="#info"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Info</a></li>
 		<li><a href="#vulnerabilities"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Vulnerabilities</a></li>
             <li><a href="#exploit"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Exploit</a></li>
+            <li><a href="#info"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Directory</a></li>
+            <li><a href="#loginpass"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Login or Password</a></li>
 	</ul>
   </div>
     <!-- Контент -->
@@ -111,13 +109,35 @@
 			<div class="card">
   <div class="card-content">
     <div class="content">
-    Info
+    <strong>Текст вкладки №45</strong>
+    </div>
+  </div>
+</div>
+		</div>
+    <div class="tabs-item" id="loginpass">
+			<div class="card">
+  <div class="card-content">
+    <div class="content">
+    <strong>Password</strong>
     </div>
   </div>
 </div>
 		</div>
 		<div class="tabs-item" id="vulnerabilities">
-			<strong>Текст вкладки №2</strong>
+            {% for item in uid.open_port %}
+                {% if item.plugins.cve_mitre %}
+                    {% for cve_data in item.plugins.cve_mitre %}
+                        <article class="message is-dark">
+                            <div class="message-body">
+                                <p><strong>Service Name: </strong>{{ item.product }}</p>
+                                <p><strong>Version: </strong>{{ item.version }}</p>
+                                <p><strong>Port: </strong>{{ item.port }}</p>
+                                <p><strong>Vulnerability: </strong><a href="{{ url_for('main.vulnerability_data', vuln=cve_data) }}">{{ cve_data }}</a></p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
 		</div>
 		<div class="tabs-item" id="exploit">
 			<strong>Текст вкладки №3</strong>
@@ -125,4 +145,30 @@
 	</div>
      </div>
     </div>
+    <script>
+        function delete_data() {
+            $.ajax({
+                type: "POST",
+                url: "/scanner/{{uid.uuid}}/delete",
+                success: function(){
+                window.location.href = "/inventory/{{uid.host}}";
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+        function create_report() {
+            $.ajax({
+                type: "POST",
+                url: "/report/{{uid.uuid}}",
+                success: function(){
+                window.location.href = "/report";
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
 {% endblock %}
