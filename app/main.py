@@ -14,6 +14,7 @@ from rq import Queue
 from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
+from .plugins.KB import table_KB, get_cve_info
 from .plugins.info import *
 from .plugins.report import *
 from .service.database_old.database import Storage
@@ -312,14 +313,9 @@ def cve():
         logger.info(f"Found CVE: {cve_form_get}")
         if len(cve_form_get) == 0:
             return render_template('cve.html', cve_info="")
-        cve_upper = str(cve_form_get).upper().replace(' ', '')
-        knowledge_base = Storage(db='vulndb', collection='cve')
-        data = knowledge_base.data_one(data={"cve": cve_upper})
-        return render_template('cve.html', cve_info=data)
+        return render_template('cve.html', cve_info=get_cve_info(cve_form_get))
     else:
-        knowledge_base = Storage(db='vulndb', collection='cve')
-        last_data = knowledge_base.data_last_n(50)
-        return render_template('cve.html', items=last_data)
+        return render_template('cve.html', items=table_KB())
 
 
 @main.route('/vulnerability/<vuln>', methods=['GET', 'POST'])

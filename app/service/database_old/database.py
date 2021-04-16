@@ -22,7 +22,6 @@ class Storage(object):
 
     def insert(self, data: dict = None):
         """
-
         :param data:
         :return:
         """
@@ -30,7 +29,6 @@ class Storage(object):
 
     def update(self, name: dict = None, data: dict = None):
         """
-
         :param name:
         :param data:
         :return:
@@ -39,7 +37,6 @@ class Storage(object):
 
     def upsert(self, name: dict = None, data: dict = None):
         """
-
         :param name:
         :param data:
         :return:
@@ -48,7 +45,6 @@ class Storage(object):
 
     def delete(self, name: dict = None):
         """
-
         :param name:
         :return:
         """
@@ -71,6 +67,3 @@ class Storage(object):
 
     def close_connection(self):
         return self.client_mongo.close()
-
-    def data_last_n(self, n: int):
-        return self.db[self.collection].find().sort('_id', -1).limit(n)

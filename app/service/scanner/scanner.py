@@ -1,13 +1,11 @@
 import datetime
 from pprint import pprint
 from uuid import uuid4
-
-import requests
 from nmap3 import nmap3
-
-from app.config import DATABASE
+from app.service.database import MessageProducer, MongoDriver
 from app.plugins.vulnerability import result_code, VulnDB, CveMitre
-from app.service.database_old.database import Storage
+# from app.service.database_old.database import Storage
+from app.service.database import MessageProducer, MongoDriver
 
 
 def scanner_uuid(host):
@@ -102,9 +100,6 @@ class Scanner:
                 prt['plugins'] = {'cve_mitre': result_cvemitre['data']}
             open_ports.append(prt)
         result_json['open_port'] = open_ports
-        # запись в базу данных
-        # scanner_data = Storage(db='scanner', collection='result')
-        # scanner_data.upsert(name={"uuid": uuid}, data=result_json)
-        data = {"uuid": uuid}
-        requests.post(DATABASE + '/upsert', json={"data": data, "set": result_json,
-                                                  "base": "scanner", "collection": "result"})
+        message_mongo = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                    base="scanner", collection="result"))
+        message_mongo.update_message(message={"uuid": uuid}, new_value=result_json)
