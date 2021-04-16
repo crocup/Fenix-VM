@@ -3,11 +3,7 @@ info.html
 Dmitry Livanov, 2021
 """
 from __future__ import annotations
-import requests
-from app.config import DATABASE
-from app.service.database.database import Storage
-from abc import ABC, abstractmethod, abstractproperty
-from typing import Any
+from app.service.database import MessageProducer, MongoDriver
 
 
 def delete_task(uuid: str):
@@ -16,8 +12,9 @@ def delete_task(uuid: str):
     uuid: UUID номер задачи
     """
     try:
-        requests.post(f"{DATABASE}/delete", json={"data": {"uuid": uuid},
-                                                  "base": "scanner", "collection": "result"})
+        message_mongo = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                    base="scanner", collection="result"))
+        message_mongo.delete_message({"uuid": uuid})
     except Exception as e:
         print(e)
 
@@ -32,8 +29,9 @@ def vulnerability_info(vulnerability: str):
     """
     try:
         cve_upper = str(vulnerability).upper()
-        knowledge_base = Storage(db='vulndb', collection='cve')
-        data = knowledge_base.data_one(data={"cve": cve_upper})
+        message_mongo = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                    base="vulndb", collection="cve"))
+        data = message_mongo.get_message({"cve": cve_upper})
         return data
     except Exception as e:
         print(e)

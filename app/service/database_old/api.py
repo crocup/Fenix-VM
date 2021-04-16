@@ -12,7 +12,7 @@ from bson import json_util
 app = flask.Flask(__name__)
 
 
-@app.route('/api/v1/database/mongo/upsert', methods=['POST'])
+@app.route('/api/v1/database_old/mongo/upsert', methods=['POST'])
 def database_upsert():
     if not request.json:
         abort(400)
@@ -23,7 +23,7 @@ def database_upsert():
     return jsonify({"data": "OK"})
 
 
-@app.route('/api/v1/database/mongo/insert', methods=['POST'])
+@app.route('/api/v1/database_old/mongo/insert', methods=['POST'])
 def database_insert():
     if not request.json:
         abort(400)
@@ -34,7 +34,7 @@ def database_insert():
     return jsonify({"data": "OK"})
 
 
-@app.route('/api/v1/database/mongo/get_one', methods=['POST'])
+@app.route('/api/v1/database_old/mongo/get_one', methods=['POST'])
 def database_get_one():
     if not request.json:
         abort(400)
@@ -45,7 +45,7 @@ def database_get_one():
     return jsonify({"data": result})
 
 
-@app.route('/api/v1/database/mongo/get_all', methods=['POST'])
+@app.route('/api/v1/database_old/mongo/get_all', methods=['POST'])
 def database_get_all():
     if not request.json:
         abort(400)

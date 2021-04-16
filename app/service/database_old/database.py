@@ -71,3 +71,6 @@ class Storage(object):
 
     def close_connection(self):
         return self.client_mongo.close()
+
+    def data_last_n(self, n: int):
+        return self.db[self.collection].find().sort('_id', -1).limit(n)

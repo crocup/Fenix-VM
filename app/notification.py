@@ -3,7 +3,7 @@
 Dmitry Livanov, 2021
 """
 import requests
-from app.service.database.database import Storage
+from app.service.database_old.database import Storage
 
 
 def notification_message():

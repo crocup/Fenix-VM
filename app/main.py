@@ -4,7 +4,9 @@ API приложения Fenix Security Scanner
 Dmitry Livanov, 2021
 """
 from bson import ObjectId
-from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response
+from bson.json_util import dumps
+from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response, send_from_directory, \
+    abort
 from flask_login import login_required
 from . import logger
 from redis import Redis
@@ -13,7 +15,8 @@ from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
 from .plugins.info import *
-from .plugins.report import result_report, PDF_Report
+from .plugins.report import *
+from .service.database_old.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
 
 # Брокер сообщений RQ Worker, TTL=1 день
@@ -314,7 +317,9 @@ def cve():
         data = knowledge_base.data_one(data={"cve": cve_upper})
         return render_template('cve.html', cve_info=data)
     else:
-        return render_template('cve.html')
+        knowledge_base = Storage(db='vulndb', collection='cve')
+        last_data = knowledge_base.data_last_n(50)
+        return render_template('cve.html', items=last_data)
 
 
 @main.route('/vulnerability/<vuln>', methods=['GET', 'POST'])
@@ -360,10 +365,7 @@ def report():
     Отчеты в формате PDF
     Еще не реализовано....
     """
-    if request.method == 'POST':
-        return render_template('report.html')
-    else:
-        return render_template('report.html')
+    return render_template('report.html', items=list_report())
 
 
 @main.route('/report/<uuid>', methods=['POST'])
@@ -373,5 +375,24 @@ def report_task(uuid):
     Отчеты в формате PDF
     Еще не реализовано....
     """
-    result_report(PDF_Report(), uuid)
+    result_report(PDF_Report(), data=uuid)
     return render_template('report.html')
+
+
+@main.route('/report/<name>/delete', methods=['POST'])
+@login_required
+def report_delete(name):
+    """
+
+    """
+    del_report(name)
+    return render_template('report.html')
+
+
+@main.route('/report/<path:path>', methods=['GET'])
+@login_required
+def open_pdf(path):
+    try:
+        return send_from_directory(app.config['REPORT_FILE'], filename=path, mimetype='application/pdf')
+    except FileNotFoundError:
+        abort(404)

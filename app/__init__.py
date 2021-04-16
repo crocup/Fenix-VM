@@ -23,6 +23,8 @@ app.secret_key = 'hellos'
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['REPORT_FILE'] = 'app/report'
+
 db = SQLAlchemy(app)
 db.init_app(app)
 Migrate(app, db)
@@ -45,7 +47,6 @@ from .models import User
 
 @login_manager.user_loader
 def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
     return User.query.get(int(user_id))
 
 
@@ -57,19 +58,20 @@ def time():
 
 # blueprint for auth routes in our app
 from .auth import auth as auth_blueprint
+
 app.register_blueprint(auth_blueprint)
 
 from .main import main as main_blueprint
+
 app.register_blueprint(main_blueprint)
 
 from app import models
 from app import main
 
+# scheduler
 from .scheduler import scheduler_host_discovery, scheduler_scanner
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=scheduler_host_discovery, trigger="interval",  minutes=5)
-scheduler.add_job(func=scheduler_scanner, trigger="interval",  hours=24)
+scheduler.add_job(func=scheduler_host_discovery, trigger="interval", minutes=5)
+scheduler.add_job(func=scheduler_scanner, trigger="interval", hours=24)
 scheduler.start()
-
-# Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())

@@ -6,7 +6,7 @@ Scheduler
 Dmitry Livanov, 2021
 """
 from app.main import q
-from app.service.database.database import Storage
+from app.service.database_old.database import Storage
 from app.task import host_discovery_task, scan_task, scan_db_task
 
 
