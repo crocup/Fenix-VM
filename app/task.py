@@ -1,9 +1,9 @@
 from time import sleep
 from app import time
 from app.config import *
-from app.service.database.database import Storage
-from app.service.scanner.scanner import Scanner
 import requests
+from app.service.database import MessageProducer, MongoDriver
+from app.service.scanner_new import result_scanner, ScannerTask
 
 
 def scan_task(network_mask: str) -> str:
@@ -12,7 +12,6 @@ def scan_task(network_mask: str) -> str:
     :param network_mask:
     :return:
     """
-    scanner = Scanner(network_mask)
     task_id = requests.post(f"{HOST_DISCOVERY}/get", json={"host": network_mask})
     task = task_id.json()
     while True:
@@ -22,7 +21,7 @@ def scan_task(network_mask: str) -> str:
             break
     ret = eval(result_discovery.content.decode())
     for host in ret['result']:
-        scanner.scanner_task(host)
+        result_scanner(ScannerTask(host))
     return "success"
 
 
@@ -39,8 +38,9 @@ def scan_db_task(result: str, host: str):
         "host": host,
         "time": time()
     }
-    requests.post(API_DATABASE + '/insert', json={"data": data,
-                                                  "base": "scanner", "collection": "task"})
+    message_mongo = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                base="scanner", collection="task"))
+    message_mongo.insert_message(data)
 
 
 def host_discovery_task(host: str):
@@ -61,11 +61,14 @@ def delete_data_host_discovery(host: str):
 
     """
     try:
-        requests.post(f"{DATABASE}/delete", json={"data": {"ip": host},
-                                                  "base": "host_discovery", "collection": "result"})
-        requests.post(f"{DATABASE}/delete", json={"data": {"host": host},
-                                                  "base": "scanner", "collection": "result"})
-        requests.post(f"{DATABASE}/delete", json={"data": {"host": host},
-                                                  "base": "scanner", "collection": "task"})
+        message_mongo_host_discovery = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                                   base="host_discovery", collection="result"))
+        message_mongo_scanner_result = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                                   base="scanner", collection="result"))
+        message_mongo_scanner_task = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                                 base="scanner", collection="task"))
+        message_mongo_host_discovery.delete_message({"ip": host})
+        message_mongo_scanner_result.delete_message({"host": host})
+        message_mongo_scanner_task.delete_message({"host": host})
     except Exception as e:
         print(e)

@@ -9,17 +9,26 @@
       <a class="button is-info" href="{{ url_for('main.report') }}">Refresh</a>
   </div>
 </section>
-
-   <article class="message is-dark">
-  <div class="message-body">
-  <p><strong>Name:</strong> 1</p>
-      <p><strong>Time:</strong> 2</p>
-      <button class="button is-info" name="report" onclick="create_report();">Open Report</button>
-      <span class="separator"></span>
-      <button class="button is-danger" name="report" onclick="delete_data();">Delete Report</button>
-  </div>
-</article>
-
+{% for item in items %}
+    <div class="notification">
+  <button class="delete" name="report" onclick="delete_report('{{ item }}');"></button>
+  <p><strong>Name: </strong><a href="{{ url_for('main.open_pdf', path=item) }}"> {{ item }}</a></p>
+    <p><strong>Date create:</strong> {{ items[item]['time'] }}</p>
+    </div>
+{% endfor %}
 </div>
-<!--  <div class="container">-->
+<script>
+        function delete_report(name) {
+            $.ajax({
+                type: "POST",
+                url: "/report/"+name+"/delete",
+                success: function(){
+                window.location.href = "/report";
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
 {% endblock %}

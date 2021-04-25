@@ -33,6 +33,7 @@
       <button class="button is-danger" name="report" onclick="delete_data();">Delete Task</button>
   </div>
 </div>
+
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
@@ -71,11 +72,13 @@
         <li><a href="#open-port"><span class="icon is-small"><i class="fa fa-server"></i></span>Open Port</a></li>
 		<li><a href="#vulnerabilities"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Vulnerabilities</a></li>
             <li><a href="#exploit"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Exploit</a></li>
-            <li><a href="#info"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Directory</a></li>
-            <li><a href="#loginpass"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Login or Password</a></li>
+            <li><a href="#directory"><span class="icon is-small"><i class="fa fa-calendar"></i></span>Directory</a></li>
+            <li><a href="#loginpass"><span class="icon is-small"><i class="fa fa-paste"></i></span>Login or Password</a></li>
+            <li><a href="#info"><span class="icon is-small"><i class="fa fa-info"></i></span>Info</a></li>
 	</ul>
   </div>
     <!-- Контент -->
+
 	<div class="tabs-items">
 		<div class="tabs-item" id="open-port">
 			<div class="table-container">
@@ -105,7 +108,7 @@
     </table>
 </div>
 		</div>
-        <div class="tabs-item" id="info">
+        <div class="tabs-item" id="directory">
 			<div class="card">
   <div class="card-content">
     <div class="content">
@@ -123,6 +126,7 @@
   </div>
 </div>
 		</div>
+
 		<div class="tabs-item" id="vulnerabilities">
             {% for item in uid.open_port %}
                 {% if item.plugins.cve_mitre %}
@@ -141,6 +145,9 @@
 		</div>
 		<div class="tabs-item" id="exploit">
 			<strong>Текст вкладки №3</strong>
+		</div>
+    <div class="tabs-item" id="info">
+			<strong>Info</strong>
 		</div>
 	</div>
      </div>
