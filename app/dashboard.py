@@ -3,9 +3,8 @@
 Dmitry Livanov, 2021
 """
 from typing import Dict
-import requests
 from app import db_scanner
-from app.config import GET_ALL_DATABASE
+from app.service.database import MessageProducer, MongoDriver
 
 
 def dashboard_data() -> Dict:
@@ -15,10 +14,14 @@ def dashboard_data() -> Dict:
 
     :return: data(Dict)
     """
-    data_all_host = requests.post(GET_ALL_DATABASE, json={"base": "host_discovery", "collection": "result"})
-    count = data_all_host.json()
+    message_all = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                              base="host_discovery", collection="result"))
+    data_all_host = message_all.get_all_message()
+    count = 0
+    for i in data_all_host:
+        count += 1
     data = {
-        "count_host": count["count"],
+        "count_host": count,
         "count_important_host": 2,
         "count_vulnerability": 43,
         "exploit": 2,

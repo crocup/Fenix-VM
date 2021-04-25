@@ -5,9 +5,14 @@ Scheduler
 Задачи запускаются в фоне с помощью RQ Worker
 Dmitry Livanov, 2021
 """
+from app.config import *
 from app.main import q
-from app.service.database.database import Storage
+from app.service.database import MessageProducer, MongoDriver
 from app.task import host_discovery_task, scan_task, scan_db_task
+
+
+class Scheduler:
+    pass
 
 
 def scheduler_host_discovery():
@@ -16,8 +21,9 @@ def scheduler_host_discovery():
     Поиск хостов осуществляется каждые 5 минут
     :return: None
     """
-    setting_data = Storage(db='setting', collection='network')
-    items = setting_data.find_data_all()
+    setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                               base="setting", collection="network"))
+    items = setting_data.get_all_message()
     for net in items:
         q.enqueue_call(host_discovery_task, args=(net["network"],), result_ttl=500)
 
@@ -29,8 +35,9 @@ def scheduler_scanner():
     Сканирование осуществляется каждые 24 часа.
     :return: None
     """
-    host_discovery = Storage(db='host_discovery', collection='result')
-    items = host_discovery.find_data_all()
+    host_discovery = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                 base="host_discovery", collection="result"))
+    items = host_discovery.get_all_message()
     list_ip = []
     for data in items:
         if data["important"]:

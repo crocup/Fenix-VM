@@ -64,20 +64,20 @@
 </div>
     {% endfor %}
 {% else %}
-        <table id="inventory_id" class="display" style="width:100%">
+        <table id="kb_id" class="display" style="width:100%">
         <thead>
             <tr>
-                <th><div style="width: 40px;">IP</div></th>
-                <th>Tags</th>
-                <th>Update Date</th>
+                <th><div style="width: 40px;">CVE</div></th>
+                <th>Base Score</th>
+                <th>Published Date</th>
             </tr>
         </thead>
         <tbody>
         {% for item in items %}
             <tr>
-                <td>1</td>
-            <td>2</td>
-            <td>3</td>
+                <td>{{ item['cve'] }}</td>
+            <td>{{ item['value'] }}</td>
+            <td>{{ item['publishedDate'] }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -86,7 +86,7 @@
                     </div>
 <script type="text/javascript" class="init">
         $(document).ready(function() {
-	    $('#inventory_id').DataTable(
+	    $('#kb_id').DataTable(
 	    {#    {#}
 		{#"order": [[ 0, "desc" ]]#}
 	    {#    } #}

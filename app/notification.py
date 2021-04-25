@@ -3,7 +3,7 @@
 Dmitry Livanov, 2021
 """
 import requests
-from app.service.database.database import Storage
+from app.service.database import MessageProducer, MongoDriver
 
 
 def notification_message():
@@ -11,8 +11,10 @@ def notification_message():
     Вывод последних 10 записей из БД
     :return: *Storage -> Cursor Database
     """
-    notifications_data = Storage(db='notification', collection='notifications')
-    return notifications_data.find_data_all().sort("_id", -1).limit(10)
+    notifications_data = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                     base="notification", collection="notifications"))
+    data = notifications_data.get_message_limit(10)
+    return data
 
 
 def telegram_message(message):
@@ -22,8 +24,9 @@ def telegram_message(message):
     :return: None
     """
     try:
-        notifications_data = Storage(db='setting', collection='notification')
-        data = notifications_data.find_data_all()
+        notifications_data = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                         base="setting", collection="notifications"))
+        data = notifications_data.get_all_message()
         for item in data:
             bot = item['telegram_bot_api']
             chat_id = item['telegram_chat_id']
@@ -40,4 +43,5 @@ def email_message():
     Оправка сообщения на email
     ... доработка
     """
-    notifications_data = Storage(db='setting', collection='notification')
+    notifications_data = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                     base="setting", collection="notifications"))
