@@ -4,21 +4,21 @@ API приложения Fenix Security Scanner
 Dmitry Livanov, 2021
 """
 from bson import ObjectId
-from bson.json_util import dumps
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response, send_from_directory, \
     abort
 from flask_login import login_required
 from . import logger
 from redis import Redis
 from rq import Queue
+from app.config import *
 from app.result import log_file
 from .dashboard import find_vulnerability, dashboard_data
 from .notification import notification_message
 from .plugins.KB import table_KB, get_cve_info
 from .plugins.info import *
 from .plugins.report import *
-from .service.database_old.database import Storage
 from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
+from app.service.database import MessageProducer, MongoDriver
 
 # Брокер сообщений RQ Worker, TTL=1 день
 q = Queue(connection=Redis(), default_timeout=86400)
@@ -62,11 +62,12 @@ def setting():
     items_setting, items_notification: Получение всех данных из соответствующий коллекций
     return: Отображение страницы настройки
     """
-    setting_networks = Storage(db='setting', collection='network')
-    items_setting = setting_networks.find_data_all()
-    setting_data = Storage(db='setting', collection='notification')
-    items_notification = setting_data.find_data_all()
-    return render_template('setting.html', settings=items_setting, notification=items_notification)
+    setting_networks = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                   base="setting", collection="network"))
+    setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                               base="setting", collection="notification"))
+    return render_template('setting.html', settings=setting_networks.get_all_message(),
+                           notification=setting_data.get_all_message())
 
 
 @main.route('/setting/network', methods=['GET', 'POST'])
@@ -98,8 +99,9 @@ def setting_network():
             "telegram": telegram,
             "mail": mail
         }
-        setting_data = Storage(db='setting', collection='network')
-        setting_data.upsert(name, data)
+        setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                   base="setting", collection="network"))
+        setting_data.update_message(message=name, new_value=data)
         return redirect(url_for('main.setting'))
     else:
         return render_template('network.html')
@@ -121,13 +123,14 @@ def setting_notification():
         telegram = request.form.get('telegram')
         chat_id = request.form.get('chat_id')
         email = request.form.get('email')
-        setting_data = Storage(db='setting', collection='notification')
         data = {
             "telegram_bot_api": telegram,
             "telegram_chat_id": chat_id,
             "email": email,
         }
-        setting_data.insert(data)
+        setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                   base="setting", collection="notification"))
+        setting_data.insert_message(message=data)
         return redirect(url_for('main.setting'))
     else:
         return render_template('network_notification.html')
@@ -141,8 +144,9 @@ def setting_network_delete(_id, col):
     col: название колекции в БД
     _id: Идентификатор в БД
     """
-    setting_data = Storage(db='setting', collection=col)
-    setting_data.delete({'_id': ObjectId(_id)})
+    setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                               base="setting", collection=col))
+    setting_data.delete_message({'_id': ObjectId(_id)})
     return redirect(url_for('main.setting'))
 
 
@@ -156,16 +160,17 @@ def inventory():
     get_mask_ip: Получение всех сохраненных хостов в сети
     .... дописать
     """
-    setting_data = Storage(db='setting', collection='network')
-    get_mask_ip = setting_data.find_data_all()
-    host_discovery_data = Storage(db='host_discovery', collection='result')
-    item = host_discovery_data.find_data_all()
+    setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                               base="setting", collection="network"))
+    host_discovery_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                      base="host_discovery", collection="result"))
     if request.method == 'POST':
         select = request.form.get('comp_select')
         host_discovery_task(host=select)
         return redirect(url_for('main.inventory'))
     else:
-        return render_template('inventory.html', items=item, net=get_mask_ip)
+        return render_template('inventory.html', items=host_discovery_data.get_all_message(),
+                               net=setting_data.get_all_message())
 
 
 @main.route('/inventory/<ip>', methods=['GET', 'POST'])
@@ -177,10 +182,12 @@ def tags(ip):
     :param ip: ip-адрес хоста
     :return: переадресания лиюо отображение страницы
     """
-    host_discovery_ip = Storage(db='scanner', collection='result')
-    data_all = host_discovery_ip.data_one({"host": ip})
-    host_discovery_tag = Storage(db='host_discovery', collection='result')
-    data_tag = host_discovery_tag.data_one({"ip": ip})
+    host_discovery_ip = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                    base="scanner", collection="result"))
+    data_all = host_discovery_ip.get_message({"host": ip})
+    host_discovery_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                     base="host_discovery", collection="result"))
+    data_tag = host_discovery_tag.get_message({"ip": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
         important = request.form.get('important')
@@ -188,8 +195,9 @@ def tags(ip):
             important = True
         else:
             important = False
-        host_discovery_tag = Storage(db='host_discovery', collection='result')
-        host_discovery_tag.update({"ip": ip}, {"tag": tag_get, "important": important})
+        host_discovery_post_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                              base="host_discovery", collection="result"))
+        host_discovery_post_tag.update_message({"ip": ip}, {"tag": tag_get, "important": important})
         return redirect(url_for('main.inventory'))
     else:
         return render_template('tag.html', ips=ip, items=data_all, tag_items=data_tag)
@@ -215,8 +223,9 @@ def result_task():
     а также логов приложения
     :return: Отображение страницы с историей
     """
-    task_all = Storage(db='scanner', collection='task')
-    item = task_all.find_data_all()
+    task_all = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                           base="scanner", collection="task"))
+    item = task_all.get_all_message()
     return render_template('result.html',
                            items=item,
                            logs=log_file('app/logs/logging.log')
@@ -236,7 +245,8 @@ def result(uuid):
             return make_response(jsonify({"status": job.result}), 200).json['status']
         else:
             return make_response(jsonify({"status": "pending"}), 202).json['status']
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return make_response(jsonify({"status": ""}), 404).json['status']
 
 
@@ -267,8 +277,9 @@ def scanner():
     scan_db_task: Запись в БД (нужно исправить)
     :return: Отображение страницы /scanner
     """
-    host_discovery_ip = Storage(db='scanner', collection='result')
-    data_all = host_discovery_ip.find_data_all()
+    host_discovery_ip = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                                    base="scanner", collection="result"))
+    data_all = host_discovery_ip.get_all_message()
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
         results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
@@ -284,13 +295,14 @@ def scanner_info(uuid: str):
     result_vuln: Поиск уязвимостей в соответствии с задачей(нужно исправить)
     Раздел следует доработать
     """
-    dct = dict()
-    scanner_data = Storage(db='scanner', collection='result')
-    for dict_data in scanner_data.data_one(data={"uuid": uuid}):
-        dct = dict_data
-    result_vuln = find_vulnerability(task=uuid)
-    return render_template('info.html', uid=dct, info_mng=result_vuln[0], cntV=result_vuln[1], cntE=0,
-                           cntD=0, cntP=0, avgS=round(result_vuln[3], 2))
+    vuln_data = dict()
+    scanner_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+                                               base="scanner", collection="result"))
+    for dict_data in scanner_data.get_message(message={"uuid": uuid}):
+        vuln_data = dict_data
+    count_vuln = result_count_data(VulnerabilityInfo(uuid))
+    return render_template('info.html', uid=vuln_data, info_mng=0, cntV=count_vuln["count"], cntE=0,
+                           cntD=0, cntP=0, avgS=round(count_vuln["avg"], 2))
 
 
 @main.route('/scanner/<uuid>/delete', methods=['POST'])
@@ -389,6 +401,6 @@ def report_delete(name):
 @login_required
 def open_pdf(path):
     try:
-        return send_from_directory(app.config['REPORT_FILE'], filename=path, mimetype='application/pdf')
+        return send_from_directory(basedir + '/report/', filename=path, mimetype='application/pdf')
     except FileNotFoundError:
         abort(404)

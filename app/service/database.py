@@ -4,7 +4,6 @@ from typing import Dict
 from bson import ObjectId
 from pymongo import MongoClient
 import logging
-from bson.json_util import dumps
 
 
 # message_mongo = MessageProducer(MongoDriver(host='localhost', port=27017,
