@@ -287,6 +287,17 @@ def scanner():
     return render_template('scanner.html', ips='', items=data_all)
 
 
+@main.route('/scanner/<host>', methods=['POST'])
+@login_required
+def scanner_ip(host):
+    """
+
+    """
+    results = q.enqueue_call(scan_task, args=(host,), result_ttl=500)
+    scan_db_task(result=results.id, host=host)
+    return redirect(url_for('main.inventory'))
+
+
 @main.route('/scanner/<uuid>', methods=['GET', 'POST'])
 @login_required
 def scanner_info(uuid: str):

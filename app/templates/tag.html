@@ -7,11 +7,11 @@
 <div class="content-header">
         <h2 class="title is-4"><span class="icon"><i class="fa fa-edit"></i></span><strong>{{ips}}</strong></h2>
         <span class="separator"></span>
-    <a class="button is-info" href="{{ url_for('main.tags', ip=ips) }}">Refresh</a>
+    <button class="button is-info" name="scan" onclick="scanner_host();">Start Scanner</button>
     <span class="separator"></span>
-    <a class="button is-success" href="{{ url_for('main.tags', ip=ips) }}">Start Scanner</a>
+    <button class="button is-info" name="report" onclick="delete_host();">Delete Host</button>
     <span class="separator"></span>
-      <button class="button is-danger" name="report" onclick="delete_host();">Delete Host</button>
+      <a class="button is-info" href="{{ url_for('main.tags', ip=ips) }}">Refresh</a>
         </div>
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
@@ -93,6 +93,20 @@
                 url: "/inventory/{{ips}}/delete",
                 success: function(){
                 window.location.href = "/inventory";
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+    <script>
+        function scanner_host() {
+            $.ajax({
+                type: "POST",
+                url: "/scanner/{{ips}}",
+                success: function(){
+                window.location.href = "/inventory/{{ips}}";
                 },
                 error: function(error) {
                     console.log(error);
