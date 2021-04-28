@@ -65,10 +65,11 @@ def unzip(name):
         print(e)
 
 
-@app.route('/api/v1/cve/mitre/download', methods=['POST'])
+# @app.route('/api/v1/cve/mitre/download', methods=['POST'])
 def download_data():
     download(years=YEAR)
 
 
 if __name__ == '__main__':
-    app.run(port=9002)
+    download_data()
+    # app.run(port=9002)
