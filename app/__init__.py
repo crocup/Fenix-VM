@@ -1,4 +1,6 @@
 import atexit
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -12,10 +14,18 @@ from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from .config import basedir
+
 sentry_sdk.init(
     dsn='https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896',
     integrations=[FlaskIntegration()]
 )
+
+if not os.path.exists('app/logs'):
+    os.makedirs('app/logs')
+
+if not os.path.exists('app/report'):
+    os.makedirs('app/report')
 
 app = Flask(__name__)
 app.debug = True
@@ -33,7 +43,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
 
-with open('app/logging.json', 'r') as config_file:
+with open(basedir + '/logging.json', 'r') as config_file:
     config_dict = json.load(config_file)
 logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
@@ -70,6 +80,7 @@ from app import main
 
 # scheduler
 from .scheduler import scheduler_host_discovery, scheduler_scanner
+
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=scheduler_host_discovery, trigger="interval", minutes=5)
 scheduler.add_job(func=scheduler_scanner, trigger="interval", hours=24)
