@@ -1,6 +1,5 @@
 import atexit
 import os
-
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -13,7 +12,6 @@ import sentry_sdk
 from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 from apscheduler.schedulers.background import BackgroundScheduler
-
 from .config import basedir
 
 sentry_sdk.init(
