@@ -1,4 +1,4 @@
-<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">Fenix Security Scanner</a></h1>
+<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">Busel VM</a></h1>
 <p align="center">Система управления уязвимостями с окрытым исходным кодом</p>
 <p align="center">
 is the open source Vulnerability Management System, being developed in the Republic of Belarus
@@ -20,7 +20,7 @@ is the open source Vulnerability Management System, being developed in the Repub
 
 **Управление уязвимостями (Vulnerability Management)** — непрерывный процесс, направленный на проведение инвентаризации всей инфраструктуры, исследование её на предмет выявления и приоритезации уязвимостей и исправление выявленных недостатков. Это эволюция обычного сканера уязвимостей, более совершенный процесс, призванный существенно повысить безопасность организации.
 
-**Fenix Security Scanner** позволяет получать объективную оценку состояния защищенности информационной системы, 
+**Busel VM** позволяет получать объективную оценку состояния защищенности информационной системы, 
 заблаговременно обнаружить и устранить уязвимости, автоматизировать процесс контроля соответствия требованиям регулятора в Республике Беларусь
 
 
