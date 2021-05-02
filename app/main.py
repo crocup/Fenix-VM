@@ -415,3 +415,12 @@ def open_pdf(path):
         return send_from_directory(basedir + '/report/', filename=path, mimetype='application/pdf')
     except FileNotFoundError:
         abort(404)
+
+
+@main.route('/compliance', methods=['GET'])
+@login_required
+def compliance_66():
+    """
+
+    """
+    return render_template('compliance.html')
