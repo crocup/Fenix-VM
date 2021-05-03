@@ -3,6 +3,7 @@ import datetime
 from uuid import uuid4
 from nmap3 import nmap3
 from app.config import MONGO_HOST, MONGO_PORT
+from app.plugins.dir_buster.fenix_web_buster import TaskWebBuster
 from app.plugins.vulnerability import result_code, CveMitre
 from app.service.database import MessageProducer, MongoDriver
 
@@ -123,6 +124,11 @@ class ScannerTask(AbstractScanner):
                         prt['product'] = i['service']['product']
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
+            # FenixWebBuster
+            if prt['name'] == 'http':
+                url = f"http://{self.host}:{prt['port']}"
+                prt['directory'] = TaskWebBuster(url)
+            # cve mitre
             if prt['product'] is not None and prt['version'] is not None:
                 result_cvemitre = result_code(CveMitre(), product=prt['product'], version=prt['version'])
                 prt['plugins'] = {'cve_mitre': result_cvemitre['data']}
