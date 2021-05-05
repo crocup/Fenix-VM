@@ -1,7 +1,6 @@
-<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">Busel VM</a></h1>
-<p align="center">Система управления уязвимостями с окрытым исходным кодом</p>
+<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">Fenix VM</a></h1>
 <p align="center">
-is the open source Vulnerability Management System, being developed in the Republic of Belarus
+open source Vulnerability Management System, being developed in the Republic of Belarus
 </p>
 <p align="center">
   <a href="#">
@@ -18,25 +17,21 @@ is the open source Vulnerability Management System, being developed in the Repub
 ![GitHub Logo](img.png)
 ## About
 
-**Управление уязвимостями (Vulnerability Management)** — непрерывный процесс, направленный на проведение инвентаризации всей инфраструктуры, исследование её на предмет выявления и приоритезации уязвимостей и исправление выявленных недостатков. Это эволюция обычного сканера уязвимостей, более совершенный процесс, призванный существенно повысить безопасность организации.
+**Vulnerability Management** is an ongoing process aimed at taking an inventory of the entire infrastructure, researching it to identify and prioritizing vulnerabilities and fixing identified deficiencies. It is an evolution of the conventional vulnerability scanner, an improved process designed to dramatically improve the security of an organization. 
 
-**Busel VM** позволяет получать объективную оценку состояния защищенности информационной системы, 
-заблаговременно обнаружить и устранить уязвимости, автоматизировать процесс контроля соответствия требованиям регулятора в Республике Беларусь
-
+**Fenix VM** allows you to obtain an objective assessment of the security state of the information system,
+detect and eliminate vulnerabilities in advance, automate the process of monitoring compliance with regulatory requirements in the Republic of Belarus 
 
 ## Possible
-- Автоматическое обнаружение активов в сети (Инвентаризация)
-- Определение важных активов
-- Ежедневное автоматическое сканирование важных активов
-- Выявление и приоритизация уязвимостей и эксплойтов **(в разработке)**
-- Ежедневный отчет о состоянии защищенности инфраструктуры
-- Немедленное оповещение (telegram, email) администратора системы: об обнаружении или изменении активов в сети, обнаружении новых уязвимостей, появлении новых эксплойтов для обнаруженных уязвимостей
-- Переодическое напоминание о необходимости устранения критических уязвимостей (если не устранены в течении 2 дн.) **(в разработке)**
-- Контроль соответствия требованиям регулятора в Республике Беларусь **(в разработке)**
-
+- Automatic discovery of assets on the network (Inventory)
+- Identification of important assets
+- Daily automatic scans of important assets
+- Identification and prioritization of vulnerabilities and exploits **(in development)**
+- Daily report on the state of infrastructure security
+- Immediate notification (telegram, email) of the system administrator: about the discovery or change of assets in the network, the discovery of new vulnerabilities, the emergence of new exploits for the discovered vulnerabilities
+- Periodic reminder of the need to eliminate critical vulnerabilities (if not eliminated within 2 days) **(in development)**
+- Monitoring compliance with the requirements of the regulator in the Republic of Belarus **(under development)** 
 ## Warning
-ПО находится в разработке, многие функции еще не разработаны и не протестированы!
-
 This is a development version, we don't recommend its use in production!
 
-**Предварительно выход первой бета-версии в конце Июня 2021 г.**
+**Pre-release of the first beta version at the end of June 2021** 

@@ -12,8 +12,8 @@ from redis import Redis
 from rq import Queue
 from app.config import *
 from app.result import log_file
-from .dashboard import find_vulnerability, dashboard_data
-from .notification import notification_message
+from .dashboard import dashboard_data
+from app.service.notification import notification_message
 from .plugins.KB import table_KB, get_cve_info
 from .plugins.info import *
 from .plugins.report import *
