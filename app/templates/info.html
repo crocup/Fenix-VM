@@ -109,18 +109,33 @@
 </div>
 		</div>
         <div class="tabs-item" id="directory">
-			<div class="card">
-  <div class="card-content">
-    <div class="content">
-    <strong>Текст вкладки №45</strong>
-    </div>
-  </div>
-</div>
+			<div class="table-container">
+        {% for item in uid.open_port %}
+            {% if item.directory %}
+                    <table id="dirb" class="display" style="width:100%">
+                    <thead>
+                    <tr>
+                    <th>URL</th>
+                    <th><div style="width: 40px;">CODE</div></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dir in item.directory %}
+                        <tr>
+                            <th><a href={{dir.url}}>{{dir.url}}</a></th>
+                            <th>{{dir.code}}</th>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+            {% endif %}
+        {% endfor %}
+            </div>
 		</div>
     <div class="tabs-item" id="loginpass">
 			<div class="card">
-  <div class="card-content">
-    <div class="content">
+                <div class="card-content">
+        <div class="content">
     <strong>Password</strong>
     </div>
   </div>
@@ -149,10 +164,16 @@
     <div class="tabs-item" id="info">
 			<strong>Info</strong>
 		</div>
-	</div>
+	    </div>
      </div>
     </div>
     <script>
+    $(document).ready(function() {
+	    $('#dirb').DataTable( {
+		select: true
+	        } );
+        } );
+
         function delete_data() {
             $.ajax({
                 type: "POST",
