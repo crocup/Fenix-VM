@@ -1,10 +1,11 @@
-import asyncio
 import requests
-
 from app import basedir
 
 
 class FenixWebBuster:
+    """
+
+    """
 
     def __init__(self, url):
         """
@@ -15,40 +16,22 @@ class FenixWebBuster:
         self.data = []
         self.url = url
 
-    async def fastdirb(self, path):
-        """
-
-        :param path:
-        :return:
-        """
-        path = path.strip().decode("utf-8")
-        urlpath = self.url + "/" + path
-        r = requests.get(urlpath)
-        if r.status_code == 200:
-            self.data.append({
-                "code": r.status_code,
-                "url": urlpath
-            })
-
-    async def run(self):
-        """
-
-        :return:
-        """
-        wordlist = open(self.dict, "rb")
+    def task_dir_buster(self):
         try:
-            await asyncio.wait([
-                self.fastdirb(path)
-                for path in wordlist.readlines()
-            ])
-        except:
+            wordlist = open(self.dict, "rb")
+            for path in wordlist.readlines():
+                path = path.strip().decode("utf-8")
+                urlpath = self.url + "/" + path
+                r = requests.get(urlpath, timeout=10)
+                if r.status_code == 200:
+                    self.data.append({
+                        "code": r.status_code,
+                        "url": urlpath
+                    })
+                    print({
+                        "code": r.status_code,
+                        "url": urlpath
+                    })
+        except Exception as e:
             self.data = []
         return self.data
-
-
-def TaskWebBuster(url):
-    task = FenixWebBuster(url=url)
-    loop = asyncio.get_event_loop()
-    results = loop.run_until_complete(task.run())
-    loop.close()
-    return results
