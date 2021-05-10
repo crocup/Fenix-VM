@@ -1,7 +1,7 @@
 """
 Сервис для обнаружения хостов в сети
 Dmitry Livanov, 2021
-ver 0.0.2
+ver 0.0.3
 """
 from flask import Flask, request, abort, jsonify
 from rq.job import Job
@@ -40,4 +40,4 @@ def get_results(job_key):
 
 
 if __name__ == '__main__':
-    host_discovery.run(port=9001)
+    host_discovery.run(host='0.0.0.0', port=9001)

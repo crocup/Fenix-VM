@@ -163,7 +163,7 @@ def inventory():
     setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
                                                base="setting", collection="network"))
     host_discovery_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                      base="host_discovery", collection="result"))
+                                                      base="HostDiscovery", collection="result"))
     if request.method == 'POST':
         select = request.form.get('comp_select')
         host_discovery_task(host=select)
@@ -186,7 +186,7 @@ def tags(ip):
                                                     base="scanner", collection="result"))
     data_all = host_discovery_ip.get_message({"host": ip})
     host_discovery_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                     base="host_discovery", collection="result"))
+                                                     base="HostDiscovery", collection="result"))
     data_tag = host_discovery_tag.get_message({"ip": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
@@ -196,7 +196,7 @@ def tags(ip):
         else:
             important = False
         host_discovery_post_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                              base="host_discovery", collection="result"))
+                                                              base="HostDiscovery", collection="result"))
         host_discovery_post_tag.update_message({"ip": ip}, {"tag": tag_get, "important": important})
         return redirect(url_for('main.inventory'))
     else:
@@ -312,8 +312,9 @@ def scanner_info(uuid: str):
     for dict_data in scanner_data.get_message(message={"uuid": uuid}):
         vuln_data = dict_data
     count_vuln = result_count_data(VulnerabilityInfo(uuid))
+    count_dir = result_count_data(DirectoryInfo(uuid))
     return render_template('info.html', uid=vuln_data, info_mng=0, cntV=count_vuln["count"], cntE=0,
-                           cntD=0, cntP=0, avgS=round(count_vuln["avg"], 2))
+                           cntD=count_dir["count"], cntP=0, avgS=round(count_vuln["avg"], 2))
 
 
 @main.route('/scanner/<uuid>/delete', methods=['POST'])
