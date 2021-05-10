@@ -101,6 +101,24 @@ class VulnerabilityInfo(AbstractData):
         pass
 
 
+class DirectoryInfo(AbstractData):
+
+    def count_data(self, data):
+        count = 0
+        for i in data:
+            if 'open_port' in i:
+                for info_directory in i['open_port']:
+                    if 'directory' in info_directory:
+                        count += len(info_directory['directory'])
+        data = {
+            "count": count,
+        }
+        return data
+
+    def info_data(self, data):
+        pass
+
+
 def result_count_data(abstract_class: AbstractData):
     return abstract_class.template_count_data()
 
