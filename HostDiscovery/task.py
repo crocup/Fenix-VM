@@ -40,7 +40,7 @@ def record_result(data: List):
     try:
         for host_discovery in data:
             message_host_discovery = MessageProducer(MongoDriver(host='localhost', port=27017,
-                                                                 base='host_discovery', collection='result'))
+                                                                 base='HostDiscovery', collection='result'))
             message_notification = MessageProducer(MongoDriver(host='localhost', port=27017,
                                                                base='notification', collection='notifications'))
             data_ip = message_host_discovery.get_message({"ip": str(host_discovery)})

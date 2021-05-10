@@ -72,7 +72,7 @@ class AbstractScanner:
         now = datetime.datetime.now()
         self.result['date'] = now.strftime("%d-%m-%Y %H:%M")
         host_discovery_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                         base="host_discovery", collection="result"))
+                                                         base="HostDiscovery", collection="result"))
         tag_ip = host_discovery_tag.get_message(message={"ip": self.host})
         for tags in tag_ip:
             self.result['tag'] = tags['tag']
