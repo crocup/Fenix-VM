@@ -13,6 +13,7 @@ from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
 from apscheduler.schedulers.background import BackgroundScheduler
 from .config import basedir
+from dotenv import load_dotenv
 
 sentry_sdk.init(
     dsn='https://981301459a144d5c8a2a44d77bae743e@o437376.ingest.sentry.io/5399896',
@@ -21,17 +22,19 @@ sentry_sdk.init(
 
 if not os.path.exists('app/logs'):
     os.makedirs('app/logs')
-
 if not os.path.exists('app/report'):
     os.makedirs('app/report')
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'hellos'
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['REPORT_FILE'] = 'app/report'
+app.config['REPORT_FILE'] = "app/report"
 
 db = SQLAlchemy(app)
 db.init_app(app)

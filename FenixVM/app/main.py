@@ -311,10 +311,9 @@ def scanner_info(uuid: str):
                                                base="scanner", collection="result"))
     for dict_data in scanner_data.get_message(message={"uuid": uuid}):
         vuln_data = dict_data
-    count_vuln = result_count_data(VulnerabilityInfo(uuid))
     count_dir = result_count_data(DirectoryInfo(uuid))
-    return render_template('info.html', uid=vuln_data, info_mng=0, cntV=count_vuln["count"], cntE=0,
-                           cntD=count_dir["count"], cntP=0, avgS=round(count_vuln["avg"], 2))
+    return render_template('info.html', uid=vuln_data, info_mng=0, cntE=0,
+                           cntD=count_dir["count"], cntP=0)
 
 
 @main.route('/scanner/<uuid>/delete', methods=['POST'])

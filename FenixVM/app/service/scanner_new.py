@@ -60,9 +60,18 @@ class AbstractScanner:
         self.uuid = self.get_uuid()
 
     def template_scanner(self):
+        # scan
         self.scanner()
-        self.count_data()
+        # count
+        self.count_vulnerability()
+        self.count_exploit()
+        self.count_directory()
+        self.count_pass()
+        # info
+        self.info_scanner()
+        # avg score
         self.score()
+        # record in mongo
         self.record_data()
 
     def get_uuid(self):
@@ -90,7 +99,23 @@ class AbstractScanner:
         pass
 
     @abstractmethod
-    def count_data(self):
+    def count_vulnerability(self):
+        pass
+
+    @abstractmethod
+    def count_exploit(self):
+        pass
+
+    @abstractmethod
+    def count_directory(self):
+        pass
+
+    @abstractmethod
+    def count_pass(self):
+        pass
+
+    @abstractmethod
+    def info_scanner(self):
         pass
 
     @abstractmethod
@@ -142,11 +167,23 @@ class ScannerTask(AbstractScanner):
         else:
             self.result['score'] = 9.99
 
-    def count_data(self):
+    def count_vulnerability(self):
         count = 0
         for info_port in self.result['open_port']:
             count += len(info_port['plugins']['cve_mitre'])
         self.result['count_data'] = count
+
+    def count_exploit(self):
+        self.result['count_exploit'] = 0
+
+    def count_directory(self):
+        self.result['count_directory'] = 0
+
+    def count_pass(self):
+        self.result['count_pass'] = 0
+
+    def info_scanner(self):
+        self.result['info_scanner'] = {}
 
     def record_data(self):
         message_mongo = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
