@@ -2,10 +2,11 @@ from abc import abstractmethod
 import datetime
 from uuid import uuid4
 from nmap3 import nmap3
-from app.config import MONGO_HOST, MONGO_PORT
-from app.plugins.dir_buster.fenix_web_buster import FenixWebBuster
-from app.plugins.vulnerability import result_code, CveMitre
-from app.service.database import MessageProducer, MongoDriver
+import conf
+from plugins.dir_buster.fenix_web_buster import FenixWebBuster
+from plugins.vulnerability import result_code, CveMitre
+from database import MessageProducer, MongoDriver
+import data_count
 
 
 class Scanner:
@@ -22,7 +23,7 @@ class Scanner:
         :return:
         """
         nm = nmap3.Nmap()
-        return nm.nmap_version_detection(self.host)
+        return nm.nmap_version_detection(self.host, args="-sV -T4 --host-timeout 10m")
 
     def scan_arp(self):
         """
@@ -60,18 +61,10 @@ class AbstractScanner:
         self.uuid = self.get_uuid()
 
     def template_scanner(self):
-        # scan
         self.scanner()
-        # count
-        self.count_vulnerability()
-        self.count_exploit()
-        self.count_directory()
-        self.count_pass()
-        # info
-        self.info_scanner()
-        # avg score
+        self.mcount()
+        self.info()
         self.score()
-        # record in mongo
         self.record_data()
 
     def get_uuid(self):
@@ -80,12 +73,11 @@ class AbstractScanner:
         self.result['uuid'] = uuid
         now = datetime.datetime.now()
         self.result['date'] = now.strftime("%d-%m-%Y %H:%M")
-        host_discovery_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+        host_discovery_tag = MessageProducer(MongoDriver(host=conf.Config.MONGO_HOST, port=conf.Config.MONGO_PORT,
                                                          base="HostDiscovery", collection="result"))
         tag_ip = host_discovery_tag.get_message(message={"ip": self.host})
-        for tags in tag_ip:
-            self.result['tag'] = tags['tag']
-        scanner_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+        self.result['tag'] = tag_ip['tag']
+        scanner_data = MessageProducer(MongoDriver(host=conf.Config.MONGO_HOST, port=conf.Config.MONGO_PORT,
                                                    base="scanner", collection="result"))
         scanner_data.insert_message(message=self.result)
         return uuid
@@ -99,23 +91,11 @@ class AbstractScanner:
         pass
 
     @abstractmethod
-    def count_vulnerability(self):
+    def mcount(self):
         pass
 
     @abstractmethod
-    def count_exploit(self):
-        pass
-
-    @abstractmethod
-    def count_directory(self):
-        pass
-
-    @abstractmethod
-    def count_pass(self):
-        pass
-
-    @abstractmethod
-    def info_scanner(self):
+    def info(self):
         pass
 
     @abstractmethod
@@ -167,26 +147,17 @@ class ScannerTask(AbstractScanner):
         else:
             self.result['score'] = 9.99
 
-    def count_vulnerability(self):
-        count = 0
-        for info_port in self.result['open_port']:
-            count += len(info_port['plugins']['cve_mitre'])
-        self.result['count_data'] = count
+    def mcount(self):
+        self.result['count_data'] = data_count.result_count(data_count.VulnCountData(), self.result)
+        self.result['count_exploit'] = data_count.result_count(data_count.ExploitCountData(), self.result)
+        self.result['count_directory'] = data_count.result_count(data_count.DirCountData(), self.result)
+        self.result['count_pass'] = data_count.result_count(data_count.PassCountData(), self.result)
 
-    def count_exploit(self):
-        self.result['count_exploit'] = 0
-
-    def count_directory(self):
-        self.result['count_directory'] = 0
-
-    def count_pass(self):
-        self.result['count_pass'] = 0
-
-    def info_scanner(self):
+    def info(self):
         self.result['info_scanner'] = {}
 
     def record_data(self):
-        message_mongo = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
+        message_mongo = MessageProducer(MongoDriver(host=conf.Config.MONGO_HOST, port=conf.Config.MONGO_PORT,
                                                     base="scanner", collection="result"))
         message_mongo.update_message(message={"uuid": self.uuid}, new_value=self.result)
 

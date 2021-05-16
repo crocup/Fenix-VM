@@ -4,8 +4,8 @@ API приложения Fenix Security Scanner
 Dmitry Livanov, 2021
 """
 from bson import ObjectId
-from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response, send_from_directory, \
-    abort
+from flask import Blueprint, render_template, redirect, url_for, jsonify, request, make_response, \
+    send_from_directory, abort
 from flask_login import login_required
 from . import logger
 from redis import Redis
@@ -17,7 +17,7 @@ from app.service.notification import notification_message
 from .plugins.KB import table_KB, get_cve_info
 from .plugins.info import *
 from .plugins.report import *
-from .task import host_discovery_task, scan_task, scan_db_task, delete_data_host_discovery
+from .task import host_discovery_task, scan_task, record_db_task, delete_data_host_discovery
 from app.service.database import MessageProducer, MongoDriver
 
 # Брокер сообщений RQ Worker, TTL=1 день
@@ -282,8 +282,7 @@ def scanner():
     data_all = host_discovery_ip.get_all_message()
     if request.method == 'POST':
         scanner_host = request.form.get("scanner_text")
-        results = q.enqueue_call(scan_task, args=(scanner_host,), result_ttl=500)
-        scan_db_task(result=results.id, host=scanner_host)
+        scan_task(scanner_host)
     return render_template('scanner.html', ips='', items=data_all)
 
 
@@ -293,8 +292,7 @@ def scanner_ip(host):
     """
 
     """
-    results = q.enqueue_call(scan_task, args=(host,), result_ttl=500)
-    scan_db_task(result=results.id, host=host)
+    scan_task(host)
     return redirect(url_for('main.inventory'))
 
 

@@ -12,7 +12,6 @@ from worker import conn
 import os
 from dotenv import load_dotenv
 
-
 host_discovery = Flask(__name__)
 host_discovery.config.from_object(configs.DevelopmentConfig)
 q = Queue(name='discovery', connection=conn)
@@ -20,6 +19,7 @@ q = Queue(name='discovery', connection=conn)
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
+
 
 @host_discovery.route('/api/v1/discovery/get', methods=['POST'])
 def get_task():
