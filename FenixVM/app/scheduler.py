@@ -6,9 +6,8 @@ Scheduler
 Dmitry Livanov, 2021
 """
 from app.config import *
-from app.main import q
 from app.service.database import MessageProducer, MongoDriver
-from app.task import host_discovery_task, scan_task, scan_db_task
+from app.task import host_discovery_task, scan_task
 
 
 class Scheduler:
@@ -25,7 +24,7 @@ def scheduler_host_discovery():
                                                base="setting", collection="network"))
     items = setting_data.get_all_message()
     for net in items:
-        q.enqueue_call(host_discovery_task, args=(net["network"],), result_ttl=500)
+        host_discovery_task(host=net["network"])
 
 
 def scheduler_scanner():
@@ -43,5 +42,4 @@ def scheduler_scanner():
         if data["important"]:
             list_ip.append(data["ip"])
     for net in list_ip:
-        results = q.enqueue_call(scan_task, args=(net,), result_ttl=500)
-        scan_db_task(result=results.id, host=net)
+        scan_task(net)
