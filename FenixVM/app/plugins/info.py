@@ -9,7 +9,7 @@ from app.config import MONGO_PORT, MONGO_HOST
 from app.service.database import MessageProducer, MongoDriver
 
 
-class AbstractData:
+class AbstractStatistic:
     """
     Абстрактный класс для работы с информацией по конретной задаче
     """
@@ -55,53 +55,7 @@ class AbstractData:
         pass
 
 
-class VulnerabilityInfo(AbstractData):
-
-    def count_data(self, data):
-        """
-
-        """
-        count = 0
-        avg = 0
-        for i in data:
-            if 'open_port' in i:
-                for info_port in i['open_port']:
-                    count += len(info_port['plugins']['cve_mitre'])
-                    avg += self.average_cve(info_port['plugins']['cve_mitre'])
-        if count == 0:
-            avg = 0
-        else:
-            avg = avg / count
-        data = {
-            "count": count,
-            "avg": avg
-        }
-        return data
-
-    def average_cve(self, list_data):
-        avg = 0
-        for data in list_data:
-            for i in vulnerability_info(data):
-                if i['impact']:
-                    if i['impact']['baseMetricV2']:
-                        if i['impact']['baseMetricV2']['cvssV2']:
-                            if i['impact']['baseMetricV2']['cvssV2']['baseScore']:
-                                avg += i['impact']['baseMetricV2']['cvssV2']['baseScore']
-                            else:
-                                continue
-                        else:
-                            continue
-                    else:
-                        continue
-                else:
-                    continue
-        return avg
-
-    def info_data(self, data):
-        pass
-
-
-class DirectoryInfo(AbstractData):
+class DirectoryInfo(AbstractStatistic):
 
     def count_data(self, data):
         count = 0
@@ -119,7 +73,7 @@ class DirectoryInfo(AbstractData):
         pass
 
 
-def result_count_data(abstract_class: AbstractData):
+def result_count_data(abstract_class: AbstractStatistic):
     return abstract_class.template_count_data()
 
 

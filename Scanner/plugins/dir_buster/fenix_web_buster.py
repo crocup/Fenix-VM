@@ -1,5 +1,5 @@
+import os
 import requests
-from app import basedir
 
 
 class FenixWebBuster:
@@ -12,7 +12,8 @@ class FenixWebBuster:
 
         :param url:
         """
-        self.dict = basedir+"/plugins/dir_buster/data/common.txt"
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.dict = self.basedir+"/data/common.txt"
         self.data = []
         self.url = url
 
@@ -25,10 +26,6 @@ class FenixWebBuster:
                 r = requests.get(urlpath, timeout=10)
                 if r.status_code == 200:
                     self.data.append({
-                        "code": r.status_code,
-                        "url": urlpath
-                    })
-                    print({
                         "code": r.status_code,
                         "url": urlpath
                     })

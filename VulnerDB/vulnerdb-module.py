@@ -6,6 +6,7 @@ import wget
 import zipfile
 import configparser
 import schedule
+from dotenv import load_dotenv
 
 json_path = "json/"
 if not os.path.exists(json_path):
@@ -16,6 +17,10 @@ if not os.path.exists(log_path):
 setting_path = "setting/"
 if not os.path.exists(setting_path):
     os.mkdir(setting_path, 0o755)
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 # read setting file
 path = "setting/settings_vulner.conf"
