@@ -4,6 +4,7 @@ from typing import Dict, List
 import requests
 import json
 from bs4 import BeautifulSoup
+from base_plugin import BasePlugin
 
 
 class AbstractVulnerability(ABC):
@@ -32,7 +33,7 @@ class VulnDB(AbstractVulnerability):
         """
         pass
         """
-        self.api = API_VULNDB
+        self.api = 'API_VULNDB'
         self.user_agent = 'VulDB API Python Agent'
 
     def required_vulnerability(self, **kwargs) -> Dict:
@@ -103,3 +104,19 @@ def result_code(abstract_vulnerability: AbstractVulnerability, **kwargs) -> Dict
     :return:
     """
     return abstract_vulnerability.template_method(**kwargs)
+
+
+class FenixCVEMitre(BasePlugin):
+
+    def __init__(self):
+        """
+
+        """
+        pass
+
+    def run(self, **kwargs):
+        if kwargs is not None:
+            if (('product' in kwargs) and (kwargs['product'] is not None)) and \
+                    (('version' in kwargs) and (kwargs['version'] is not None)):
+                result_cvemitre = result_code(CveMitre(), product=kwargs['product'], version=kwargs['version'])
+                return {'cve_mitre': result_cvemitre['data']}

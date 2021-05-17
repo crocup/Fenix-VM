@@ -3,10 +3,29 @@ import datetime
 from uuid import uuid4
 from nmap3 import nmap3
 import conf
-from plugins.dir_buster.fenix_web_buster import FenixWebBuster
-from plugins.vulnerability import result_code, CveMitre
 from database import MessageProducer, MongoDriver
 import data_count
+import os
+import inspect
+from plugins.base_plugin import BasePlugin
+
+plugin_dir = "plugins"
+
+# Сюда добавляем имена загруженных модулей
+modules = []
+
+# Перебирем файлы в папке plugins
+for fname in os.listdir(plugin_dir):
+    # Нас интересуют только файлы с расширением .py
+    if fname.endswith(".py"):
+        # Обрежем расширение .py у имени файла
+        module_name = fname[: -3]
+
+        # Пропустим файлы base.py и __init__.py
+        if module_name != "base_plugin" and module_name != "__init__":
+            # Загружаем модуль и добавляем его имя в список загруженных модулей
+            package_obj = __import__(plugin_dir + "." + module_name)
+            modules.append(module_name)
 
 
 class Scanner:
@@ -129,15 +148,19 @@ class ScannerTask(AbstractScanner):
                         prt['product'] = i['service']['product']
                         if 'version' in i['service']:
                             prt['version'] = i['service']['version']
-            # FenixWebBuster
-            if prt['name'] == 'http':
-                url = f"http://{self.host}:{prt['port']}"
-                dirb = FenixWebBuster(url)
-                prt['directory'] = dirb.task_dir_buster()
-            # cve mitre
-            if prt['product'] is not None and prt['version'] is not None:
-                result_cvemitre = result_code(CveMitre(), product=prt['product'], version=prt['version'])
-                prt['plugins'] = {'cve_mitre': result_cvemitre['data']}
+            # Перебираем загруженные модули
+            for modules_name in modules:
+                module_obj = getattr(package_obj, modules_name)
+                for elem in dir(module_obj):
+                    obj = getattr(module_obj, elem)
+                    if inspect.isclass(obj):
+                        if issubclass(obj, BasePlugin):
+                            a = obj()
+                            res_pl = a.run(proto=prt['name'], url=f"http://{self.host}:{prt['port']}", port=prt['port'],
+                                           product=prt['product'], version=prt['version'], host=self.host)
+                            if res_pl is not None:
+                                prt['plugins'] = res_pl
+            # Добавление портов в dict
             open_ports.append(prt)
         self.result['open_port'] = open_ports
 
