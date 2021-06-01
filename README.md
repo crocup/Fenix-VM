@@ -23,8 +23,6 @@ open source Vulnerability Management System, being developed in the Republic of 
 - [Warning](#warning)
 - [License](#license)
 
-![GitHub Logo](img.png)
-
 ## Give a Star! :star:
 If you like the project, please consider giving it a star to raise awareness!
 
@@ -37,6 +35,8 @@ detect and eliminate vulnerabilities in advance, automate the process of monitor
 **Управление уязвимостями** это непрерывный процесс, направленный на инвентаризацию всей инфраструктуры, ее исследование для выявления и определения приоритетности уязвимостей и исправления выявленных недостатков. Это эволюция обычного сканера уязвимостей, усовершенствованный процесс, призванный значительно повысить безопасность организации. 
 **Fenix VM** позволяет получить объективную оценку состояния безопасности информационной системы,
 заблаговременно обнаруживать и устранять уязвимости, автоматизировать процесс контроля соблюдения нормативных требований в Республике Беларусь 
+
+![GitHub Logo](img.png)
 
 ## Possible
 - Continuous monitoring of the organization's infrastructure through automatic network inventory
@@ -70,6 +70,7 @@ This is a development version, we don't recommend its use in production!
 
 ## Предупреждение
 Это разрабатываемая версия, мы не рекомендуем ее использовать в продакшене!
+
 **Предварительный выпуск первой бета-версии в конце июня 2021 года** 
 
 ## Maintainers
