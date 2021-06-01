@@ -17,6 +17,12 @@ open source Vulnerability Management System, being developed in the Republic of 
   </a>
 </p>
 
+## Contents
+- [About](#about)
+- [Possible](#possible)
+- [Warning](#warning)
+- [License](#license)
+
 ![GitHub Logo](img.png)
 
 ## Give a Star! :star:
@@ -66,3 +72,10 @@ This is a development version, we don't recommend its use in production!
 Это разрабатываемая версия, мы не рекомендуем ее использовать в продакшене!
 **Предварительный выпуск первой бета-версии в конце июня 2021 года** 
 
+## Maintainers
+
+This repository is currently maintained by [@Crocup](https://github.com/crocup). 
+
+## License
+
+This project has been released under the GPL-3.0 license. More information can be found by viewing the license [here](LICENSE).
