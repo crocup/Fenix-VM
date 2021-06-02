@@ -4,5 +4,5 @@ idna<3
 pymongo==3.11.4
 requests==2.25.1
 schedule==1.1.0
-urllib3==1.26.4
+urllib3==1.26.5
 wget==3.2
