@@ -26,27 +26,7 @@
     </head>
     <body>
 <!--    {% if current_user.is_authenticated %}-->
-{#    <nav class="navbar" role="navigation" aria-label="main navigation">#}
-{#  <div class="navbar-brand">#}
-{#    <a class="navbar-item" href="https://bulma.io">#}
-{#      <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: Free, open source, and modern CSS framework based on Flexbox" width="112" height="28">#}
-{#    </a>#}
-{##}
-{#    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">#}
-{#      <span aria-hidden="true"></span>#}
-{#      <span aria-hidden="true"></span>#}
-{#      <span aria-hidden="true"></span>#}
-{#    </a>#}
-{#  </div>#}
-{#</nav>#}
         <nav class="navbar columns is-fixed-top" role="navigation" aria-label="main navigation" id="app-header">
-
-{#        <nav class="navbar" role="navigation" aria-label="main navigation">#}
-{#  <div class="navbar-brand column is-5">#}
-{#    <img src="static/images/Untitled.png" alt="Busel VM" >#}
-{#  </div>#}
-{#</nav>#}
-
     <div class="navbar-brand column is-2 is-paddingless">
         <img src="static/images/Untitled.png" alt="Fenix VM" >
     </div>
@@ -75,8 +55,8 @@
                 <a class="" href="{{ url_for('main.dashboard') }}"><span class="icon"><i class="fa fa-home"></i></span> Dashboard</a>
                 <a class="" href="{{ url_for('main.inventory') }}"><span class="icon"><i class="fa fa-edit"></i></span> Host Discovery</a>
                 <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> Scanner</a>
+                <a class="" href="{{ url_for('main.scanner') }}"><span class="icon"><i class="fa fa-desktop"></i></span> OSINT</a>
                 <a class="" href="{{ url_for('main.compliance_66') }}"><span class="icon"><i class="fa fa-compress"></i></span> Compliance</a>
-<!--                <a class="" href="{{ url_for('main.main_scheduller') }}"><span class="icon"><i class="fa fa-times-circle"></i></span> Scheduler</a>-->
                 <a class="" href="{{ url_for('main.cve') }}"><span class="icon"><i class="fa fa-table"></i></span> Knowledge Base</a>
                  <a class="" href="{{ url_for('main.notification') }}"><span class="icon"><i class="fa fa-newspaper-o"></i></span> Notification</a>
                 <a class="" href="{{ url_for('main.report') }}"><span class="icon"><i class="fa fa-list"></i></span> Report</a>
