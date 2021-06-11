@@ -38,6 +38,7 @@ for the future, as well as to analyze compliance with the requirements of the re
 - Daily report on the state of infrastructure security;
 - Immediate notification (telegram, email) to the system administrator: about the discovery or change of assets in the network, the discovery of new vulnerabilities and the emergence of new exploits for previously discovered vulnerabilities;
 - Control of elimination of vulnerabilities;
+- Creating custom plugins for searching for vulnerabilities.
 
 ## In Developing
 - **Monitoring compliance** with the requirements of regulatory legal acts of the regulator **in the Republic of Belarus**.
