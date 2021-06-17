@@ -15,7 +15,7 @@ def dashboard_data() -> Dict:
     :return: data(Dict)
     """
     message_all = MessageProducer(MongoDriver(host='localhost', port=27017,
-                                              base="HostDiscovery", collection="result"))
+                                              base="FenixScanner", collection="result"))
     data_all_host = message_all.get_all_message()
     count = 0
     for i in data_all_host:

@@ -163,7 +163,7 @@ def inventory():
     setting_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
                                                base="setting", collection="network"))
     host_discovery_data = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                      base="HostDiscovery", collection="result"))
+                                                      base="FenixScanner", collection="result"))
     if request.method == 'POST':
         select = request.form.get('comp_select')
         host_discovery_task(host=select)
@@ -186,7 +186,7 @@ def tags(ip):
                                                     base="scanner", collection="result"))
     data_all = host_discovery_ip.get_message({"host": ip})
     host_discovery_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                     base="HostDiscovery", collection="result"))
+                                                     base="FenixScanner", collection="result"))
     data_tag = host_discovery_tag.get_message({"ip": ip})
     if request.method == 'POST':
         tag_get = request.form.get("tag")
@@ -196,7 +196,7 @@ def tags(ip):
         else:
             important = False
         host_discovery_post_tag = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                              base="HostDiscovery", collection="result"))
+                                                              base="FenixScanner", collection="result"))
         host_discovery_post_tag.update_message({"ip": ip}, {"tag": tag_get, "important": important})
         return redirect(url_for('main.inventory'))
     else:
