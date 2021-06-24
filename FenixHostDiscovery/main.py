@@ -5,7 +5,7 @@ from worker import conn
 from pydantic import BaseModel
 
 app = FastAPI()
-q_fenix_scan = Queue(name='scan', connection=conn)
+q_fenix_scan = Queue(name='hostdiscovery', connection=conn)
 
 
 class Host(BaseModel):
@@ -23,11 +23,3 @@ async def read_root(item: Host):
         func=send_to_db.template_db, args=()
     )
     return {"job.id": job.id}
-
-
-@app.post("/api/v1/fenix/scanner")
-async def read_scanner(item: Host):
-    """
-    send to core job_id
-    """
-    pass

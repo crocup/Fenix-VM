@@ -59,15 +59,16 @@ class DistributionDB:
     def send_db(self, list_data):
         for data in list_data:
             message_host_discovery = MessageProducer(MongoDriver(host='localhost', port=27017,
-                                                                 base='FenixScanner', collection='result'))
+                                                                 base='Fenix', collection='HostDiscovery'))
             message_notification = MessageProducer(MongoDriver(host='localhost', port=27017,
-                                                               base='notification', collection='notifications'))
+                                                               base='Fenix', collection='Notification'))
             data_ip = message_host_discovery.get_message({"host": str(data["host"])})
             if data_ip is None:
-                message_host_discovery.insert_message({"host": data["host"], "tag": "None", "time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
-                message_notification.insert_message({"time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "message": f"New IP: {data['host']}"})
+                message_host_discovery.insert_message(data)
+                message_notification.insert_message({"time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 
+                                                     "message": f"New IP: {data['host']}"}) 
             else:
-                message_host_discovery.update_message(message={"ip": data["host"]}, new_value={"time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+                message_host_discovery.update_message(message={"host": data["host"]}, new_value=data)
 
     def edit_data_result(self, result):
         list_hostdiscovery = []
@@ -90,5 +91,5 @@ class DistributionDB:
             if "runtime" in result:
                 del result["runtime"]
         except Exception as e:
-            result = {"error": e}
+            result = {}
         return result

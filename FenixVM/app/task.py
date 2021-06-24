@@ -56,7 +56,7 @@ def delete_data_host_discovery(host: str):
     """
     try:
         message_mongo_host_discovery = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                                   base="FenixScanner", collection="result"))
+                                                                   base="FenixHostDiscovery", collection="result"))
         message_mongo_scanner_result = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
                                                                    base="scanner", collection="result"))
         message_mongo_scanner_task = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,

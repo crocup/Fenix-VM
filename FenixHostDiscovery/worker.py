@@ -5,7 +5,7 @@ import os
 import redis
 from rq import Worker, Queue, Connection
 
-listen = ['scan']
+listen = ['hostdiscovery']
 redis_url = os.getenv('REDISTOGO_URL', 'redis://0.0.0.0:6379')
 conn = redis.from_url(redis_url)
 

@@ -35,7 +35,7 @@ def scheduler_scanner():
     :return: None
     """
     host_discovery = MessageProducer(MongoDriver(host=MONGO_HOST, port=MONGO_PORT,
-                                                 base="FenixScanner", collection="result"))
+                                                 base="FenixHostDiscovery", collection="result"))
     items = host_discovery.get_all_message()
     list_ip = []
     for data in items:
