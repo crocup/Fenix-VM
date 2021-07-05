@@ -4,11 +4,16 @@ from rq import Queue
 from worker import conn
 from pydantic import BaseModel
 
+# use FastAPI
 app = FastAPI()
+# RQ Worker
 q_fenix_scan = Queue(name='hostdiscovery', connection=conn)
 
 
 class Host(BaseModel):
+    """
+
+    """
     host: str
 
 
@@ -16,10 +21,9 @@ class Host(BaseModel):
 async def read_root(item: Host):
     """
     send to core job_id
+    return: JSON job.id
     """
-
-    send_to_db = DistributionDB(item.host)
     job = q_fenix_scan.enqueue_call(
-        func=send_to_db.template_db, args=()
+        func=DistributionDB(item.host).template_db, args=()
     )
     return {"job.id": job.id}

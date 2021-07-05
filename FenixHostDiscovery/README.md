@@ -1,7 +1,7 @@
-<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">FenixScanner</a></h1>
+<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">Fenix Host Discovery</a></h1>
 
 # About
-The service is designed to detect hosts on the network, as well as to perform scanning on the search
+The service is designed to detect hosts on the network
 ## Warning
 The development is of interest to the community, but please wait for the preliminary beta and do not use it in a production environment.
 
