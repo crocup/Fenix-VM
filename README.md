@@ -1,6 +1,4 @@
 ![GitHub Logo](fsec.png)
-
-<h1 align="center" style="border-bottom: none !important; margin-bottom: 5px !important;"><a href="#">FSEC VM</a></h1>
 <p align="center">
 open source Vulnerability Management System, being developed in the Republic of Belarus
 </p>
