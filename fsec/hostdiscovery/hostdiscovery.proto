@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message Text {
+    string data = 1;
+}
+
+message ResultIp {
+    string ip = 2;
+    string hostname = 3;
+    string mac = 4;
+    string date = 5;
+}
+
+service HostDiscovery {
+    rpc arp_scan(Text) returns (ResultIp) {};
+}
