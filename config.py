@@ -4,13 +4,14 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BaseConfig:
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'sdkfgdsyu768536usdgfUYR'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopementConfig(BaseConfig):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or \
+        'sqlite:///my_db.db'
 
 
 class TestingConfig(BaseConfig):

@@ -6,7 +6,9 @@ charset-normalizer==2.0.4
 click==8.0.1
 docutils==0.17.1
 Flask==2.0.1
+Flask-Login==0.5.0
 Flask-Migrate==3.1.0
+Flask-Script==2.0.6
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==0.15.1
 greenlet==1.1.1
@@ -17,6 +19,7 @@ Jinja2==3.0.1
 Mako==1.1.4
 MarkupSafe==2.0.1
 packaging==21.0
+pkg_resources==0.0.0
 Pygments==2.9.0
 pyparsing==2.4.7
 python-dateutil==2.8.2
