@@ -1,6 +1,4 @@
-# auth.py
-
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import User
@@ -23,7 +21,7 @@ def login_post():
     remember = True if request.form.get('remember') else False
     user = User.query.filter_by(email=email).first()
     if not user or not check_password_hash(user.password, password):
-        flash('Please check your login details and try again.')
+        flash('Пожалуйста, проверьте свои данные для входа и попробуйте еще раз')
         return redirect(url_for('auth.login'))
     login_user(user, remember=remember)
     return redirect(url_for('main.index'))
