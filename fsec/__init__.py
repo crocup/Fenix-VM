@@ -23,8 +23,9 @@ def create_app():
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
-
     from .views import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+    from .modules.hostdiscovery.api import hostdiscovery as main_blueprint
     app.register_blueprint(main_blueprint)
 
     return app

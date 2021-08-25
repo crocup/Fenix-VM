@@ -1,7 +1,14 @@
-import datetime
 from abc import abstractmethod
-from typing import Dict, List
+from typing import Dict
 import nmap3
+from fsec.database import MessageProducer, MongoDriver
+from datetime import datetime
+
+
+def get_time() -> str:
+    """
+    """
+    return datetime.now().strftime("%H:%M:%S %d.%m.%Y")
 
 
 class AbstractDiscovery:
@@ -12,11 +19,21 @@ class AbstractDiscovery:
         self.nmap = nmap3.NmapHostDiscovery()
         self.host = host
 
-    def template_discovery(self) -> Dict:
-        return self.discovery(self.host)
+    def template_discovery(self):
+        result = self.discovery(self.host)
+        new_result = self.del_misc_data(data=result)
+        self.send_to_db(new_result)
 
     @abstractmethod
     def discovery(self, host):
+        pass
+
+    @abstractmethod
+    def del_misc_data(self, data):
+        pass
+
+    @abstractmethod
+    def send_to_db(self, result):
         pass
 
 
@@ -24,57 +41,49 @@ class HostDiscovery(AbstractDiscovery):
     """Only host discover (-sn)"""
 
     def discovery(self, host) -> Dict:
+        """
+
+        """
         return self.nmap.nmap_no_portscan(host)
 
+    def del_misc_data(self, data) -> Dict:
+        """
 
-class ArpDiscovery(AbstractDiscovery):
-    """Arp discovery on a local network (-PR)"""
+        """
+        try:
+            if "stats" in data:
+                del data["stats"]
+            if "runtime" in data:
+                del data["runtime"]
+        except Exception as e:
+            data = {}
+        return data
 
-    def discovery(self, host) -> Dict:
-        return self.nmap.nmap_arp_discovery(host)
+    def send_to_db(self, result):
+        """
 
-
-class PortScan(AbstractDiscovery):
-    """Only port scan (-Pn)"""
-
-    def discovery(self, host) -> Dict:
-        return self.nmap.nmap_portscan_only(host)
+        """
+        message_host_discovery = MessageProducer(MongoDriver(host='localhost', port=27017,
+                                                             base='HostDiscovery', collection='result'))
+        for host in result:
+            data = {
+                "host": host,
+                "hostname": result[host]["hostname"],
+                "macaddress": result[host]["macaddress"],
+                "time": get_time()
+            }
+            data_ip = message_host_discovery.get_message({"host": str(host)})
+            if data_ip is None:
+                message_host_discovery.insert_message(data)
+            else:
+                message_host_discovery.update_message(message={"host": host},
+                                                      new_value={"macaddress": result[host]["macaddress"],
+                                                                 "hostname": result[host]["hostname"],
+                                                                 "time": get_time()})
 
 
 def result_scanner(abstract_class: AbstractDiscovery):
-    return abstract_class.template_discovery()
-
-
-def arp_scan_data(data):
-    return result_scanner(HostDiscovery(data))
-
-
-def arp_scan(data):
-    response = result_scanner(HostDiscovery(data))
-    response = delete_misc_data(response)
-    hostname = ""
-    macaddress = ""
-    host = ""
-    time = ""
-    for i in response:
-        host = i
-        print(i)
-        if "hostname" in response[i]:
-            hostname = response[i]["hostname"]
-        if "macaddress" in response[i]:
-            macaddress = response[i]["macaddress"]
-        time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return host, str(hostname), str(macaddress), time
-
-
-def delete_misc_data(result: Dict) -> Dict:
     """
-        """
-    try:
-        if "stats" in result:
-            del result["stats"]
-        if "runtime" in result:
-            del result["runtime"]
-    except Exception as e:
-        result = {}
-    return result
+
+    """
+    abstract_class.template_discovery()

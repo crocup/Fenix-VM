@@ -12,6 +12,8 @@ class DevelopementConfig(BaseConfig):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or \
         'sqlite:///my_db.db'
+    MONGO_DATABASE = 'localhost'
+    MONGO_PORT = 27017
 
 
 class TestingConfig(BaseConfig):
