@@ -5,12 +5,6 @@ from fsec.database import MessageProducer, MongoDriver
 from datetime import datetime
 
 
-def get_time() -> str:
-    """
-    """
-    return datetime.now().strftime("%H:%M:%S %d.%m.%Y")
-
-
 class AbstractDiscovery:
     """
     """
@@ -70,7 +64,7 @@ class HostDiscovery(AbstractDiscovery):
                 "host": host,
                 "hostname": result[host]["hostname"],
                 "macaddress": result[host]["macaddress"],
-                "time": get_time()
+                "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")
             }
             data_ip = message_host_discovery.get_message({"host": str(host)})
             if data_ip is None:
@@ -79,7 +73,7 @@ class HostDiscovery(AbstractDiscovery):
                 message_host_discovery.update_message(message={"host": host},
                                                       new_value={"macaddress": result[host]["macaddress"],
                                                                  "hostname": result[host]["hostname"],
-                                                                 "time": get_time()})
+                                                                 "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")})
 
 
 def result_scanner(abstract_class: AbstractDiscovery):
