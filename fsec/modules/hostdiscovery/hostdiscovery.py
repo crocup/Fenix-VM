@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 from typing import Dict
 import nmap3
@@ -57,7 +58,7 @@ class HostDiscovery(AbstractDiscovery):
         """
 
         """
-        message_host_discovery = MessageProducer(MongoDriver(host='localhost', port=27017,
+        message_host_discovery = MessageProducer(MongoDriver(host=os.environ.get('MONGO_DATABASE'), port=27017,
                                                              base='HostDiscovery', collection='result'))
         for host in result:
             data = {
