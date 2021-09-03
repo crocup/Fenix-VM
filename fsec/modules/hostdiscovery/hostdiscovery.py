@@ -81,3 +81,4 @@ def result_scanner(abstract_class: AbstractDiscovery):
 
     """
     abstract_class.template_discovery()
+
