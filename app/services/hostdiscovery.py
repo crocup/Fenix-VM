@@ -2,8 +2,8 @@ import os
 from abc import abstractmethod
 from typing import Dict
 import nmap3
-from fsec.database import MessageProducer, MongoDriver
 from datetime import datetime
+from app.services.database import MessageProducer, MongoDriver
 
 
 class AbstractDiscovery:
@@ -37,13 +37,11 @@ class HostDiscovery(AbstractDiscovery):
 
     def discovery(self, host) -> Dict:
         """
-
         """
         return self.nmap.nmap_no_portscan(host)
 
     def del_misc_data(self, data) -> Dict:
         """
-
         """
         try:
             if "stats" in data:
@@ -56,7 +54,6 @@ class HostDiscovery(AbstractDiscovery):
 
     def send_to_db(self, result):
         """
-
         """
         message_host_discovery = MessageProducer(MongoDriver(host=os.environ.get('MONGO_DATABASE'), port=27017,
                                                              base='HostDiscovery', collection='result'))
@@ -79,7 +76,5 @@ class HostDiscovery(AbstractDiscovery):
 
 def result_scanner(abstract_class: AbstractDiscovery):
     """
-
     """
     abstract_class.template_discovery()
-
