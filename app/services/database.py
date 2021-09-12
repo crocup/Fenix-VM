@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Dict
 from pymongo import MongoClient
 import logging
+import json
+from bson import ObjectId
 
 
 class Driver(ABC):
@@ -127,6 +129,13 @@ class Producer(ABC):
         pass
 
 
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
 class MessageProducer(Producer):
 
     def insert_message(self, message: Dict):
@@ -153,6 +162,7 @@ class MessageProducer(Producer):
     def get_all_message(self):
         self.driver.connect()
         result = self.driver.get_all()
+        # result = JSONEncoder().encode(self.driver.get_all())
         self.driver.disconnect()
         return result
 

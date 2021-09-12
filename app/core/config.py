@@ -13,3 +13,5 @@ ALLOWED_HOSTS: List[str] = config(
     cast=CommaSeparatedStrings,
     default="",
 )
+DATABASE_IP = "127.0.0.1"
+DATABASE_PORT = 27017

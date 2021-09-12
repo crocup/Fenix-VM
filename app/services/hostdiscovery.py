@@ -3,6 +3,8 @@ from abc import abstractmethod
 from typing import Dict
 import nmap3
 from datetime import datetime
+
+from app.core.config import DATABASE_PORT, DATABASE_IP
 from app.services.database import MessageProducer, MongoDriver
 
 
@@ -55,7 +57,7 @@ class HostDiscovery(AbstractDiscovery):
     def send_to_db(self, result):
         """
         """
-        message_host_discovery = MessageProducer(MongoDriver(host=os.environ.get('MONGO_DATABASE'), port=27017,
+        message_host_discovery = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
                                                              base='HostDiscovery', collection='result'))
         for host in result:
             data = {
