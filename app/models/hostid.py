@@ -17,3 +17,8 @@ class Discovery(BaseModel):
     """ ds """
     status: bool
     data: List
+
+
+class Task(BaseModel):
+    """ """
+    success: bool
