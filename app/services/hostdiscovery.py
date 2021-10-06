@@ -1,9 +1,7 @@
-import os
 from abc import abstractmethod
 from typing import Dict
 import nmap3
 from datetime import datetime
-
 from app.core.config import DATABASE_PORT, DATABASE_IP
 from app.services.database import MessageProducer, MongoDriver
 
