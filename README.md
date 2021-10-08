@@ -48,7 +48,7 @@ The development is of interest to the community, but please wait for the prelimi
 
 The system is under active development by one person and there are many ideas ahead, but consider supporting it and giving it a star to raise awareness! 
 
-**UDP:** **Pre-release of the first beta version at the end of September 2021** 
+**UDP:** **Pre-release of the first beta version at the end of December 2021** 
 
 ## Maintainers
 
