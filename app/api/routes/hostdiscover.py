@@ -1,5 +1,3 @@
-import json
-
 from fastapi import APIRouter
 from app.core.config import DATABASE_PORT, DATABASE_IP
 from app.models.hostid import HostIn, Discovery, HostOut
