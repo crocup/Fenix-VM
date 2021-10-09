@@ -74,7 +74,7 @@ class HostDiscovery(AbstractDiscovery):
                                                                  "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")})
 
 
-def result_scanner(abstract_class: AbstractDiscovery):
+def result_discovery(abstract_class: AbstractDiscovery):
     """
     """
     abstract_class.template_discovery()
