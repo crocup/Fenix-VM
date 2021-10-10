@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from rq.job import Job
 from app.models.hostid import Task
-from worker import conn
+from app.worker import conn
 
 router = APIRouter()
 

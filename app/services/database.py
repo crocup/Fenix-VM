@@ -85,7 +85,7 @@ class MongoDriver(Driver):
         return self._get_one_message(message)
 
     def _get_one_message(self, message):
-        return self.collection.find_one(message)
+        return self.collection.find_one(message, {'_id': 0})
 
     def get_all(self):
         return self._get_all_message()
@@ -162,7 +162,6 @@ class MessageProducer(Producer):
     def get_all_message(self):
         self.driver.connect()
         result = self.driver.get_all()
-        # result = JSONEncoder().encode(self.driver.get_all())
         self.driver.disconnect()
         return result
 
