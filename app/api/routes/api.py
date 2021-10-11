@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from rq import Queue
 from app.api.routes import discovery, rqtask, scanner
-from app.worker import conn
+from worker import conn
 
 router = APIRouter()
 rq_que = Queue(name='fsec', connection=conn)
