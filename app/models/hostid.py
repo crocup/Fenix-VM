@@ -1,4 +1,3 @@
-from typing import List
 from pydantic import BaseModel
 
 
@@ -12,14 +11,3 @@ class HostOut(BaseModel):
     """  """
     status: bool
     job: str
-
-
-class Discovery(BaseModel):
-    """ ds """
-    status: bool
-    data: List
-
-
-class Task(BaseModel):
-    """ """
-    success: bool

@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from starlette import status
 from app.core.config import DATABASE_PORT, DATABASE_IP
-from app.models.hostid import HostIn, Discovery, HostOut
+from app.models.hostid import HostIn, HostOut
+from app.models.task import TaskResult
 from app.services.database import MessageProducer, MongoDriver
 from app.services.hostdiscovery import result_discovery, HostDiscovery
 
@@ -19,7 +20,7 @@ async def get_page():
     for doc in host_discovery_data.get_all_message():
         del doc["_id"]
         db_list.append(doc)
-    return Discovery(status=True, data=db_list)
+    return TaskResult(status=True, data=db_list)
 
 
 @router.post("/start_task", status_code=status.HTTP_200_OK, name="discovery:start",)
