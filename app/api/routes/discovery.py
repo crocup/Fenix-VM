@@ -14,12 +14,15 @@ async def get_page(task: TaskStart):
     """
     список всех хостов в задаче
     """
-    host_discovery_data = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
-                                                      base="HostDiscovery", collection="result"))
-    db_list = list()
-    for doc in host_discovery_data.get_message({"name": task.name}):
-        db_list.append(doc)
-    return GetTaskResult(status=True, data=db_list)
+    try:
+        host_discovery_data = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
+                                                          base="HostDiscovery", collection="result"))
+        db_list = list()
+        for doc in host_discovery_data.get_message({"name": task.name}):
+            db_list.append(doc)
+        return GetTaskResult(status=True, data=db_list)
+    except Exception as e:
+        return GetTaskResult(status=False, data=[])
 
 
 @router.post("/create_task", status_code=status.HTTP_200_OK, name="discovery:create", )
@@ -48,13 +51,16 @@ async def start_task_discovery(task: TaskStart):
     запускаем задачу обнаружения хостов
     данные читаются из БД
     """
-    db_discovery_start_task = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
-                                                          base="HostDiscovery", collection="task"))
-    host_db = db_discovery_start_task.get_message({"name": task.name})
-    for host in host_db:
-        host_db = host
-    from app.api.routes.api import rq_que
-    job = rq_que.enqueue_call(
-        func=result_discovery, args=(HostDiscovery(host_db['mask'], host_db['name']),)
-    )
-    return TaskStatus(success=True, message=job.id)
+    try:
+        db_discovery_start_task = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
+                                                              base="HostDiscovery", collection="task"))
+        host_db = db_discovery_start_task.get_message({"name": task.name})
+        for host in host_db:
+            host_db = host
+        from app.api.routes.api import rq_que
+        job = rq_que.enqueue_call(
+            func=result_discovery, args=(HostDiscovery(host_db['mask'], host_db['name']),)
+        )
+        return TaskStatus(success=True, message=job.id)
+    except Exception as e:
+        return TaskStatus(success=False, message=e)
