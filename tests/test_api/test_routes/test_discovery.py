@@ -11,6 +11,13 @@ async def test_get_page():
 
 
 @pytest.mark.anyio
+async def test_get_page_no_data():
+    async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
+        response = await ac.post(app.url_path_for("discovery:get"), json={"name": "test5"})
+    assert response.status_code == 200
+
+
+@pytest.mark.anyio
 async def test_get_page_no_name():
     async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
         response = await ac.post(app.url_path_for("discovery:get"))

@@ -10,11 +10,17 @@ router = APIRouter()
 
 @router.get("/", status_code=status.HTTP_204_NO_CONTENT, name="task:default",)
 async def status_default():
+    """
+
+    """
     return Status(success=False)
 
 
 @router.get("/{job_key}", status_code=status.HTTP_200_OK, name="task:status",)
 async def status_task(job_key):
+    """
+
+    """
     try:
         job = Job.fetch(job_key, connection=conn)
         if job.is_finished:
