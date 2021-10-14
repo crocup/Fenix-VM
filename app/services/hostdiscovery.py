@@ -10,9 +10,10 @@ class AbstractDiscovery:
     """
     """
 
-    def __init__(self, host):
+    def __init__(self, host, name):
         self.nmap = nmap3.NmapHostDiscovery()
         self.host = host
+        self.name = name
 
     def template_discovery(self):
         result = self.discovery(self.host)
@@ -60,6 +61,7 @@ class HostDiscovery(AbstractDiscovery):
         for host in result:
             data = {
                 "host": host,
+                "name": self.name,
                 "hostname": result[host]["hostname"],
                 "macaddress": result[host]["macaddress"],
                 "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")
@@ -71,6 +73,7 @@ class HostDiscovery(AbstractDiscovery):
                 message_host_discovery.update_message(message={"host": host},
                                                       new_value={"macaddress": result[host]["macaddress"],
                                                                  "hostname": result[host]["hostname"],
+                                                                 "name": self.name,
                                                                  "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")})
 
 

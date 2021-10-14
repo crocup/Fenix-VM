@@ -85,7 +85,7 @@ class MongoDriver(Driver):
         return self._get_one_message(message)
 
     def _get_one_message(self, message):
-        return self.collection.find_one(message, {'_id': 0})
+        return self.collection.find(message, {'_id': 0})
 
     def get_all(self):
         return self._get_all_message()

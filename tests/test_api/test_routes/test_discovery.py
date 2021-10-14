@@ -6,7 +6,7 @@ from app.main import app
 @pytest.mark.anyio
 async def test_get_page():
     async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
-        response = await ac.get(app.url_path_for("discovery:get"))
+        response = await ac.post(app.url_path_for("discovery:get"), json={"name": "test1"})
     assert response.status_code == 200
 
 
@@ -20,5 +20,6 @@ async def test_start_discovery_not_host():
 @pytest.mark.anyio
 async def test_start_discovery_host():
     async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
-        response = await ac.post(app.url_path_for("discovery:start"), json={"host": "192.168.1.1", "options": "123"})
+        response = await ac.post(app.url_path_for("discovery:start"), json={"name": "test1"})
     assert response.status_code == 200
+
