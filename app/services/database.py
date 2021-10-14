@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Dict
 from pymongo import MongoClient
 import logging
+import json
+from bson import ObjectId
+from app.models.database import Message
 
 
 class Driver(ABC):
@@ -59,31 +62,37 @@ class MongoDriver(Driver):
         logging.info('Disconnect from mongo')
 
     def insert(self, message):
-        self._insert_message(message)
+        return self._insert_message(message)
 
     def _insert_message(self, message):
         self.collection.insert_one(message)
-        logging.info(f'Inserted: {message}')
+        return Message(success=True)
 
     def delete(self, message):
-        self._delete_message(message)
+        return self._delete_message(message)
 
     def _delete_message(self, message):
-        self.collection.remove(message)
-        logging.info(f'Deleted: {message}')
+        try:
+            self.collection.delete_one(message)
+            return Message(success=True)
+        except Exception as e:
+            return Message(success=False)
 
     def update(self, message, new_value):
-        self._update_message(message, new_value)
+        return self._update_message(message, new_value)
 
     def _update_message(self, message, new_value):
-        self.collection.update_one(message, {'$set': new_value}, upsert=True)
-        logging.info(f'Updated: {message}')
+        try:
+            self.collection.update_one(message, {'$set': new_value}, upsert=True)
+            return Message(success=True)
+        except Exception as e:
+            return Message(success=False)
 
     def get_one(self, message):
         return self._get_one_message(message)
 
     def _get_one_message(self, message):
-        return self.collection.find_one(message)
+        return self.collection.find(message, {'_id': 0})
 
     def get_all(self):
         return self._get_all_message()
@@ -127,22 +136,32 @@ class Producer(ABC):
         pass
 
 
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
 class MessageProducer(Producer):
 
     def insert_message(self, message: Dict):
         self.driver.connect()
-        self.driver.insert(message)
+        result = self.driver.insert(message)
         self.driver.disconnect()
+        return result
 
     def delete_message(self, message: Dict):
         self.driver.connect()
-        self.driver.delete(message)
+        result = self.driver.delete(message)
         self.driver.disconnect()
+        return result
 
     def update_message(self, message: Dict, new_value: Dict):
         self.driver.connect()
-        self.driver.update(message, new_value)
+        result = self.driver.update(message, new_value)
         self.driver.disconnect()
+        return result
 
     def get_message(self, message: Dict):
         self.driver.connect()
