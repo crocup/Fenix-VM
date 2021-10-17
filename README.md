@@ -19,6 +19,7 @@ open source Vulnerability Management System, being developed in the Republic of 
 * [Possible](#possible)
 * [In Developing](#in-developing)
 * [Warning](#warning)
+* [Run tests](#run-tests)
 * [License](#license)
 
 ## Give a Star! :star:
@@ -49,6 +50,17 @@ The development is of interest to the community, but please wait for the prelimi
 The system is under active development by one person and there are many ideas ahead, but consider supporting it and giving it a star to raise awareness! 
 
 **UDP:** **Pre-release of the first beta version at the end of December 2021** 
+
+## Run tests
+
+Tests for this project are defined in the ``tests/`` folder.
+
+This project uses [pytest](https://docs.pytest.org/) to define tests because it allows you to use the ``assert`` keyword with good formatting for failed assertations.
+
+
+To run all the tests of a project, simply run the ``pytest`` command: ::
+
+    $ pytest --cov=app tests/
 
 ## Maintainers
 
