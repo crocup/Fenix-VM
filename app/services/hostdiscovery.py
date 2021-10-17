@@ -1,45 +1,18 @@
-from abc import abstractmethod
 from typing import Dict
 import nmap3
 from datetime import datetime
 from app.core.config import DATABASE_PORT, DATABASE_IP
+from app.core.scanner import AbstractScanner
 from app.services.database import MessageProducer, MongoDriver
 
 
-class AbstractDiscovery:
-    """
-    """
-
-    def __init__(self, host, name):
-        self.nmap = nmap3.NmapHostDiscovery()
-        self.host = host
-        self.name = name
-
-    def template_discovery(self):
-        result = self.discovery(self.host)
-        new_result = self.del_misc_data(data=result)
-        self.send_to_db(new_result)
-
-    @abstractmethod
-    def discovery(self, host):
-        pass
-
-    @abstractmethod
-    def del_misc_data(self, data):
-        pass
-
-    @abstractmethod
-    def send_to_db(self, result):
-        pass
-
-
-class HostDiscovery(AbstractDiscovery):
+class HostDiscovery(AbstractScanner):
     """Only host discover (-sn)"""
 
-    def discovery(self, host) -> Dict:
+    def scanner(self, host) -> Dict:
         """
         """
-        return self.nmap.nmap_no_portscan(host)
+        return nmap3.NmapHostDiscovery().nmap_no_portscan(host)
 
     def del_misc_data(self, data) -> Dict:
         """
@@ -57,7 +30,7 @@ class HostDiscovery(AbstractDiscovery):
         """
         """
         message_host_discovery = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
-                                                             base='HostDiscovery', collection='result'))
+                                                             base=self.db, collection=self.table))
         for host in result:
             data = {
                 "host": host,
@@ -75,9 +48,3 @@ class HostDiscovery(AbstractDiscovery):
                                                                  "hostname": result[host]["hostname"],
                                                                  "name": self.name,
                                                                  "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")})
-
-
-def result_discovery(abstract_class: AbstractDiscovery):
-    """
-    """
-    abstract_class.template_discovery()
