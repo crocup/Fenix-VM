@@ -3,8 +3,9 @@ from starlette import status
 from datetime import datetime
 from app.core.config import DATABASE_PORT, DATABASE_IP
 from app.models.discovery import TaskCreate, TaskStatus, GetTaskResult, TaskStart
+from app.core.scanner import result_scan
 from app.services.database import MessageProducer, MongoDriver
-from app.services.hostdiscovery import result_discovery, HostDiscovery
+from app.services.hostdiscovery import HostDiscovery
 
 router = APIRouter()
 
@@ -59,7 +60,8 @@ async def start_task_discovery(task: TaskStart):
             host_db = host
         from app.api.routes.api import rq_que
         job = rq_que.enqueue_call(
-            func=result_discovery, args=(HostDiscovery(host_db['mask'], host_db['name']),)
+            func=result_scan, args=(HostDiscovery(host=host_db['mask'], name=host_db['name'], db="HostDiscovery",
+                                                  table="result"),)
         )
         return TaskStatus(success=True, message=job.id)
     except Exception as e:
