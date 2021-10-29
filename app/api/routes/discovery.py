@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+import logging
 from starlette import status
 from datetime import datetime
 from app.core.config import DATABASE_PORT, DATABASE_IP
@@ -23,6 +24,7 @@ async def get_page(task: Start):
             db_list.append(doc)
         return GetResult(status=True, data=db_list)
     except Exception as e:
+        logging.error(e)
         return GetResult(status=False, data=[])
 
 
@@ -43,6 +45,7 @@ async def create_task_discovery(task: Create):
         db_discovery_create_task.update_message(message, {"name": task.name})
         return Status(success=True, message="insert data")
     except Exception as e:
+        logging.error(e)
         return Status(success=False, message=e)
 
 
@@ -65,4 +68,5 @@ async def start_task_discovery(task: Start):
         )
         return Status(success=True, message=job.id)
     except Exception as e:
+        logging.error(e)
         return Status(success=False, message=e)

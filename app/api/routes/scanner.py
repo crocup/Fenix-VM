@@ -1,9 +1,10 @@
 from fastapi import APIRouter
+import logging
 from starlette import status
 from datetime import datetime
 from app.core.config import DATABASE_IP, DATABASE_PORT
 from app.core.scanner import result_scan
-from app.models.task import Create, Status, Start
+from app.models.task import Create, Status, Start, GetResult
 from app.services.database import MessageProducer, MongoDriver
 from app.services.scanner import ServiceDetection
 
@@ -25,6 +26,7 @@ async def start_scanner(task: Start):
         )
         return Status(success=True, message=job.id)
     except Exception as e:
+        logging.error(e)
         return Status(success=False, message=e)
 
 
@@ -41,4 +43,24 @@ async def create_task_scanner(task: Create):
         db_scanner_create_task.update_message(message, {"name": task.name})
         return Status(success=True, message="insert data")
     except Exception as e:
+        logging.error(e)
         return Status(success=False, message=f"error: {e}")
+
+
+@router.post("/get_task", status_code=status.HTTP_200_OK, name="scanner:get", )
+async def get_page_scanner(task: Start):
+    try:
+        scan_data = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
+                                                base="Scanner", collection="result"))
+        db_list = list()
+        for doc in scan_data.get_message({"name": task.name}):
+            result = {
+                "host": doc['host'],
+                "name": task.name,
+                "time": doc['time']
+            }
+            db_list.append(result)
+        return GetResult(status=True, data=db_list)
+    except Exception as e:
+        logging.error(e)
+        return GetResult(status=False, data=[])
