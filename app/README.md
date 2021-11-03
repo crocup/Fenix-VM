@@ -10,6 +10,6 @@ Application parts are:
     │   └── routes       - 
     ├── core             - 
     ├── models           -
-    ├── services         - 
-    │   └── plugins      - 
+    ├── plugins          -
+    ├── services         -
     └── main.py          - 
