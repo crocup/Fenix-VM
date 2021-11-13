@@ -40,7 +40,7 @@ async def create_task_scanner(task: Create):
             "date": datetime.now().strftime("%H:%M:%S %d.%m.%Y"),
             "name": task.name,
         }
-        db_scanner_create_task.update_message(message, {"name": task.name})
+        db_scanner_create_task.update_message({"name": task.name}, message)
         return Status(success=True, message="insert data")
     except Exception as e:
         logging.error(e)
