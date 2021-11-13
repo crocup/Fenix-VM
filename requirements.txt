@@ -22,6 +22,7 @@ pytest==6.2.5
 pytest-cov==3.0.0
 python3-nmap==1.5.1
 redis==3.5.3
+requests==2.26.0
 rfc3986==1.5.0
 rq==1.10.0
 simplejson==3.17.5
@@ -32,3 +33,4 @@ toml==0.10.2
 tomli==1.2.1
 trio==0.19.0
 typing-extensions==3.10.0.2
+urllib3==1.26.7

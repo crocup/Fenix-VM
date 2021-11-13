@@ -41,6 +41,10 @@ class Driver(ABC):
     def get_message_limit(self, count):
         pass
 
+    @abstractmethod
+    def count_doc(self, count):
+        pass
+
 
 class MongoDriver(Driver):
     def __init__(self, host, port, base, collection):
@@ -106,6 +110,12 @@ class MongoDriver(Driver):
     def _get_message_limit(self, count):
         return self.collection.find().sort("_id", -1).limit(count)
 
+    def _count_doc(self, doc):
+        return self.collection.count_documents(doc)
+
+    def count_doc(self, doc):
+        return self._count_doc(doc)
+
 
 class Producer(ABC):
     def __init__(self, driver: Driver):
@@ -133,6 +143,10 @@ class Producer(ABC):
 
     @abstractmethod
     def get_message_limit(self, count: int):
+        pass
+
+    @abstractmethod
+    def get_count_doc(self, doc):
         pass
 
 
@@ -178,5 +192,11 @@ class MessageProducer(Producer):
     def get_message_limit(self, count: int):
         self.driver.connect()
         result = self.driver.get_message_limit(count)
+        self.driver.disconnect()
+        return result
+
+    def get_count_doc(self, doc):
+        self.driver.connect()
+        result = self.driver.count_doc(doc)
         self.driver.disconnect()
         return result

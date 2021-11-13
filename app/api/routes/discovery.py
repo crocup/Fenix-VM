@@ -1,9 +1,10 @@
 from fastapi import APIRouter
+import logging
 from starlette import status
 from datetime import datetime
 from app.core.config import DATABASE_PORT, DATABASE_IP
-from app.models.discovery import TaskCreate, TaskStatus, GetTaskResult, TaskStart
 from app.core.scanner import result_scan
+from app.models.task import GetResult, Start, Create, Status
 from app.services.database import MessageProducer, MongoDriver
 from app.services.hostdiscovery import HostDiscovery
 
@@ -11,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("/get_task", status_code=status.HTTP_200_OK, name="discovery:get", )
-async def get_page(task: TaskStart):
+async def get_page(task: Start):
     """
     список всех хостов в задаче
     """
@@ -21,13 +22,14 @@ async def get_page(task: TaskStart):
         db_list = list()
         for doc in host_discovery_data.get_message({"name": task.name}):
             db_list.append(doc)
-        return GetTaskResult(status=True, data=db_list)
+        return GetResult(status=True, data=db_list)
     except Exception as e:
-        return GetTaskResult(status=False, data=[])
+        logging.error(e)
+        return GetResult(status=False, data=[])
 
 
 @router.post("/create_task", status_code=status.HTTP_200_OK, name="discovery:create", )
-async def create_task_discovery(task: TaskCreate):
+async def create_task_discovery(task: Create):
     """
     создаем задачу для обнаружения хостов
     данные сохраняются в бд
@@ -40,14 +42,15 @@ async def create_task_discovery(task: TaskCreate):
             "date": datetime.now().strftime("%H:%M:%S %d.%m.%Y"),
             "name": task.name,
         }
-        db_discovery_create_task.update_message(message, {"name": task.name})
-        return TaskStatus(success=True, message="insert data")
+        db_discovery_create_task.update_message({"name": task.name}, message)
+        return Status(success=True, message="insert data")
     except Exception as e:
-        return TaskStatus(success=False, message=e)
+        logging.error(e)
+        return Status(success=False, message=e)
 
 
 @router.post("/start_task", status_code=status.HTTP_200_OK, name="discovery:start", )
-async def start_task_discovery(task: TaskStart):
+async def start_task_discovery(task: Start):
     """
     запускаем задачу обнаружения хостов
     данные читаются из БД
@@ -63,6 +66,7 @@ async def start_task_discovery(task: TaskStart):
             func=result_scan, args=(HostDiscovery(host=host_db['mask'], name=host_db['name'], db="HostDiscovery",
                                                   table="result"),)
         )
-        return TaskStatus(success=True, message=job.id)
+        return Status(success=True, message=job.id)
     except Exception as e:
-        return TaskStatus(success=False, message=e)
+        logging.error(e)
+        return Status(success=False, message=e)

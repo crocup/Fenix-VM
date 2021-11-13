@@ -13,7 +13,7 @@ async def status_default():
     """
 
     """
-    return Status(success=False)
+    return Status(success=False, message="no content")
 
 
 @router.get("/{job_key}", status_code=status.HTTP_200_OK, name="task:status",)
@@ -24,8 +24,8 @@ async def status_task(job_key):
     try:
         job = Job.fetch(job_key, connection=conn)
         if job.is_finished:
-            return Status(success=True)
+            return Status(success=True, message="job finished")
         else:
-            return Status(success=False)
+            return Status(success=False, message="job is not finished")
     except rq.exceptions.NoSuchJobError:
-        return Status(success=False)
+        return Status(success=False, message="no such job")
