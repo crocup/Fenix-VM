@@ -27,8 +27,8 @@ async def test_get_page_scanner_no_name():
 @pytest.mark.anyio
 async def test_create_task_scanner():
     async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
-        response = await ac.post(app.url_path_for("scanner:create"), json={"mask": "192.168.100.1",
-                                                                           "name": "test3"})
+        response = await ac.post(app.url_path_for("scanner:create"), json={"mask": "192.168.1.1",
+                                                                           "name": "test2"})
     assert response.status_code == 200
     assert response.json() == {"success": True, "message": "insert data"}
 
