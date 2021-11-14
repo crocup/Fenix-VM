@@ -1,7 +1,8 @@
+import datetime
 from typing import List
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
-
+# app
 API_PREFIX = "/api/v1"
 VERSION = "0.0.21"
 config = Config(".env")
@@ -12,6 +13,10 @@ ALLOWED_HOSTS: List[str] = config(
     cast=CommaSeparatedStrings,
     default="",
 )
+# database
 DATABASE_IP: str = config("DATABASE_IP", default="127.0.0.1")
 DATABASE_PORT: int = config("DATABASE_PORT", default=27017)
+# year feeds
+NOW_YEAR: int = config("NOW_YEAR", default=datetime.datetime.now().year)
+START_YEAR: int = config("START_YEAR", default=2002)
 # https://github.com/nsidnev/fastapi-realworld-example-app/blob/master/app/api/routes/tags.py
