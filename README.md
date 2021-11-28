@@ -20,6 +20,7 @@ open source Vulnerability Management System, being developed in the Republic of 
 * [In Developing](#in-developing)
 * [Warning](#warning)
 * [Run tests](#run-tests)
+* [Quick Start in Ubuntu(Debian)](#quick-start-in-ubuntudebian)
 * [License](#license)
 
 ## Give a Star! :star:
@@ -63,15 +64,21 @@ To run all the tests of a project, simply run the ``pytest`` command: ::
     $ pytest --cov=app tests/
 
 
-## Quick Start
+## Quick Start in Ubuntu(Debian)
+1. Install Docker: 
+``sudo apt install docker.io``
+2. Install Redis:
+``sudo docker run --restart=always -d --name redis_1 -v /opt/redis/etc/redis.conf:/usr/local/etc/redis/redis.conf -v /opt/redis/data:/data -p 0.0.0.0:6379:6379 redis redis-server /usr/local/etc/redis/redis.conf``
+3. Install Mongo:
+``sudo docker run --restart=always -d --name mongodb_1 -v mongodata:/data/db -p 0.0.0.0:27017:27017 mongo``
+4. Build FSEC_VM image: 
+``
+sudo docker build -t fsec ./
+``
+5. Run a container based on your image:
+``sudo docker run -d --name fsec_vm -p 0.0.0.0:8000:8000 fsec
+``
 
-1. Build image: 
-``
-docker build -t fsec ./
-``
-2. Run a container based on your image:
-``docker run -d -p 8000:8000 fsec
-``
 ## Maintainers
 
 This repository is currently maintained by [@Crocup](https://github.com/crocup). 
