@@ -1,18 +1,7 @@
 from abc import abstractmethod
 
 
-class AbstractVulnerability:
-    """
-    """
-
-    def __init__(self):
-        pass
-
-    def template_vulnerability(self):
-        pass
-
-
-class AbctactDownloadVulnerabitity:
+class AbstractDownloadFeeds:
     """
 
     """
@@ -34,9 +23,5 @@ class AbctactDownloadVulnerabitity:
         pass
 
 
-def result_vulnerability(abstract_class: AbstractVulnerability):
-    abstract_class.template_vulnerability()
-
-
-def result_download_vulnerability(abstract_class: AbctactDownloadVulnerabitity):
+def result_download_vulnerability(abstract_class: AbstractDownloadFeeds):
     abstract_class.template_download_vulnerability()

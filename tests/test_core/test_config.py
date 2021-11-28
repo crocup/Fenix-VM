@@ -5,7 +5,7 @@ from app.core.setting import Settings
 def test_data_config_default():
     assert API_PREFIX == "/api/v1"
     assert PROJECT_NAME == "FSEC VM"
-    assert VERSION == "0.0.19"
+    assert VERSION == "0.0.21"
     assert DATABASE_IP == "127.0.0.1"
     assert DATABASE_PORT == 27017
 
