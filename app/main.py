@@ -8,6 +8,9 @@ from app.api.errors.validation_error import http422_error_handler
 from app.core.config import PROJECT_NAME, ALLOWED_HOSTS, VERSION, API_PREFIX
 from app.api.routes.api import router as api_router
 from fastapi.exceptions import RequestValidationError
+import pathlib
+
+dir_path = pathlib.Path.cwd()
 
 
 def get_application() -> FastAPI:
