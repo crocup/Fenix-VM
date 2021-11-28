@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from rq.job import Job
 from starlette import status
 from app.models.task import Status
-from worker import conn
+from app.worker import conn
 
 router = APIRouter()
 

@@ -62,6 +62,16 @@ To run all the tests of a project, simply run the ``pytest`` command: ::
 
     $ pytest --cov=app tests/
 
+
+## Quick Start
+
+1. Build image: 
+``
+docker build -t fsec ./
+``
+2. Run a container based on your image:
+``docker run -d -p 8000:8000 fsec
+``
 ## Maintainers
 
 This repository is currently maintained by [@Crocup](https://github.com/crocup). 
