@@ -34,6 +34,7 @@ class HostDiscovery(AbstractScanner):
         for host in result:
             data = {
                 "host": host,
+                "uuid": self.uuid,
                 "name": self.name,
                 "hostname": result[host]["hostname"],
                 "macaddress": result[host]["macaddress"],
@@ -47,4 +48,5 @@ class HostDiscovery(AbstractScanner):
                                                       new_value={"macaddress": result[host]["macaddress"],
                                                                  "hostname": result[host]["hostname"],
                                                                  "name": self.name,
+                                                                 "uuid": self.uuid,
                                                                  "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")})
