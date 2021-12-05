@@ -21,5 +21,7 @@ DATABASE_PORT: int = config("DATABASE_PORT", default=27017)
 # year feeds
 NOW_YEAR: int = config("NOW_YEAR", default=datetime.datetime.now().year)
 START_YEAR: int = config("START_YEAR", default=2002)
-# https://github.com/nsidnev/fastapi-realworld-example-app/blob/master/app/api/routes/tags.py
+
 DIR_FEEDS: str = ""
+
+# https://github.com/nsidnev/fastapi-realworld-example-app/blob/master/app/api/routes/tags.py
