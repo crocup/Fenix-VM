@@ -97,7 +97,6 @@ async def delete_task_discovery(task: Start):
     удалить задачу
     """
     try:
-
         return Result(success=True)
     except Exception as e:
         logging.error(e)
