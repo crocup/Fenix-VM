@@ -43,5 +43,5 @@ async def test_start_scanner_not_host():
 @pytest.mark.anyio
 async def test_start_scanner():
     async with AsyncClient(app=app, base_url="http://127.0.0.1:8000") as ac:
-        response = await ac.post(app.url_path_for("scanner:start"), json={"name": "test2"})
-    assert response.status_code == 200
+        response = await ac.post(app.url_path_for("scanner:start"), json={"uuid": "4e403d1b-e97a-4091-9bfa-6d7a79c924e0"})
+    assert response.status_code == 422

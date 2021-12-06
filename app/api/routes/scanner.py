@@ -21,8 +21,8 @@ async def start_scanner(task: Start):
             host_db = host
         from app.api.routes.api import rq_que
         job = rq_que.enqueue_call(
-            func=result_scan, args=(ServiceDetection(host=host_db['mask'], name=host_db['name'], db="Scanner",
-                                                     table="result"),)
+            func=result_scan, args=(ServiceDetection(host=host_db['mask'], uuid=host_db['uuid'], name=host_db['name'],
+                                                     db="Scanner", table="result"),)
         )
         return Status(success=True, message=job.id)
     except Exception as e:

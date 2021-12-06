@@ -91,12 +91,15 @@ async def tasks_discovery():
         return ResultTask(status=False, data=[])
 
 
-@router.delete("/delete", status_code=status.HTTP_200_OK, name="discovery:deleted", )
+@router.delete("/delete", status_code=status.HTTP_200_OK, name="discovery:delete", )
 async def delete_task_discovery(task: Start):
     """
     удалить задачу
     """
     try:
+        db_discovery_delete_task = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
+                                                               base="HostDiscovery", collection="task"))
+        db_discovery_delete_task.delete_message({"uuid": task.uuid})
         return Result(success=True)
     except Exception as e:
         logging.error(e)
