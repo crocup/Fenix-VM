@@ -7,13 +7,12 @@ class Create(BaseModel):
     name: str
 
 
-class Start(BaseModel):
-    uuid: str
+class Host(BaseModel):
+    host: str
 
 
 class Edit(BaseModel):
-    uuid: str
-    mask: str
+    host: str
     name: str
 
 

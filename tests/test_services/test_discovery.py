@@ -7,7 +7,7 @@ def test_del_misc_data():
         "stats": "stats",
         "runtime": "runtime"
     }
-    assert HostDiscovery(host="192.168.1.1", name="name", uuid="uuid",
+    assert HostDiscovery(host="192.168.1.1",
                          db="db", table="table").del_misc_data(data=data) == {"test": "test"}
 
 
@@ -16,7 +16,7 @@ def test_del_misc_data_no_stats():
         "test": "test",
         "runtime": "runtime"
     }
-    assert HostDiscovery(host="192.168.1.1", name="name", uuid="uuid",
+    assert HostDiscovery(host="192.168.1.1",
                          db="db", table="table").del_misc_data(data=data) == {"test": "test"}
 
 
@@ -25,7 +25,7 @@ def test_del_misc_data_no_stats_and_runtime():
         "test": "test",
         "runtimes": "runtimes"
     }
-    assert HostDiscovery(host="192.168.1.1", name="name", uuid="uuid",
+    assert HostDiscovery(host="192.168.1.1",
                          db="db", table="table").del_misc_data(data=data) == {"test": "test", "runtimes": "runtimes"}
 
 
