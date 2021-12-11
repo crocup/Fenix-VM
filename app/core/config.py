@@ -2,7 +2,6 @@ import datetime
 from typing import List
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
-from pathlib import Path
 
 
 API_PREFIX = "/api/v1"
@@ -23,5 +22,8 @@ NOW_YEAR: int = config("NOW_YEAR", default=datetime.datetime.now().year)
 START_YEAR: int = config("START_YEAR", default=2002)
 
 DIR_FEEDS: str = ""
-
+BASE_VM: str = config("BASE_VM", default="VM")
+COLLECTION_HOST_DISCOVERY: str = config("COLLECTION_HOST_DISCOVERY", default="discovery")
+COLLECTION_SCANNER: str = config("COLLECTION_SCANNER", default="scanner")
+COLLECTION_SETTING: str = config("COLLECTION_SETTING", default="setting")
 # https://github.com/nsidnev/fastapi-realworld-example-app/blob/master/app/api/routes/tags.py
