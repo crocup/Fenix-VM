@@ -5,10 +5,8 @@ class AbstractScanner:
     """
     """
 
-    def __init__(self, host, uuid, name, db, table):
+    def __init__(self, host, db, table):
         self.host = host
-        self.uuid = uuid
-        self.name = name
         self.db = db
         self.table = table
 
