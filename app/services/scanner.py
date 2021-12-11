@@ -31,12 +31,10 @@ class ServiceDetection(AbstractScanner):
             message_host_scanner = MessageProducer(MongoDriver(host=DATABASE_IP, port=DATABASE_PORT,
                                                                base=self.db, collection=self.table))
             for host in result:
-                data = {
-                    "host": host,
-                    "name": self.name,
+                new_value = {
                     "result": result[host],
                     "time": datetime.now().strftime("%H:%M:%S %d.%m.%Y")
                 }
-                message_host_scanner.insert_message(data)
+                message_host_scanner.update_message(message={"host": host}, new_value=new_value)
         except Exception as e:
             logging.error(e)
