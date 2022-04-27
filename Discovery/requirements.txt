@@ -1,0 +1,8 @@
+anyio==3.5.0
+idna==3.3
+pika==1.2.0
+python3-nmap==1.5.1
+simplejson==3.17.6
+sniffio==1.2.0
+starlette==0.19.1
+typing_extensions==4.2.0
