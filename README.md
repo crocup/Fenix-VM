@@ -67,12 +67,9 @@ To run all the tests of a project, simply run the ``pytest`` command: ::
 ``sudo docker run --restart=always -d --name redis_1 -v /opt/redis/etc/redis.conf:/usr/local/etc/redis/redis.conf -v /opt/redis/data:/data -p 0.0.0.0:6379:6379 redis redis-server /usr/local/etc/redis/redis.conf``
 3. Install Mongo:
 ``sudo docker run --restart=always -d --name mongodb_1 -v mongodata:/data/db -p 0.0.0.0:27017:27017 mongo``
-4. Build FSEC_VM image: 
+4. Install RabbitMQ: 
 ``
-sudo docker build -t fsec ./
-``
-5. Run a container based on your image:
-``sudo docker run -d --name fsec_vm -p 0.0.0.0:8000:8000 fsec
+sudo docker run --restart=always -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq
 ``
 
 ## Maintainers
