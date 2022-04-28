@@ -1,12 +1,7 @@
 # Install
-sudo docker build -t fsec_discovery ./
+sudo docker build -t fsec_scanner ./
 
-sudo docker run -it --rm --name fsec_discovery fsec_discovery
-
-or 
-
-sudo docker run -d --name fsec_discovery fsec_discovery
-
+sudo docker run -it --rm --name fsec_scanner fsec_scanner
 
 
 # RabbitMQ

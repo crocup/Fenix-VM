@@ -4,7 +4,6 @@ import logging
 from abc import abstractmethod
 from typing import Dict
 import nmap3
-
 from sender import result_sender, HostSenderData
 
 
@@ -66,13 +65,12 @@ class HostScanner(AbstractScanner):
             отправка в брокер сообщений
             """
             for host in result:
-                # send to rabbitmq
                 result_data = {
                     "service": "scanner",
                     "host_addr": host,
-                    "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "data": result[host]
+                    "time": datetime.datetime.now().isoformat(),
+                    "ports": result[host]["ports"]
                 }
-                result_sender(HostSenderData(data=json.dumps(result_data), rabbit_queue="Core"))
+                result_sender(HostSenderData(data=json.dumps(result_data), rabbit_queue="Vulnerability"))
         except Exception as e:
             logging.error(e)
