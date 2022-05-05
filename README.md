@@ -1,6 +1,6 @@
 ![GitHub Logo](fsec.png)
 <p align="center">
-Vulnerability Management System, being developed in the Republic of Belarus <img src="by.svg" width="16" height="16" alt="" /> </p>
+Vulnerability Management System, developed in the Republic of Belarus <img src="by.svg" width="16" height="16" alt="" /> </p>
 <p align="center">
   <a href="#">
     <img src="https://img.shields.io/github/license/crocup/Fenix-Security-Scanner" />
@@ -46,7 +46,7 @@ The development is of interest to the community, but please wait for the prelimi
 
 The system is under active development by one person and there are many ideas ahead, but consider supporting it and giving it a star to raise awareness! 
 
-**UDP:** **Pre-release of the first beta version at the end of February 2022** 
+**UDP:** **Pre-release of the first beta version at the end of September 2022** 
 
 ## Run tests
 
@@ -63,11 +63,7 @@ To run all the tests of a project, simply run the ``pytest`` command: ::
 ## Quick Start in Ubuntu(Debian)
 1. Install Docker: 
 ``sudo apt install docker.io``
-2. Install Redis:
-``sudo docker run --restart=always -d --name redis_1 -v /opt/redis/etc/redis.conf:/usr/local/etc/redis/redis.conf -v /opt/redis/data:/data -p 0.0.0.0:6379:6379 redis redis-server /usr/local/etc/redis/redis.conf``
-3. Install Mongo:
-``sudo docker run --restart=always -d --name mongodb_1 -v mongodata:/data/db -p 0.0.0.0:27017:27017 mongo``
-4. Install RabbitMQ: 
+2. Install RabbitMQ: 
 ``
 sudo docker run --restart=always -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq
 ``

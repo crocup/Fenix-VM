@@ -73,7 +73,7 @@ class HostDiscovery(AbstractScanner):
                     "service": "discovery",
                     "mac": mac,
                     "host_addr": host,
-                    "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "time": datetime.datetime.now().isoformat()
                 }
                 result_sender(HostSenderData(data=json.dumps(result_data), rabbit_queue="Core"))
                 print(result_data)
