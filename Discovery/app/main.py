@@ -1,6 +1,8 @@
 #!/usr/bin/venv python
 import json
-import pika, sys, os
+import logging
+import pika
+import sys
 from config import rabbit_mq
 from discovery import result_scan, HostDiscovery
 
@@ -21,9 +23,6 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os.exit(0)
+    except Exception as e:
+        logging.error(e)
+        sys.exit(0)
