@@ -65,12 +65,13 @@ class HostScanner(AbstractScanner):
             отправка в брокер сообщений
             """
             for host in result:
-                result_data = {
-                    "service": "scanner",
-                    "host_addr": host,
-                    "time": datetime.datetime.now().isoformat(),
-                    "ports": result[host]["ports"]
-                }
-                result_sender(HostSenderData(data=json.dumps(result_data), rabbit_queue="Vulnerability"))
+                for port in result[host]["ports"]:
+                    result_data = {
+                        "service": "scanner",
+                        "host_addr": host,
+                        "time": datetime.datetime.now().isoformat(),
+                        "port": port
+                    }
+                    result_sender(HostSenderData(data=json.dumps(result_data), rabbit_queue="Core"))
         except Exception as e:
             logging.error(e)
