@@ -1,6 +1,9 @@
-![GitHub Logo](fsec.png)
+![GitHub Logo](fsec_new.png)
 <p align="center">
-Vulnerability Management System, developed in the Republic of Belarus <img src="by.svg" width="16" height="16" alt="" /> </p>
+Система управления уязвимостями, разрабатываемая в Республике Беларусь <img src="by.svg" width="16" height="16" alt="" /> </p>
+<p align="center">
+<p align="center">
+Vulnerability Management System, developed in the Republic of Belarus </p>
 <p align="center">
   <a href="#">
     <img src="https://img.shields.io/github/license/crocup/Fenix-Security-Scanner" />
@@ -21,14 +24,35 @@ Vulnerability Management System, developed in the Republic of Belarus <img src="
 * [Quick Start in Ubuntu(Debian)](#quick-start-in-ubuntudebian)
 * [License](#license)
 
-## Give a Star! :star:
+## Поддержите проект!(Give a Star!) :star:
+Если вам нравится проект, поставьте ему звездочку, чтобы привлечь внимание!
+
 If you like the project, please consider giving it a star to raise awareness!
 
 ## General info
-**"FSEC VM"** is a new generation **vulnerability Management System**. The solution allows you to build a full-fledged vulnerability management process, search for information
+**"FENIX VM"** — это **система управления уязвимостями** нового поколения и с подходом, отличающимся от разработанных решений. Решение позволяет выстроить полноценный процесс управления уязвимостями, поиска информации
+об организации в открытых источниках, оценивать состояние защищенности в режиме реального времени, делать прогноз защищенности организации
+на перспективу, а также провести анализ соблюдения требований нормативных правовых актов регулятора в Республике Беларусь.
+
+**ВАЖНО! Это не сканер уязвимостей!**
+
+**"FENIX VM"** is a new generation **vulnerability Management System**. The solution allows you to build a full-fledged vulnerability management process, search for information
 about the organization in open sources, assess the state of security in real time, make a forecast of the security of the organization
 for the future, as well as to analyze compliance with the requirements of the regulatory legal acts of the regulator in the Republic of Belarus.
 **This is not a Vulnerability scanner!**
+
+## Возможности
+- Непрерывный контроль инфраструктуры организации посредством автоматической инвентаризации сети;
+- Выявление и ежедневное автоматическое сканирование важных активов в сети, направленное на своевременное реагирование при обнаружении уязвимостей;
+- Выявление и приоритизация обнаруженных уязвимостей и эксплойтов. Это достигается за счет использования модуля аналитики, входящего в состав программного продукта;
+- Ежедневный отчет о состоянии безопасности инфраструктуры;
+- Немедленное уведомление (телеграмма, электронная почта) системного администратора: об обнаружении или изменении активов в сети, обнаружении новых уязвимостей и появлении новых эксплойтов для ранее обнаруженных уязвимостей;
+- Контроль устранения уязвимостей;
+- Создание пользовательских плагинов для поиска уязвимостей.
+- **Контроль за соблюдением** требований нормативных правовых актов регулятора **в Республике Беларусь**.
+- Поиск информации о компании в открытых источниках (**OSINT**);
+- Анализ всех полученных данных в **реальном времени** для получения комплексной оценки состояния безопасности информационной системы.
+
 ## Possible
 - Continuous control of the organization's infrastructure through automatic network inventory;
 - Identification and daily automatic scanning of important assets in the network, aimed at timely response when vulnerabilities are found;
@@ -41,32 +65,19 @@ for the future, as well as to analyze compliance with the requirements of the re
 - Search for information about the company in open sources (**OSINT**);
 - Analysis of all received data in **real time** to obtain a comprehensive assessment of the security status of the information system. 
 
+## Предупреждение
+Разработка представляет интерес для сообщества, но просьба дождаться предварительной бета-версии и не использовать ее в производственной среде.
+
+Система активно разрабатывается одним человеком и впереди много идей, но подумайте о том, чтобы поддержать проект и поставить звезду, чтобы повысить охват аудитории!
+
+**UDP:** **Предварительный выпуск первой бета-версии в конце сентября 2022 г.**
+
 ## Warning
 The development is of interest to the community, but please wait for the preliminary beta and do not use it in a production environment.
 
 The system is under active development by one person and there are many ideas ahead, but consider supporting it and giving it a star to raise awareness! 
 
 **UDP:** **Pre-release of the first beta version at the end of September 2022** 
-
-## Run tests
-
-Tests for this project are defined in the ``tests/`` folder.
-
-This project uses [pytest](https://docs.pytest.org/) to define tests because it allows you to use the ``assert`` keyword with good formatting for failed assertations.
-
-
-To run all the tests of a project, simply run the ``pytest`` command: ::
-
-    $ pytest --cov=app tests/
-
-
-## Quick Start in Ubuntu(Debian)
-1. Install Docker: 
-``sudo apt install docker.io``
-2. Install RabbitMQ: 
-``
-sudo docker run --restart=always -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq
-``
 
 ## Maintainers
 
