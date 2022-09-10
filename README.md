@@ -81,8 +81,5 @@ The system is under active development by one person and there are many ideas ah
 
 ## Maintainers
 
+
 This repository is currently maintained by [@Crocup](https://github.com/crocup). 
-
-## License
-
-This project has been released under the GPL-3.0 license. More information can be found by viewing the license [here](LICENSE).
