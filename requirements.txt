@@ -17,7 +17,7 @@ redis==4.2.2
 rq==1.10.1
 simplejson==3.17.6
 sniffio==1.2.0
-starlette==0.17.1
+starlette==0.25.0
 typing_extensions==4.2.0
 uvicorn==0.17.6
 uvloop==0.16.0
